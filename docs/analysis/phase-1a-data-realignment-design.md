@@ -566,3 +566,168 @@ Phase 1a 코드 구현 시작
 - **미래의 재분류 규칙 변경 시 참조**: 기존 원칙을 깨지 않고 확장하는지 확인
 
 이 문서는 **Phase 1a 완료 후에도 유효**하며, Phase 2-7 내내 ontology 설계 의사결정의 근거로 사용된다.
+
+---
+
+## 7. XLSX-Anchored Phase 1a (수정된 최종 구조)
+
+### 7.1 발견 — 권위 있는 기존 분류 소스
+
+Section 1~6의 상세 설계 논의 도중, 같은 raw 디렉터리의 `Refining_ObjectID_20260407_192047.xlsx` (5.2 MB) 가
+DXTnavis 프로젝트의 `RefinedXlsxExporter.cs` 모듈이 생성한 **권위 있는 재정렬 출력물**임이 확인되었다.
+
+속성:
+- 동일한 12,009 ObjectId (다른 모든 raw 소스와 일치)
+- 6-클래스 taxonomy 로 이미 분류 완료 (Piping/Structure/Equipment/Electrical/HVAC/Other)
+  - Support 클래스는 Structure/Piping 으로 흡수되어 제거됨
+- 결정론적 규칙 기반 생성 (상세: `docs/analysis/refined-xlsx-exporter-logic.md`)
+- 프로젝트 오너가 신뢰하는 snapshot-specific ground truth
+
+**함의**: Phase 1a는 더 이상 classifier 를 작성하지 않는다. 대신 **"XLSX ingest + 보조 파일 enrich + Foundry 정규화 + lineage"** 가 된다.
+
+### 7.2 5개 구조적 질문의 상태 변화
+
+| Q | 원래 상태 | 새 상태 |
+|---|----------|--------|
+| Q1 Container 정의 | 논의 중 (클래스 vs 플래그) | **플래그 확정** (`is_container`, `is_bbox_placeholder`) |
+| Q2 재분류 전략 | 2-signal consensus 제안 | **불필요** — XLSX 가 이미 분류 완료 |
+| Q3 Insulation Volume | 별도 AnalysisVolume 클래스 | **플래그로 변경** — XLSX 가 Insulation Volume 을 여러 클래스(Piping/HVAC/Equipment/Other)에 문맥 기반 귀속시켰기 때문에 클래스로 분리 불가 |
+| Q4 고립 Piping 153 | raw 데이터 확인 필요 | **XLSX 분류 신뢰** + `has_own_geometry=False` 플래그 |
+| Q5 Lineage 4컬럼 | 확정 | **동일, 단순화됨** — 모든 레코드가 단일 규칙 (`xlsx_refined_exporter@snapshot-20260407-192047`) |
+
+### 7.3 수정된 Phase 1a 구조
+
+```
+Primary source:
+  data/raw/dxtnavis/2026-04-07/Refining_ObjectID_20260407_192047.xlsx
+    └── Sheet: Refining_ObjectID_Pivot (12,009 × 135)
+
+Critical join (XLSX 누락 컬럼 회수):
+  data/raw/dxtnavis/2026-04-07/AllProperties_20260407_184650.csv
+    └── 회수 대상: ObjectId, ParentId, SmartPlant 3D|Flow Direction, SmartPlant 3D|Cut length
+
+Enrichment joins:
+  geometry.csv          → MinX/Y/Z, MaxX/Y/Z, CentroidX/Y/Z, Volume, MeshUri
+  validation.csv        → HasRealMesh, AdjacencyCount, MeshQuality, Verdict
+  connected_groups.csv  → GroupId, element_count, in_giant_group
+  adjacency.csv         → 110,173 spatial edges (별도 테이블 bim_adjacency)
+
+SI unit parsing (Phase 1b 재사용):
+  Dry Weight              → dry_weight_kg
+  Length/Width/Depth/Height → *_m
+  Design Max Pressure     → design_pressure_kpa
+  Design Max Temperature  → design_temperature_c
+  NPD                     → npd_end1_m, npd_end2_m
+
+Derived flags:
+  is_container         = (MeshQuality='skipped_container') AND (AdjacencyCount=0)
+  is_bbox_placeholder  = (MeshQuality='box_placeholder')
+  is_analysis_volume   = display_name 에 'Insulation Volume' | 'Obstruction Volume' | 'Fireproofing Volume' 포함
+  has_own_geometry     = HasRealMesh
+  graph_participant    = NOT is_container AND NOT is_bbox_placeholder AND NOT is_analysis_volume
+
+Foundry normalization:
+  snake_case 컬럼명 (예: SmartPlant 3D|Dry Weight → sp3d_dry_weight)
+  명시적 타입 (TEXT / REAL / INTEGER / BOOLEAN)
+  primary_key = object_id (UUID 문자열)
+  title       = display_name (빈 값이면 object_id fallback)
+  ingested_at_utc = ISO 8601 timestamp
+
+Lineage (4-column scheme):
+  original_class          = XLSX Class 값
+  refined_class           = XLSX Class 값 (동일, 미래 override 여지)
+  refining_rule           = 'xlsx_refined_exporter'
+  refining_rule_version   = 'DXTnavis@main (snapshot 20260407-192047)'
+```
+
+### 7.4 교차 검증 전략 — Python InferClass 재구현
+
+XLSX 분류기를 완전히 이해하고 재현 가능성을 보장하기 위해, C# `InferClass` 메서드를 1:1 Python으로 포팅한다.
+
+- 파일: `src/bimkg/ingest/xlsx_classifier.py`
+- 규칙: 3-tier 시스템 (Explicit class property → Property key inference → Keyword substring matching)
+- 키워드 리스트: C# 상수 그대로 복사
+
+검증 테스트:
+
+1. AllProperties CSV (136 컬럼 raw 속성) 로드
+2. 각 행에 Python `infer_class()` 적용
+3. XLSX Class 컬럼과 비교
+4. 기대: 12,009 행 전체 100% 일치
+
+일치율 < 100% 인 경우:
+- 각 불일치 건을 조사
+- 우리의 Python 버그인지, 또는 XLSX 가 더 많은 데이터(예: Navisworks `Category` 속성)를 참고했는지 판정
+- 수용 가능한 편차는 기록
+
+### 7.5 Palantir Foundry 호환성 (결정 연기)
+
+**Foundry 관련 질문 답변 (2026-04-11)**:
+
+- **F1 (데이터 포맷)**: 미결정 → **3종 산출물 모두 생성** — SQLite canonical, CSV for PowerBI, Parquet for Foundry dataset import
+- **F2 (Object Type 전략)**: 데이터 정렬 확인 후 결정 → **Phase 1a 는 flat 테이블 생성**, 이후 Ontology 에서 Flat 또는 Per-class 중 선택 가능
+- **F3 (Container 처리 전략)**: 모름 → **플래그 기반 유지** — 클래스 기반으로 가지 않음으로써 양쪽 옵션을 모두 열어둠
+- **F4 (배포 환경)**: Developer Tier → **작은 dataset 사이즈 한계, 단순한 Ontology 모델 계획**
+- **F5 (기존 Ontology 연동)**: 별도 프로젝트 → **clean-slate namespace**, legacy 제약 없음
+
+#### Developer Tier 고려사항
+
+Palantir Foundry Developer Tier 는 개인용 무료 티어다. 우리 사용 사례에 중요한 제약:
+- Dataset 크기: 제한 있음 (현재 티어 스펙 확인 필요)
+- Ontology Object Type 개수: 제한
+- 컴퓨트: 단일 사용자, 분산 Spark 없음
+- Actions: 기본 write-back 지원
+- 다중 사용자 협업 없음
+
+**이 플랜트 모델(12,009 objects + 110K edges) 은 Developer Tier 에 여유롭게 들어간다**.
+단, 불필요하게 복잡한 Ontology 구조는 피해야 한다.
+
+#### Phase 1a 산출물의 Foundry 중립성
+
+Phase 1a 는 특정 Ontology 전략에 종속되지 않는 **import-ready 구조** 를 생성한다:
+
+1. **단일 마스터 테이블**: `bim_objects` — flat, 모든 컬럼, 1 row per object
+2. **단일 링크 테이블**: `bim_adjacency` — (source, target, relation_type, metrics)
+3. **보조 테이블**: hierarchy, groups, validation results
+
+이 flat 구조는 향후 Ontology 에서 다음 중 어느 쪽으로도 매핑 가능하다:
+- **Flat Ontology**: Object Type 1개 (`BIMObject`) + class 필터
+- **Per-class Ontology**: class 값으로 분할
+- **Property-Set Ontology**: class 를 Property Set 으로 매핑
+
+Phase 1a 는 Ontology 선택을 **강제하지 않고** 모든 가능성을 연 상태로 유지한다.
+
+### 7.6 갱신된 Phase 1a 산출물 목록
+
+```
+src/bimkg/ingest/
+  __init__.py             [Phase 1b 에서 생성됨]
+  unit_parser.py          [Phase 1b - 완료]
+  xlsx_classifier.py      [NEW - Python port of InferClass for oracle validation]
+  xlsx_loader.py          [NEW - Load Refining_ObjectID_Pivot + enrich]
+  clean.py                [NEW - Join, flag derivation, lineage, Foundry normalize]
+  sqlite_writer.py        [NEW - Write bim_objects + bim_adjacency to SQLite]
+  exporters/
+    __init__.py
+    powerbi.py            [Phase 1d - Regenerate 12 PowerBI CSVs]
+    parquet.py            [Phase 1d - Write Foundry-ready Parquet]
+
+tests/test_ingest/
+  test_unit_parser.py     [Phase 1b - 완료]
+  test_xlsx_classifier.py [NEW - Python classifier ≡ XLSX at 100%]
+  test_xlsx_loader.py     [NEW]
+  test_clean.py           [NEW]
+  test_oracle.py          [NEW - End-to-end 12,009 object count + class distribution]
+
+docs/analysis/
+  phase-1a-data-realignment-design.md  [현재 문서]
+  refined-xlsx-exporter-logic.md       [NEW - C# 로직 분해 문서]
+```
+
+### 7.7 다음 단계
+
+1. **Step 2**: `refined-xlsx-exporter-logic.md` 작성 — C# 로직을 Python 개발자가 바로 참조 가능한 형태로 기록
+2. **Step 3**: `xlsx_classifier.py` 구현 + `test_xlsx_classifier.py` 로 100% oracle 일치 검증
+3. **Step 4**: `xlsx_loader.py` + `clean.py` + `sqlite_writer.py` 구현
+4. **Phase 1d 확장**: Parquet exporter 추가 (Foundry import 용)
+
