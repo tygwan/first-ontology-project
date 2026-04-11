@@ -39,6 +39,13 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Windows Alternate Data Streams (e.g., Zone.Identifier for downloaded files)
+*:Zone.Identifier
+
+# Loose data files at project root (should always live under data/)
+/Refining_ObjectID_*.xlsx
+/AllProperties_*.csv
+
 # Testing
 .pytest_cache/
 .coverage
