@@ -15,10 +15,11 @@
 
 **프로젝트 상태** (2026-04-12 기준):
 - Phase 0 ~ 1e: ✅ 완료 (210 테스트 통과)
+- Phase 2: ⏸ **Paused** — Q1 top-level taxonomy 결정 (D10), Q2~Q8 은 DXTnavis PR 대기 (D11)
 - 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ Resolved locally), 알려진 한계 3건
-- DXTnavis 원천 PR: 📬 [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 제출됨
+- DXTnavis 원천 PR: 📬 [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) — PR 작성 예정, **Phase 2 blocking**
 - **Standards**: dev-standards@0.1.0 (🟢 first consumer / reference implementation)
-- 다음 단계: Phase 2 (OWL 온톨로지)
+- 다음 단계: DXTnavis PR merge + XLSX 재 export → Phase 1 재실행 → Phase 2 재개
 
 ---
 
@@ -65,6 +66,8 @@
 | D7 | Link Type = single direction + is_symmetric flag | Phase 1d | 위 |
 | D8 | Power BI + Foundry 병행 출력 | Phase 1d | 위 |
 | D9 | Finding archive 규칙 (5단계 프로세스) | 2026-04-12 | `memory/feedback_finding_archive.md` |
+| D10 | Phase 2 top-level taxonomy = sibling (BIMObject ‖ AnalysisArtifact) | Phase 2 planning | §4 D10 |
+| D11 | Phase 2 Q2~Q8 구현 대기 (DXTnavis PR 후 재개) | Phase 2 planning | §4 D11 |
 
 ---
 
@@ -86,7 +89,10 @@
              DXTnavis Issue #2 submitted
              PROJECT-JOURNAL.md created (this document)                  4214e6d
              Phase 1e — classification_confidence layer (M1 local fix)   6a337e0
-             dev-standards@0.1.0 published; first consumer linked        (pending)
+             dev-standards@0.1.0 published; first consumer linked        b315437
+             Phase 2 planning checkpoint                                  (pending)
+             └── D10: top-level taxonomy = sibling (BIMObject ‖ AnalysisArtifact)
+             └── D11: Phase 2 Q2~Q8 paused pending DXTnavis PR
 ```
 
 ### Test count progression
@@ -180,6 +186,118 @@
 
 ---
 
+### D10 — Phase 2 top-level taxonomy = sibling 구조
+
+**맥락**: Phase 2 OWL 온톨로지 설계를 위해 top-level 클래스 계층을 결정해야 함. 세 가지 옵션이 논의됨:
+- Option A: `BIMObject` 와 `AnalysisArtifact` 를 sibling 으로 분리
+- Option B: 단일 트리 — `BIMObject` 아래 모든 클래스
+- Option C: 평탄 구조 — 중간 추상 클래스 없음
+
+이전 논의 참조: `docs/analysis/phase-1a-data-realignment-design.md` §4.3 에서 이미 sibling 구조를 권고했으나 최종 결정은 Phase 2 시점으로 연기.
+
+**결정**: **Option A (sibling 구조)** 를 채택.
+
+```
+BIMEntity
+├── BIMObject
+│   ├── PhysicalObject
+│   │   ├── PipingComponent
+│   │   ├── StructuralMember
+│   │   ├── Equipment
+│   │   ├── Support
+│   │   ├── ElectricalComponent
+│   │   ├── HvacComponent
+│   │   └── UncategorizedObject
+│   └── Container
+│       └── HierarchyNode
+└── AnalysisArtifact
+    └── AnalysisVolume
+        ├── InsulationVolume
+        ├── FireproofingVolume (미래)
+        └── AcousticVolume (미래)
+```
+
+**근거**:
+1. AnalysisVolume 은 의미론적으로 PhysicalObject 가 아님 — 엔지니어링 분석 아티팩트
+2. SHACL 규칙 (Phase 3) 을 positive form 으로 작성 가능 ("PhysicalObject 는 adjacency 에 참여 가능")
+3. 미래의 다른 분석 아티팩트 (Clash, StressModel 등) 확장이 자연스러움
+4. Phase 1a §4.3 심화 논의의 결론과 일치
+
+**대안 검토**:
+- Option B (단일 트리): SHACL 규칙이 negative form 필요 ("AnalysisVolume 은 adjacency 참여 불가"), 복잡도 증가
+- Option C (평탄): 서브클래스 추론 이점 상실, SPARQL 쿼리에서 중간 abstraction 활용 불가
+
+**영향**:
+- `src/bimkg/ontology/schema.py` 구현 시 이 구조 사용
+- Phase 3 SHACL 규칙은 positive 제약으로 작성 가능
+- 미래 분석 아티팩트 추가 시 스키마 변경 없이 확장
+
+**관련**: D11 (Phase 2 나머지 논의 연기), Phase 1a §4.3
+
+---
+
+### D11 — Phase 2 Q2~Q8 구현 대기 (DXTnavis PR 후 재개)
+
+**맥락**: Phase 2 planning session 에서 8 개의 구조적 질문을 논의. Q1 은 결정되었으나 (D10), Q2~Q8 은 입력 데이터의 최종 형태에 의존하는 항목들이다.
+
+현재 상황:
+- M1 finding 이 XLSX 분류기에서 ~997 건의 false positive Piping 을 발견
+- DXTnavis 측에서 원천 수정 PR 을 작성 예정 (Issue #2)
+- PR 이 merge 되고 XLSX 가 재생성되면 클래스 분포가 크게 변함:
+  - Piping 4,014 → ~2,926 (HIGH 만 남음)
+  - Structure 5,926 → ~7,000 (misclassified 흡수)
+  - Electrical 449 → ~510
+- 따라서 현재 데이터로 ABox 를 생성하면 DXTnavis fix 후 재작업 필요
+
+의존하는 질문들:
+- Q2 클래스 계층 깊이 — 데이터 통계에 따라 선택
+- Q3 LIKELY_BUG 처리 — DXTnavis 수정 후 LIKELY_BUG 자체가 사라질 수 있음
+- Q4 serialization 포맷 — 데이터 크기에 따라 결정
+- Q5 Pipeline/PipeRun 표현 — 147 vs 157 pipeline 차이가 해결되어야 결정 가능
+- Q6 ABox 파일 분할 — 최종 데이터 크기에 따라
+- Q7 Property datatype — 영향 작음
+- Q8 spatial_relationships.ttl 관계 — DXTnavis 수정에 포함될 수 있음
+
+**결정**: Q1 (D10) 이후 Phase 2 를 **일시 중단** 한다. Phase 2a (TBox), 2b (ABox), 2c (integration) 모두 DXTnavis Issue #2 가 해결되고 새 XLSX 스냅샷을 확보할 때까지 대기.
+
+**근거**:
+1. **정확성 > 일정**: 변경될 데이터 위에 구축하면 이중 작업
+2. **Phase 1e confidence column 이 임시 가교**: downstream 필요는 충족됨
+3. **D10 은 데이터 독립적**: top-level 구조는 데이터 변경과 무관하므로 결정 유지
+4. **Phase 2 의 가치는 데이터가 온전할 때 최대**: 지금 구현해도 곧 폐기
+
+**대안 검토**:
+- Option A: 현재 데이터로 그대로 진행 → 이중 작업, 신뢰 저하
+- Option B: 완전 일시 중단 ← **선택**
+- Option C: Phase 2a (TBox 만) 진행 후 2b/2c 대기
+  - TBox 는 사실 데이터 독립적이므로 가능하긴 함
+  - 하지만 2a 만 분리하면 통합 흐름이 끊김 → 한 번에 깔끔하게 가기 위해 deferral
+
+**재개 조건 (resume checklist)**:
+- [ ] DXTnavis maintainer 가 Issue #2 에 대한 PR 제출
+- [ ] PR merge + 새 DXTnavis 버전 release
+- [ ] 사용자가 Navisworks 에서 XLSX 재 export 하여 새 스냅샷 획득
+- [ ] `data/raw/dxtnavis/<new-snapshot>/` 에 신규 파일 복사
+- [ ] `bimkg.config.SNAPSHOT` 상수 업데이트 (또는 새 스냅샷 디렉터리 지원)
+- [ ] `run_phase_1a()` 재실행으로 Gold 재생성
+- [ ] `classification_confidence` 분포 확인 — 모든 Piping 이 HIGH 가 되는지 검증
+- [ ] Phase 1d exporter 재실행으로 PowerBI/Foundry 산출물 갱신
+- [ ] 192+ 테스트 전체 통과 확인 (기대 count 업데이트 필요할 수 있음)
+- [ ] Phase 2 구조적 Q2~Q8 재평가 (새 데이터 기준으로)
+
+**영향**:
+- Phase 2 시작 시점이 외부 의존성에 의해 결정됨 (open-ended)
+- Phase 3 (SHACL), Phase 4 (Analytics), Phase 5 (LLM), Phase 6 (API), Phase 7 (UI) 모두 cascaded delay
+- 대기 기간 동안 사용자가 할 수 있는 가치 있는 작업: Power BI 대시보드 구축, dev-standards 개선, 문서화
+
+**관련**:
+- D10 (유일하게 결정된 Q1)
+- DXTnavis Issue #2
+- M1 finding
+- Phase 1e confidence layer (로컬 임시 가교)
+
+---
+
 ## 5. External Dependencies
 
 ### DXTnavis (C# .NET 8 BIM data extractor)
@@ -199,9 +317,15 @@
 **의존성 상태**:
 - 현재 2026-04-07 스냅샷 고정
 - 🔴 알려진 버그: M1 (Issue #2 제출)
+- 📬 Issue #2 에 대해 DXTnavis 측에서 PR 작성 예정 (2026-04-12 기준)
+- ⏸ **Phase 2 가 이 PR 을 기다리는 중** — D11 참조
 - 🟡 Data extraction wishlist (Issue #2 Part 2): ParentId 보존, Parquet 옵션, 관계 시트 등
 
 **연락 채널**: GitHub Issues on tygwan/DXTnavis
+
+**Blocking 관계**:
+- DXTnavis Issue #2 → **Phase 2 전체 (2a/2b/2c)** 대기
+- Phase 2 → Phase 3/4/5/6/7 cascaded delay
 
 ---
 
@@ -223,27 +347,39 @@
 
 ## 6. Open Questions
 
-### Q1. M1 해결 전 Phase 2 시작?
+### ~~Q1. M1 해결 전 Phase 2 시작?~~ ✅ Resolved
 
-**질문**: Phase 1e 로 `classification_confidence` 컬럼을 먼저 추가한 후 Phase 2 를 시작할지, 아니면 Phase 2 온톨로지 설계 시 M1 보정을 포함할지.
-
-**찬 / 반**:
-- Phase 1e 먼저: 명시적, 테스트 가능. 그러나 Phase 1d 출력물 재생성 필요 (0.5일).
-- Phase 2 통합: 재작업 감소. 그러나 Phase 2 설계 복잡도 증가.
-
-**상태**: 사용자 결정 대기.
+**해결**: Phase 1e 먼저 실행하기로 결정. 완료됨 (6a337e0). 자세한 내용은 D11 참조.
 
 ### Q2. DXTnavis Issue #2 응답 대기 시간?
 
-**질문**: DXTnavis 측 수정 완료까지 얼마나 기다릴지? 장기간이면 우리 쪽에서 우회 해결 (Python classifier override) 필요.
+**질문**: DXTnavis 측 수정 완료까지 얼마나 기다릴지?
 
-**상태**: 열려 있음. 원천 수정이 늦어지면 Option 2 (confidence column) 장기 유지.
+**상태** (2026-04-12): DXTnavis 측에서 PR 작성 예정. Phase 2 전체가 이 PR 을 기다리는 중 (D11). 대기 기간이 예상보다 길어지면:
+- Phase 1e 의 confidence column 이 장기 유지됨
+- 사용자는 대기 기간 동안 Power BI 대시보드, 문서화, dev-standards 개선 등 병렬 작업 가능
 
-### Q3. Phase 2 OWL 온톨로지 스키마 top-level 구조?
+### ~~Q3. Phase 2 OWL 온톨로지 스키마 top-level 구조?~~ ✅ Resolved
 
-**질문**: `BIMEntity > BIMObject > PhysicalObject` vs `BIMObject ‖ AnalysisArtifact` (sibling) ?
+**해결**: Sibling 구조 (`BIMObject ‖ AnalysisArtifact`) 채택. D10 참조.
 
-**이전 논의**: [`docs/analysis/phase-1a-data-realignment-design.md`](analysis/phase-1a-data-realignment-design.md) §4.3 에서 sibling 구조를 권고했으나 최종 결정은 Phase 2 시작 시.
+### Q4. Phase 2 Q2~Q8 재개 후 구조적 결정
+
+**질문**: DXTnavis PR merge 후, 새 데이터를 바탕으로 Phase 2 의 남은 7 개 구조적 질문을 재평가해야 함:
+- Q2 클래스 계층 깊이
+- Q3 Piping LIKELY_BUG 처리 (PR 후엔 LIKELY_BUG 자체가 사라질 수 있음)
+- Q4 RDF serialization 포맷
+- Q5 Pipeline/PipeRun/Level individual 표현
+- Q6 ABox 파일 분할
+- Q7 Property datatype 전략
+- Q8 spatial_relationships.ttl 관계
+
+**상태**: D11 에 따라 대기. 재개 체크리스트는 D11 §재개 조건 참조.
+
+**예상 변화**:
+- 새 XLSX 의 Piping 카운트 ~2,926 (현재 4,014 에서 ~1,088 감소)
+- Pipeline 147 → ~157 (FindKey 로직 수정 시)
+- classification_confidence 분포: 모두 HIGH 예상 → 컬럼 의의 재검토
 
 ---
 
