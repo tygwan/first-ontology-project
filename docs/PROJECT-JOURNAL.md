@@ -39,7 +39,7 @@
 
 | ID | Date | Severity | Title | Status | Archive |
 |----|------|:-:|-------|--------|---------|
-| M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | 🔄 Open | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
+| M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | ✅ Resolved locally | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
 
 ### Known limitations (수용 / 연기)
 
@@ -83,7 +83,8 @@
              Finding archive rule established (memory + docs/findings/)
              M1 archive committed                                        2f330dc
              DXTnavis Issue #2 submitted
-             PROJECT-JOURNAL.md created (this document)                  (pending)
+             PROJECT-JOURNAL.md created (this document)                  4214e6d
+             Phase 1e — classification_confidence layer (M1 local fix)   (pending)
 ```
 
 ### Test count progression
@@ -100,7 +101,7 @@
 
 ## 3. Findings (상세)
 
-### M1. XLSX substring matching misclassifies 997 Piping objects  🟠 MAJOR — 🔄 Open
+### M1. XLSX substring matching misclassifies 997 Piping objects  🟠 MAJOR — ✅ Resolved locally
 
 **발견 일자**: 2026-04-12
 **발견 경위**: Phase 1 완료 후 데이터 품질 감사 (semantic deep dive) 중
@@ -120,7 +121,11 @@
 
 **외부 조치**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 제출됨 (2026-04-12).
 
-**해결 방향**: Phase 1e (로컬 `classification_confidence` 컬럼 추가) + DXTnavis 원천 C# 수정 병행.
+**로컬 해결 (Phase 1e)**: `classification_confidence` + `classification_confidence_reason` 2 컬럼을 Gold / PowerBI fact_objects / Foundry Object Type 전체에 추가.
+- Piping 4,014 분해: **HIGH 2,926 / LOW 91 / LIKELY_BUG 997**
+- 원인별 reason 세분화 (pipe_rack / pipe_trench / pipeline_folder / steel_tee_substring / unknown)
+- Phase 2 에서 `classification_confidence='HIGH'` 필터로 깨끗한 부분집합 사용 가능
+- 원천 수정 (DXTnavis Issue #2) 완료 시 Phase 1e deprecation 가능
 
 ---
 

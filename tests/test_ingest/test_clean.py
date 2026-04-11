@@ -8,10 +8,15 @@ import pytest
 from bimkg import config
 from bimkg.ingest.clean import (
     ANALYSIS_VOLUME_PATTERNS,
+    CONFIDENCE_HIGH,
+    CONFIDENCE_LIKELY_BUG,
+    CONFIDENCE_LOW,
+    CONFIDENCE_REASONS,
     EMPTY_GUID,
     REFINING_RULE,
     REFINING_RULE_VERSION,
     add_adjacency_symmetric_closure,
+    add_classification_confidence,
     add_flags,
     add_lineage,
     add_si_units,
@@ -317,3 +322,214 @@ class TestLoadHierarchy:
         df = load_hierarchy_from_all_properties()
         assert (df["parent_id"] == EMPTY_GUID).sum() == 0
         assert df["parent_id"].isna().sum() == 1  # exactly one root
+
+
+# ---------------------------------------------------------------------------
+# Phase 1e: classification_confidence integration tests
+# ---------------------------------------------------------------------------
+
+
+class TestGoldClassificationConfidence:
+    """Integration tests for Phase 1e confidence layer (M1 mitigation).
+
+    Expected numbers come from docs/findings/2026-04-12-M1-piping-misclassification/
+    and are pinned here as regression guards.
+    """
+
+    def test_columns_exist(self, gold_objects: pd.DataFrame) -> None:
+        assert "classification_confidence" in gold_objects.columns
+        assert "classification_confidence_reason" in gold_objects.columns
+
+    def test_confidence_values_valid(self, gold_objects: pd.DataFrame) -> None:
+        allowed = {CONFIDENCE_HIGH, CONFIDENCE_LOW, CONFIDENCE_LIKELY_BUG}
+        assert set(gold_objects["classification_confidence"].unique()) <= allowed
+
+    def test_confidence_reason_vocabulary(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        actual = set(gold_objects["classification_confidence_reason"].unique())
+        allowed = set(CONFIDENCE_REASONS)
+        assert actual.issubset(allowed), f"Unexpected reasons: {actual - allowed}"
+
+    def test_piping_high_count(self, gold_objects: pd.DataFrame) -> None:
+        piping = gold_objects[gold_objects["refined_class"] == "Piping"]
+        assert (piping["classification_confidence"] == CONFIDENCE_HIGH).sum() == 2926
+
+    def test_piping_low_count(self, gold_objects: pd.DataFrame) -> None:
+        piping = gold_objects[gold_objects["refined_class"] == "Piping"]
+        assert (piping["classification_confidence"] == CONFIDENCE_LOW).sum() == 91
+
+    def test_piping_likely_bug_count(self, gold_objects: pd.DataFrame) -> None:
+        piping = gold_objects[gold_objects["refined_class"] == "Piping"]
+        assert (
+            piping["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ).sum() == 997
+
+    def test_piping_confidence_sums_to_total(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        piping = gold_objects[gold_objects["refined_class"] == "Piping"]
+        high = (piping["classification_confidence"] == CONFIDENCE_HIGH).sum()
+        low = (piping["classification_confidence"] == CONFIDENCE_LOW).sum()
+        bug = (
+            piping["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ).sum()
+        assert high + low + bug == 4014
+
+    def test_non_piping_all_high(self, gold_objects: pd.DataFrame) -> None:
+        non_piping = gold_objects[gold_objects["refined_class"] != "Piping"]
+        assert (
+            non_piping["classification_confidence"] == CONFIDENCE_HIGH
+        ).all()
+
+    def test_bug_reason_pipe_rack_count(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        bug = gold_objects[
+            gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ]
+        assert (
+            bug["classification_confidence_reason"]
+            == "piping_no_metadata_pipe_rack_folder"
+        ).sum() == 698
+
+    def test_bug_reason_pipe_trench_count(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        bug = gold_objects[
+            gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ]
+        assert (
+            bug["classification_confidence_reason"]
+            == "piping_no_metadata_pipe_trench_folder"
+        ).sum() == 60
+
+    def test_bug_reason_steel_substring_count(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        bug = gold_objects[
+            gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ]
+        assert (
+            bug["classification_confidence_reason"]
+            == "piping_no_metadata_steel_tee_substring"
+        ).sum() == 10
+
+
+class TestAddClassificationConfidenceUnit:
+    """Unit tests for add_classification_confidence() as a pure function."""
+
+    def _mk_row(self, **overrides) -> dict:
+        base = {
+            "object_id": "id-1",
+            "refined_class": "Structure",
+            "system_path": "",
+            "sp3d_pipeline": None,
+            "sp3d_commodity_code": None,
+            "sp3d_short_code": None,
+            "sp3d_spec_name": None,
+            "sp3d_npd": None,
+        }
+        base.update(overrides)
+        return base
+
+    def test_structure_defaults_to_high(self) -> None:
+        df = pd.DataFrame([self._mk_row(refined_class="Structure")])
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_HIGH
+        assert (
+            out.iloc[0]["classification_confidence_reason"] == "xlsx_class_clean"
+        )
+
+    def test_piping_high_with_pipeline_and_metadata(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(
+                    refined_class="Piping",
+                    sp3d_pipeline="P-001",
+                    sp3d_commodity_code="PIPE-10-STD",
+                )
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_HIGH
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_has_pipeline_and_metadata"
+        )
+
+    def test_piping_low_pipeline_only(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(refined_class="Piping", sp3d_pipeline="P-001"),
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_LOW
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_pipeline_only"
+        )
+
+    def test_piping_low_metadata_only(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(
+                    refined_class="Piping", sp3d_commodity_code="PIPE-10-STD"
+                ),
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_LOW
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_metadata_only"
+        )
+
+    def test_piping_likely_bug_pipe_rack(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(
+                    refined_class="Piping",
+                    system_path="> A > B > Pipe Rack > Beam-1",
+                ),
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_no_metadata_pipe_rack_folder"
+        )
+
+    def test_piping_likely_bug_steel(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(
+                    refined_class="Piping",
+                    system_path="> Electrical > Steel > Member-1",
+                ),
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_no_metadata_steel_tee_substring"
+        )
+
+    def test_piping_likely_bug_unknown(self) -> None:
+        df = pd.DataFrame(
+            [
+                self._mk_row(
+                    refined_class="Piping",
+                    system_path="> Random > Other > Thing-1",
+                ),
+            ]
+        )
+        out = add_classification_confidence(df)
+        assert out.iloc[0]["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        assert (
+            out.iloc[0]["classification_confidence_reason"]
+            == "piping_no_metadata_unknown"
+        )

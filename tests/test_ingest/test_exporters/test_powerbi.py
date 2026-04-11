@@ -103,11 +103,12 @@ def test_fact_objects_has_expected_columns(powerbi_summary) -> None:
     assert set(df.columns) == expected_cols
 
 
-def test_fact_objects_has_64_plus_1_columns(powerbi_summary) -> None:
+def test_fact_objects_has_66_plus_1_columns(powerbi_summary) -> None:
     df = pd.read_csv(config.POWERBI_DIR / "fact_objects.csv", nrows=1)
-    # 64 curated columns in FACT_OBJECTS_COLUMNS + 1 derived (in_giant_group) = 65
-    assert len(FACT_OBJECTS_COLUMNS) == 64
-    assert len(df.columns) == 65
+    # 66 curated columns in FACT_OBJECTS_COLUMNS + 1 derived (in_giant_group) = 67
+    # (Phase 1e added classification_confidence + classification_confidence_reason)
+    assert len(FACT_OBJECTS_COLUMNS) == 66
+    assert len(df.columns) == 67
 
 
 def test_fact_objects_in_giant_group_count(powerbi_summary) -> None:

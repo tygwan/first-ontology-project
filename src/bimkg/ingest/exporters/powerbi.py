@@ -136,6 +136,9 @@ FACT_OBJECTS_COLUMNS: list[str] = [
     "ingested_at_utc",
     "adjacency_count",
     "child_count",
+    # classification confidence (2) — Phase 1e addition
+    "classification_confidence",
+    "classification_confidence_reason",
 ]
 
 

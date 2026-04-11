@@ -1,7 +1,7 @@
 # 2026-04-12 — M1 — Piping misclassification via XLSX substring matching
 
 **Severity**: 🟠 MAJOR
-**Status**: 🔄 Open (decision pending)
+**Status**: ✅ Resolved locally (DXTnavis source fix tracked via [Issue #2](https://github.com/tygwan/DXTnavis/issues/2))
 **Discovered by**: Phase 1 verification audit (semantic deep dive)
 **Affects**: All Phase 1 downstream outputs containing `refined_class='Piping'`
 
@@ -143,16 +143,30 @@ if (combined.Contains("pipe") || combined.Contains("valve") ||
 
 ### 4.3 Action items
 
-- [ ] Phase 1e: `src/bimkg/ingest/clean.py` 에 `classification_confidence` 파생 컬럼 추가
-- [ ] Phase 1e: 테스트 작성 — HIGH 2,926 / LOW 91 / LIKELY_BUG 997 카운트 검증
-- [ ] Phase 1e: Gold 테이블 + Phase 1d 산출물 재생성
-- [ ] Phase 1e: `phase-1e-confidence-layer.md` task log 작성
-- [ ] DXTnavis PR: 이 finding 을 근거로 `dxtnavis-pr-draft.md` 내용으로 이슈/PR 생성
-- [ ] Phase 2: `PipingComponent` Object Type 구축 시 `classification_confidence = 'HIGH'` 만 포함
+- [x] Phase 1e: `src/bimkg/ingest/clean.py` 에 `classification_confidence` 파생 컬럼 추가
+- [x] Phase 1e: 테스트 작성 — HIGH 2,926 / LOW 91 / LIKELY_BUG 997 카운트 검증 (18 신규 테스트)
+- [x] Phase 1e: Gold 테이블 + Phase 1d 산출물 재생성 (216 → 218 cols)
+- [x] Phase 1e: `phase-1e-confidence-layer.md` task log 작성
+- [x] DXTnavis Issue: [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 생성 완료
+- [ ] Phase 2: `PipingComponent` Object Type 구축 시 `classification_confidence = 'HIGH'` 만 포함 (Phase 2 시작 시 적용)
 
 ### 4.4 Resolution commit
 
-(pending — Phase 1e 완료 후 기재)
+**Local resolution**: Phase 1e 에서 `classification_confidence` + `classification_confidence_reason` 2개 컬럼을 Gold 테이블, PowerBI fact_objects, 모든 Foundry Object Type parquet 에 추가.
+
+- 커밋: (Phase 1e 커밋 해시 참조)
+- 검증: 210/210 tests passing (18 Phase 1e 신규 포함)
+- 결과: Piping 4,014 분해 — HIGH 2,926 / LOW 91 / LIKELY_BUG 997
+- 원인별 LIKELY_BUG 분포 재현:
+  - `piping_no_metadata_pipe_rack_folder`: 698
+  - `piping_no_metadata_pipe_trench_folder`: 60
+  - `piping_no_metadata_pipeline_folder`: 12
+  - `piping_no_metadata_steel_tee_substring`: 10
+  - `piping_no_metadata_unknown`: 217
+
+**Source fix (external)**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 에서 C# `InferClass` 의 regex word boundary 적용 기다림.
+
+**Deprecation path**: DXTnavis 원천 수정 + XLSX 재생성 완료되면 Phase 1e 의 confidence column 은 deprecation 가능 (모든 Piping 이 HIGH 가 되므로).
 
 ## 5. References
 

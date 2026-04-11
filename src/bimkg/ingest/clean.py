@@ -60,6 +60,28 @@ REFINING_RULE_VERSION: str = "DXTnavis@main (snapshot 20260407-192047)"
 #: We convert this to ``None`` so ``parent_id IS NULL`` queries work correctly.
 EMPTY_GUID: str = "00000000-0000-0000-0000-000000000000"
 
+#: Classification confidence levels for the refined_class column.
+#: Used by downstream phases to filter out objects whose class is likely
+#: affected by the RefinedXlsxExporter substring-matching bug (see M1
+#: finding in docs/findings/2026-04-12-M1-piping-misclassification/).
+CONFIDENCE_HIGH: str = "HIGH"
+CONFIDENCE_LOW: str = "LOW"
+CONFIDENCE_LIKELY_BUG: str = "LIKELY_BUG"
+
+#: Controlled vocabulary for classification_confidence_reason.
+#: Downstream tests assert membership in this set.
+CONFIDENCE_REASONS: tuple[str, ...] = (
+    "xlsx_class_clean",
+    "piping_has_pipeline_and_metadata",
+    "piping_pipeline_only",
+    "piping_metadata_only",
+    "piping_no_metadata_pipe_rack_folder",
+    "piping_no_metadata_pipe_trench_folder",
+    "piping_no_metadata_pipeline_folder",
+    "piping_no_metadata_steel_tee_substring",
+    "piping_no_metadata_unknown",
+)
+
 #: Display-name substrings that mark an object as an engineering analysis
 #: volume (e.g. insulation thickness envelope) rather than a physical part.
 #: These objects keep their original ``refined_class`` but are excluded from
@@ -381,6 +403,125 @@ def add_title(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def add_classification_confidence(df: pd.DataFrame) -> pd.DataFrame:
+    """Tag each object with a confidence level for its ``refined_class``.
+
+    This is Phase 1e's local mitigation for the M1 finding (XLSX classifier
+    substring-matching bug that misclassifies ~997 Piping objects). Instead
+    of overwriting ``refined_class`` — which would break the XLSX oracle —
+    we add two new columns so downstream phases can filter trustworthy rows.
+
+    Rules
+    -----
+    For the Piping class:
+        HIGH       — has a non-empty ``sp3d_pipeline`` AND any of
+                     ``sp3d_commodity_code`` / ``sp3d_short_code`` /
+                     ``sp3d_spec_name`` / ``sp3d_npd``
+        LOW        — has exactly one of the two signals (pipeline xor metadata)
+        LIKELY_BUG — neither signal
+
+    For every other class (Structure, Equipment, Electrical, HVAC, Other):
+        HIGH — the XLSX classification has no observed cross-contamination
+               (Structure has zero ``sp3d_pipeline`` / ``sp3d_eqp_type_0`` set,
+               Equipment came through SQLite → XLSX with 100% stability).
+
+    LIKELY_BUG Piping rows are further annotated with a ``reason`` that
+    identifies which substring bug caused the false positive:
+
+        piping_no_metadata_pipe_rack_folder    - "Pipe Rack" in system_path
+        piping_no_metadata_pipe_trench_folder  - "Pipe Trench" in system_path
+        piping_no_metadata_pipeline_folder     - "Pipeline" folder in path
+        piping_no_metadata_steel_tee_substring - "steel" triggers 'tee' match
+        piping_no_metadata_unknown             - other compound paths
+
+    Columns added
+    -------------
+    classification_confidence          : TEXT (HIGH / LOW / LIKELY_BUG)
+    classification_confidence_reason   : TEXT (from CONFIDENCE_REASONS)
+    """
+    out = df.copy()
+
+    # Default: every row is HIGH with the generic "xlsx clean" reason
+    out["classification_confidence"] = CONFIDENCE_HIGH
+    out["classification_confidence_reason"] = "xlsx_class_clean"
+
+    piping_mask = out["refined_class"] == "Piping"
+
+    has_pipeline = out["sp3d_pipeline"].notna() & (out["sp3d_pipeline"] != "")
+    has_strong_meta = (
+        out["sp3d_commodity_code"].notna()
+        | out["sp3d_short_code"].notna()
+        | out["sp3d_spec_name"].notna()
+        | out["sp3d_npd"].notna()
+    )
+
+    # --- Piping HIGH: both signals present ---
+    piping_high = piping_mask & has_pipeline & has_strong_meta
+    out.loc[piping_high, "classification_confidence_reason"] = (
+        "piping_has_pipeline_and_metadata"
+    )
+
+    # --- Piping LOW: exactly one signal ---
+    piping_pipeline_only = piping_mask & has_pipeline & ~has_strong_meta
+    piping_metadata_only = piping_mask & ~has_pipeline & has_strong_meta
+
+    out.loc[piping_pipeline_only, "classification_confidence"] = CONFIDENCE_LOW
+    out.loc[piping_pipeline_only, "classification_confidence_reason"] = (
+        "piping_pipeline_only"
+    )
+    out.loc[piping_metadata_only, "classification_confidence"] = CONFIDENCE_LOW
+    out.loc[piping_metadata_only, "classification_confidence_reason"] = (
+        "piping_metadata_only"
+    )
+
+    # --- Piping LIKELY_BUG: no signal at all ---
+    piping_bug = piping_mask & ~has_pipeline & ~has_strong_meta
+    out.loc[piping_bug, "classification_confidence"] = CONFIDENCE_LIKELY_BUG
+
+    # Assign default bug reason then overwrite for specific substring matches.
+    out.loc[piping_bug, "classification_confidence_reason"] = (
+        "piping_no_metadata_unknown"
+    )
+
+    sys_path = out["system_path"].fillna("")
+
+    bug_pipe_rack = piping_bug & sys_path.str.contains(
+        r"Pipe\s*Rack", case=False, regex=True, na=False
+    )
+    bug_pipe_trench = piping_bug & sys_path.str.contains(
+        r"Pipe\s*Trench", case=False, regex=True, na=False
+    )
+    # "Pipeline" folder — exclude rows already matched as Rack/Trench
+    bug_pipeline_folder = (
+        piping_bug
+        & sys_path.str.contains("Pipeline", case=False, na=False)
+        & ~bug_pipe_rack
+        & ~bug_pipe_trench
+    )
+    bug_steel = (
+        piping_bug
+        & sys_path.str.contains("steel", case=False, na=False)
+        & ~bug_pipe_rack
+        & ~bug_pipe_trench
+        & ~bug_pipeline_folder
+    )
+
+    out.loc[bug_pipe_rack, "classification_confidence_reason"] = (
+        "piping_no_metadata_pipe_rack_folder"
+    )
+    out.loc[bug_pipe_trench, "classification_confidence_reason"] = (
+        "piping_no_metadata_pipe_trench_folder"
+    )
+    out.loc[bug_pipeline_folder, "classification_confidence_reason"] = (
+        "piping_no_metadata_pipeline_folder"
+    )
+    out.loc[bug_steel, "classification_confidence_reason"] = (
+        "piping_no_metadata_steel_tee_substring"
+    )
+
+    return out
+
+
 def add_adjacency_symmetric_closure(
     adj: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -451,5 +592,6 @@ def build_bim_objects_gold(
     merged = add_si_units(merged)
     merged = add_lineage(merged)
     merged = add_title(merged)
+    merged = add_classification_confidence(merged)
 
     return merged
