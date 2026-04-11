@@ -68,7 +68,26 @@
 
 ## 사용자 검증 중 발견한 이슈
 
-### (검증 진행 후 여기에 기록)
+### M1. XLSX classifier substring matching → 997 Piping misclassifications  🟠 MAJOR — 🔄 Open
+
+**발견**: 2026-04-12 데이터 품질 감사 (semantic deep dive) 중 발견.
+
+**요약**: `RefinedXlsxExporter.InferClass` 의 word boundary 없는 substring 매칭이
+  - `"tee"` 키워드를 `"steel"` 에 매치 (10건)
+  - `"pipe"` 키워드를 `"Pipe Rack"` / `"Pipe Trench"` / `"Pipeline"` 폴더명에 매치 (770건)
+
+결과: Piping 4,014 중 997 건 (24.8%) 이 실제로는 Structure/Electrical 임.
+HIGH confidence Piping 은 2,926 건.
+
+**상세 아카이브**: [`docs/findings/2026-04-12-M1-piping-misclassification/`](../findings/2026-04-12-M1-piping-misclassification/README.md)
+
+이 아카이브에는 아래가 포함됨:
+- 재현 가능한 `audit.py`
+- 5 개의 증거 CSV
+- 4 개의 matplotlib 시각화 (confidence breakdown, substring 원인, 오분류 패턴, 클래스 분포)
+- [DXTnavis PR draft](../findings/2026-04-12-M1-piping-misclassification/dxtnavis-pr-draft.md) — 원천 C# 수정 + 데이터 추출 wishlist
+
+**권장 처리**: Phase 1e (confidence column) + DXTnavis PR 병행.
 
 ---
 

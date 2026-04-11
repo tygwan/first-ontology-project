@@ -1,0 +1,9 @@
+piping_keyword,matches_in_likely_bug,example_paths
+pipe,"Pipe Rack, Pipe Trench, Pipeline folder",> A1 > U12 > Civil_Structure > Pipe Trenches
+tee,s-TEE-l (substring in 'steel'),> Electrical Device > Steel > MemberSystem-1-0151
+valve,no false positives observed,-
+flange,no false positives observed,-
+elbow,no false positives observed,-
+reducer,no false positives observed,-
+nozzle,no false positives observed,-
+coupling,no false positives observed,-

@@ -1,0 +1,5 @@
+cause,keyword_triggered,correct_class_would_be,count
+'Pipe Rack' folder in system_path,pipe,Structure (structural support),698
+'Pipe Trench' folder in system_path,pipe,Structure (civil work),60
+'Pipeline' folder in system_path,pipe,varies (folder is grouping node),12
+'steel' in system_path -> 'tee' substring,tee,Structure (steel member),10

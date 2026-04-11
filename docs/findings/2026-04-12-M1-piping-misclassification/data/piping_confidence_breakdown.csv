@@ -1,0 +1,5 @@
+confidence,criterion,count
+HIGH,has pipeline + has commodity/spec/npd,2926
+MED,"has pipeline, no metadata",0
+LOW,"no pipeline, has metadata",91
+LIKELY_BUG,"no pipeline, no metadata",997
