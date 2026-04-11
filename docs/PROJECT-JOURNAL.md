@@ -14,10 +14,11 @@
 ## 한눈에 보기
 
 **프로젝트 상태** (2026-04-12 기준):
-- Phase 0 ~ 1d: ✅ 완료 (192 테스트 통과)
-- 발견된 데이터 이슈: 🟠 1건 MAJOR (Open), 알려진 한계 3건
+- Phase 0 ~ 1e: ✅ 완료 (210 테스트 통과)
+- 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ Resolved locally), 알려진 한계 3건
 - DXTnavis 원천 PR: 📬 [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 제출됨
-- 다음 단계: Phase 1e (M1 해결) 또는 Phase 2 (OWL 온톨로지)
+- **Standards**: dev-standards@0.1.0 (🟢 first consumer / reference implementation)
+- 다음 단계: Phase 2 (OWL 온톨로지)
 
 ---
 
@@ -84,7 +85,8 @@
              M1 archive committed                                        2f330dc
              DXTnavis Issue #2 submitted
              PROJECT-JOURNAL.md created (this document)                  4214e6d
-             Phase 1e — classification_confidence layer (M1 local fix)   (pending)
+             Phase 1e — classification_confidence layer (M1 local fix)   6a337e0
+             dev-standards@0.1.0 published; first consumer linked        (pending)
 ```
 
 ### Test count progression
