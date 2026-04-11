@@ -133,10 +133,15 @@ class TestTier3Keywords:
         assert infer_class({}, display_name="Vessel-1-0001") == "Equipment"
 
     def test_beam_keyword_structure(self) -> None:
-        assert infer_class({}, display_name="Beam_BlockExposed_All_Conc") == "Structure"
+        # PR #3 (word boundaries): "Beam-1-0042" has non-word char after "Beam"
+        # so \bbeam\b matches. Compound underscore words like "Beam_Block" would
+        # NOT match because "_" is a word char — this was the old behavior.
+        assert infer_class({}, display_name="Beam-1-0042") == "Structure"
 
     def test_cable_keyword_electrical(self) -> None:
-        assert infer_class({}, display_name="Cableway Straight") == "Electrical"
+        # PR #3: "Cable Tray" has whitespace so both "cable" and "tray" match
+        # individually. Compound "Cableway" would NOT match \bcable\b.
+        assert infer_class({}, display_name="Cable Tray-1") == "Electrical"
 
     def test_duct_keyword_hvac(self) -> None:
         assert infer_class({}, display_name="Duct Part 1") == "HVAC"
@@ -145,8 +150,15 @@ class TestTier3Keywords:
         assert infer_class({}, display_name="Instrument Housing") == "Instrumentation"
 
     def test_piping_priority_over_structure(self) -> None:
-        # Pipe should win over beam
-        assert infer_class({}, display_name="PipeSupport-Beam") == "Piping"
+        # PR #3: "Pipe-Beam-1" has whitespace-free hyphen separators.
+        # \bpipe\b matches "Pipe" (word boundary at "-"), so Piping wins
+        # via Tier 3 ordering (Piping evaluated before Structure).
+        assert infer_class({}, display_name="Pipe-Beam-1") == "Piping"
+
+    def test_pipe_rack_is_not_piping(self) -> None:
+        """PR #3 negative lookahead: 'Pipe Rack' should not be Piping."""
+        result = infer_class({}, display_name="Refining Pipe Rack")
+        assert result != "Piping"
 
     def test_default_other(self) -> None:
         assert infer_class({}, display_name="Unknown Widget") == "Other"
@@ -154,18 +166,21 @@ class TestTier3Keywords:
     def test_empty_all(self) -> None:
         assert infer_class({}) == "Other"
 
-    def test_substring_matching_plate_in_baseplate(self) -> None:
-        # Documented over-match behavior: "plate" matches "BasePlate"
-        assert infer_class({}, display_name="BasePlate-1") == "Structure"
+    def test_word_boundary_rejects_underscore_compound(self) -> None:
+        """PR #3: 'Beam_BlockExposed' does NOT match \\bbeam\\b because
+        '_' is a word character in regex. This is the intended behavior
+        aligned with DXTnavis C# regex semantics.
+        """
+        # "beam_blockexposed" has no word boundary between "beam" and "_block"
+        result = infer_class({}, display_name="Beam_BlockExposed_All_Conc")
+        assert result == "Other"
 
 
 # ---------------------------------------------------------------------------
 # Integration test: 100% oracle agreement with 2026-04-07 XLSX
 # ---------------------------------------------------------------------------
 
-XLSX_PATH = (
-    config.DATA_RAW / "Refining_ObjectID_20260407_192047.xlsx"
-)
+XLSX_PATH = config.RAW_REFINING_XLSX
 
 ALL_PROPERTIES_PATH = config.RAW_ALL_PROPERTIES
 

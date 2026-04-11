@@ -7,8 +7,8 @@ def test_project_root_contains_pyproject() -> None:
     assert (config.PROJECT_ROOT / "pyproject.toml").exists()
 
 
-def test_data_raw_path_is_2026_04_07() -> None:
-    assert config.DATA_RAW.name == "2026-04-07"
+def test_data_raw_path_uses_current_snapshot() -> None:
+    assert config.DATA_RAW.name == config.SNAPSHOT
     assert config.DATA_RAW.parent.name == "dxtnavis"
 
 

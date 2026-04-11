@@ -23,27 +23,33 @@ def foundry_summary():
 
 
 def test_piping_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["piping.parquet"] == 4014
+    """2026-04-12 post-fix: Piping shrunk from 4,014 to 3,062 (-952)."""
+    assert foundry_summary["object_type_rows"]["piping.parquet"] == 3062
 
 
 def test_structural_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["structural.parquet"] == 5926
+    """2026-04-12 post-fix: Structure shrunk from 5,926 to 4,840 (-1,086)."""
+    assert foundry_summary["object_type_rows"]["structural.parquet"] == 4840
 
 
 def test_equipment_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["equipment.parquet"] == 851
+    """2026-04-12 post-fix: Equipment shrunk from 851 to 770 (-81)."""
+    assert foundry_summary["object_type_rows"]["equipment.parquet"] == 770
 
 
 def test_electrical_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["electrical.parquet"] == 449
+    """2026-04-12 post-fix: Electrical grew from 449 to 1,053 (+604)."""
+    assert foundry_summary["object_type_rows"]["electrical.parquet"] == 1053
 
 
 def test_hvac_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["hvac.parquet"] == 72
+    """2026-04-12 post-fix: HVAC grew from 72 to 125 (+53)."""
+    assert foundry_summary["object_type_rows"]["hvac.parquet"] == 125
 
 
 def test_other_count(foundry_summary) -> None:
-    assert foundry_summary["object_type_rows"]["other.parquet"] == 697
+    """2026-04-12 post-fix: Other grew from 697 to 2,159 (+1,462)."""
+    assert foundry_summary["object_type_rows"]["other.parquet"] == 2159
 
 
 def test_total_object_type_rows_match_total_objects(foundry_summary) -> None:

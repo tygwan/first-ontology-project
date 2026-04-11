@@ -352,29 +352,40 @@ class TestGoldClassificationConfidence:
         assert actual.issubset(allowed), f"Unexpected reasons: {actual - allowed}"
 
     def test_piping_high_count(self, gold_objects: pd.DataFrame) -> None:
+        """2026-04-12 post-fix: same 2,926 HIGH Piping (pipeline + metadata)."""
         piping = gold_objects[gold_objects["refined_class"] == "Piping"]
         assert (piping["classification_confidence"] == CONFIDENCE_HIGH).sum() == 2926
 
     def test_piping_low_count(self, gold_objects: pd.DataFrame) -> None:
+        """2026-04-12 post-fix: LOW dropped from 91 to 0 (PR #3 cleaned these)."""
         piping = gold_objects[gold_objects["refined_class"] == "Piping"]
-        assert (piping["classification_confidence"] == CONFIDENCE_LOW).sum() == 91
+        assert (piping["classification_confidence"] == CONFIDENCE_LOW).sum() == 0
 
     def test_piping_likely_bug_count(self, gold_objects: pd.DataFrame) -> None:
+        """2026-04-12 post-fix: LIKELY_BUG dropped from 997 to 136.
+
+        Residual 136: mostly Tier 2 Piping matches without metadata
+        (128 unknown + 8 pipe_rack_folder). These are Piping objects
+        whose property keys contain 'pipeline'/'piperun' but whose
+        sp3d_pipeline value is empty. Not a classifier bug — the
+        property metadata is genuinely incomplete for these objects.
+        """
         piping = gold_objects[gold_objects["refined_class"] == "Piping"]
         assert (
             piping["classification_confidence"] == CONFIDENCE_LIKELY_BUG
-        ).sum() == 997
+        ).sum() == 136
 
     def test_piping_confidence_sums_to_total(
         self, gold_objects: pd.DataFrame
     ) -> None:
+        """2026-04-12 total Piping: 3,062 (2926 HIGH + 0 LOW + 136 LIKELY_BUG)."""
         piping = gold_objects[gold_objects["refined_class"] == "Piping"]
         high = (piping["classification_confidence"] == CONFIDENCE_HIGH).sum()
         low = (piping["classification_confidence"] == CONFIDENCE_LOW).sum()
         bug = (
             piping["classification_confidence"] == CONFIDENCE_LIKELY_BUG
         ).sum()
-        assert high + low + bug == 4014
+        assert high + low + bug == 3062
 
     def test_non_piping_all_high(self, gold_objects: pd.DataFrame) -> None:
         non_piping = gold_objects[gold_objects["refined_class"] != "Piping"]
@@ -385,35 +396,50 @@ class TestGoldClassificationConfidence:
     def test_bug_reason_pipe_rack_count(
         self, gold_objects: pd.DataFrame
     ) -> None:
+        """2026-04-12 post-fix: 698 → 8 (PR #3 excluded Pipe Rack via negative lookahead)."""
         bug = gold_objects[
             gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
         ]
         assert (
             bug["classification_confidence_reason"]
             == "piping_no_metadata_pipe_rack_folder"
-        ).sum() == 698
+        ).sum() == 8
 
     def test_bug_reason_pipe_trench_count(
         self, gold_objects: pd.DataFrame
     ) -> None:
+        """2026-04-12 post-fix: 60 → 0 (all Pipe Trench objects moved to Other)."""
         bug = gold_objects[
             gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
         ]
         assert (
             bug["classification_confidence_reason"]
             == "piping_no_metadata_pipe_trench_folder"
-        ).sum() == 60
+        ).sum() == 0
 
     def test_bug_reason_steel_substring_count(
         self, gold_objects: pd.DataFrame
     ) -> None:
+        """2026-04-12 post-fix: 10 → 0 (PR #3 word boundaries stopped tee/steel match)."""
         bug = gold_objects[
             gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
         ]
         assert (
             bug["classification_confidence_reason"]
             == "piping_no_metadata_steel_tee_substring"
-        ).sum() == 10
+        ).sum() == 0
+
+    def test_bug_reason_unknown_dominant(
+        self, gold_objects: pd.DataFrame
+    ) -> None:
+        """2026-04-12 post-fix: 128 'unknown' reasons dominate (Tier 2 Piping w/o metadata)."""
+        bug = gold_objects[
+            gold_objects["classification_confidence"] == CONFIDENCE_LIKELY_BUG
+        ]
+        assert (
+            bug["classification_confidence_reason"]
+            == "piping_no_metadata_unknown"
+        ).sum() == 128
 
 
 class TestAddClassificationConfidenceUnit:

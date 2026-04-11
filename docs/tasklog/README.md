@@ -13,11 +13,16 @@ Phase별 작업 로그를 저장합니다. 각 Phase를 완료할 때마다 다�
 | Phase | 파일 | 상태 |
 |-------|------|------|
 | Phase 0 | [phase-0-bootstrap.md](phase-0-bootstrap.md) | ✓ 완료 |
-| Phase 1a | phase-1a-clean.md | 대기 |
-| Phase 1b | phase-1b-unit-parser.md | 대기 |
-| Phase 1c | phase-1c-sqlite-enrich.md | 대기 |
-| Phase 1d | phase-1d-powerbi-export.md | 대기 |
-| Phase 2  | phase-2-ontology.md | 대기 |
+| Phase 1b | [phase-1b-unit-parser.md](phase-1b-unit-parser.md) | ✓ 완료 |
+| Phase 1a (XLSX oracle) | [phase-1a-xlsx-oracle.md](phase-1a-xlsx-oracle.md) | ✓ 완료 |
+| Phase 1a (Step 4 ingest) | [phase-1a-step4-ingest.md](phase-1a-step4-ingest.md) | ✓ 완료 |
+| Phase 1a (folder reorg) | [phase-1a-folder-reorg.md](phase-1a-folder-reorg.md) | ✓ 완료 |
+| Phase 1d | [phase-1d-exports.md](phase-1d-exports.md) | ✓ 완료 |
+| Phase 1 (M1 finding archive) | [phase-1-finding-m1-archive.md](phase-1-finding-m1-archive.md) | ✓ 완료 |
+| Phase 1e | [phase-1e-confidence-layer.md](phase-1e-confidence-layer.md) | ✓ 완료 |
+| Phase 2 planning | [phase-2-planning-checkpoint.md](phase-2-planning-checkpoint.md) | ✓ 완료 (D10/D11) |
+| Phase 1 re-alignment (2026-04-12) | [phase-1-realignment-20260412.md](phase-1-realignment-20260412.md) | ✓ 완료 |
+| Phase 2  | phase-2-ontology.md | 대기 (unblock 완료, 진입 가능) |
 | Phase 3  | phase-3-shacl.md | 대기 |
 | Phase 4  | phase-4-analytics.md | 대기 |
 | Phase 5  | phase-5-llm.md | 대기 |

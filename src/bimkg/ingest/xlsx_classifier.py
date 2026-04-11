@@ -19,14 +19,31 @@ Reference: docs/analysis/refined-xlsx-exporter-logic.md
 
 from __future__ import annotations
 
+import re
 from typing import Mapping
 
 # ---------------------------------------------------------------------------
-# Keyword lists -- these must match the C# source exactly (order preserved)
+# Keyword lists (DXTnavis PR #3 aligned — 2026-04-12)
 # ---------------------------------------------------------------------------
+#
+# These lists mirror the C# Regex constants in
+# ``DXTnavis/Services/RefinedXlsxExporter.cs`` after PR #3.
+#
+# Key change from the pre-PR #3 version:
+#   - Uses word boundaries (\b...\b) instead of plain substring matching
+#   - Uses negative lookahead for the Piping ``pipe`` keyword to reject
+#     composite nouns like ``Pipe Rack`` / ``Pipe Trench`` that are
+#     whitespace-separated (where plain \b still matches).
 
 PIPING_KEYWORDS: tuple[str, ...] = (
     "pipe", "valve", "flange", "elbow", "tee", "reducer", "nozzle", "coupling",
+)
+
+#: Structural nouns that may follow ``pipe`` in a system path and turn the
+#: combined phrase into a structural component rather than a piping fitting.
+#: These are rejected via negative lookahead after a ``pipe`` match.
+PIPING_NEGATIVE_LOOKAHEAD_NOUNS: tuple[str, ...] = (
+    "rack", "trench", "support", "way", "bridge", "shoe",
 )
 
 EQUIPMENT_KEYWORDS: tuple[str, ...] = (
@@ -35,8 +52,9 @@ EQUIPMENT_KEYWORDS: tuple[str, ...] = (
 )
 
 STRUCTURE_KEYWORDS: tuple[str, ...] = (
-    "struct", "steel", "beam", "column", "brace", "foundation",
-    "slab", "plate", "grating", "handrail", "ladder", "stair",
+    "struct", "structural", "structure", "steel", "beam", "column",
+    "brace", "foundation", "slab", "plate", "grating", "handrail",
+    "ladder", "stair",
 )
 
 ELECTRICAL_KEYWORDS: tuple[str, ...] = (
@@ -49,6 +67,41 @@ HVAC_KEYWORDS: tuple[str, ...] = (
 
 INSTRUMENTATION_KEYWORDS: tuple[str, ...] = (
     "instrument",
+)
+
+
+# ---------------------------------------------------------------------------
+# Compiled regexes (one per class, mirrors C# Regex constants)
+# ---------------------------------------------------------------------------
+
+def _build_piping_regex() -> re.Pattern[str]:
+    """Build the Piping regex with negative lookahead for composite nouns.
+
+    Matches ``pipe`` only when NOT followed by whitespace + a structural
+    noun like ``rack`` / ``trench`` / ``support`` / ``way`` / ``bridge`` / ``shoe``.
+
+    Also matches the other Piping keywords (valve, flange, elbow, tee,
+    reducer, nozzle, coupling) with plain word boundaries.
+    """
+    nouns = "|".join(PIPING_NEGATIVE_LOOKAHEAD_NOUNS)
+    other = "|".join(k for k in PIPING_KEYWORDS if k != "pipe")
+    pattern = rf"\b(pipe(?!\s+({nouns}))|{other})\b"
+    return re.compile(pattern, re.IGNORECASE)
+
+
+def _build_simple_regex(keywords: tuple[str, ...]) -> re.Pattern[str]:
+    """Build a plain word-boundary regex from a list of keywords."""
+    pattern = r"\b(" + "|".join(keywords) + r")\b"
+    return re.compile(pattern, re.IGNORECASE)
+
+
+PIPING_REGEX: re.Pattern[str] = _build_piping_regex()
+EQUIPMENT_REGEX: re.Pattern[str] = _build_simple_regex(EQUIPMENT_KEYWORDS)
+STRUCTURE_REGEX: re.Pattern[str] = _build_simple_regex(STRUCTURE_KEYWORDS)
+ELECTRICAL_REGEX: re.Pattern[str] = _build_simple_regex(ELECTRICAL_KEYWORDS)
+HVAC_REGEX: re.Pattern[str] = _build_simple_regex(HVAC_KEYWORDS)
+INSTRUMENTATION_REGEX: re.Pattern[str] = _build_simple_regex(
+    INSTRUMENTATION_KEYWORDS
 )
 
 
@@ -137,9 +190,11 @@ def infer_class(
     if has_equipment:
         return "Equipment"
 
-    # ---- Tier 3: substring keyword matching ----
+    # ---- Tier 3: regex keyword matching (DXTnavis PR #3 aligned) ----
     # The C# code concatenates sys_path + " " + display_name + " " + every
-    # property key, then lowercases the whole string and runs substring checks.
+    # property key, then lowercases the whole string and runs regex matches.
+    # Critical: the Piping regex uses negative lookahead to reject composite
+    # nouns like "Pipe Rack" that plain word boundaries still match.
     parts: list[str] = [sys_path or "", display_name or ""]
     for key in properties.keys():
         if key.startswith("__"):
@@ -147,17 +202,17 @@ def infer_class(
         parts.append(key)
     combined = " ".join(parts).lower()
 
-    if any(kw in combined for kw in PIPING_KEYWORDS):
+    if PIPING_REGEX.search(combined):
         return "Piping"
-    if any(kw in combined for kw in EQUIPMENT_KEYWORDS):
+    if EQUIPMENT_REGEX.search(combined):
         return "Equipment"
-    if any(kw in combined for kw in STRUCTURE_KEYWORDS):
+    if STRUCTURE_REGEX.search(combined):
         return "Structure"
-    if any(kw in combined for kw in ELECTRICAL_KEYWORDS):
+    if ELECTRICAL_REGEX.search(combined):
         return "Electrical"
-    if any(kw in combined for kw in HVAC_KEYWORDS):
+    if HVAC_REGEX.search(combined):
         return "HVAC"
-    if any(kw in combined for kw in INSTRUMENTATION_KEYWORDS):
+    if INSTRUMENTATION_REGEX.search(combined):
         return "Instrumentation"
 
     return "Other"

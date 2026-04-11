@@ -1,7 +1,7 @@
 # 2026-04-12 — M1 — Piping misclassification via XLSX substring matching
 
 **Severity**: 🟠 MAJOR
-**Status**: ✅ Resolved locally (DXTnavis source fix tracked via [Issue #2](https://github.com/tygwan/DXTnavis/issues/2))
+**Status**: ✅ **Fully Resolved** (Upstream PR #3 applied locally + re-baselined to 2026-04-12)
 **Discovered by**: Phase 1 verification audit (semantic deep dive)
 **Affects**: All Phase 1 downstream outputs containing `refined_class='Piping'`
 
@@ -148,21 +148,55 @@ if (combined.Contains("pipe") || combined.Contains("valve") ||
 - [x] Phase 1e: Gold 테이블 + Phase 1d 산출물 재생성 (216 → 218 cols)
 - [x] Phase 1e: `phase-1e-confidence-layer.md` task log 작성
 - [x] DXTnavis Issue: [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 생성 완료
-- [ ] Phase 2: `PipingComponent` Object Type 구축 시 `classification_confidence = 'HIGH'` 만 포함 (Phase 2 시작 시 적용)
+- [x] DXTnavis PR #3 open & verified — [PR #3](https://github.com/tygwan/DXTnavis/pull/3)
+- [x] 새 XLSX snapshot 2026-04-12 획득 — `Refining_ObjectID_20260412_064240.xlsx`
+- [x] Python xlsx_classifier.py 에 negative lookahead regex 적용
+- [x] Oracle 테스트 12,009/12,009 재검증 (100% 일치)
+- [x] `config.SNAPSHOT = "2026-04-12"` 갱신
+- [x] `run_phase_1a()` + Phase 1d exporter 재실행 완료
+- [x] 테스트 pinned counts 전면 갱신 (212 tests passing)
+- [x] `classification_confidence` 재평가 — 유지 (136 LIKELY_BUG 가 여전히 존재하므로 가치 있음)
+- [ ] Phase 2: `PipingComponent` Object Type 구축 시 `classification_confidence = 'HIGH'` 만 포함 (Phase 2 재개 시 적용)
 
 ### 4.4 Resolution commit
 
-**Local resolution**: Phase 1e 에서 `classification_confidence` + `classification_confidence_reason` 2개 컬럼을 Gold 테이블, PowerBI fact_objects, 모든 Foundry Object Type parquet 에 추가.
-
-- 커밋: (Phase 1e 커밋 해시 참조)
+**Phase 1: Local mitigation (2026-04-12)**: Phase 1e 에서 `classification_confidence` + `classification_confidence_reason` 2개 컬럼을 Gold 테이블, PowerBI fact_objects, 모든 Foundry Object Type parquet 에 추가.
+- 커밋: `6a337e0`
 - 검증: 210/210 tests passing (18 Phase 1e 신규 포함)
 - 결과: Piping 4,014 분해 — HIGH 2,926 / LOW 91 / LIKELY_BUG 997
-- 원인별 LIKELY_BUG 분포 재현:
+- 원인별 LIKELY_BUG 분포 (2026-04-07):
   - `piping_no_metadata_pipe_rack_folder`: 698
   - `piping_no_metadata_pipe_trench_folder`: 60
   - `piping_no_metadata_pipeline_folder`: 12
   - `piping_no_metadata_steel_tee_substring`: 10
   - `piping_no_metadata_unknown`: 217
+
+**Phase 2: Upstream fix + re-alignment (2026-04-12)**: DXTnavis PR #3 적용 후 2026-04-12 snapshot 으로 전면 재정렬.
+- DXTnavis PR #3: https://github.com/tygwan/DXTnavis/pull/3 (open, mergeable, verified)
+- 새 XLSX: `Refining_ObjectID_20260412_064240.xlsx` (PR #3 regex 적용됨)
+- Python xlsx_classifier.py 업데이트: `PIPING_REGEX` (negative lookahead) + 5 개의 다른 `*_REGEX` 모두 word-boundary 기반
+- Oracle 재검증: 12,009 / 12,009 = **100% 일치** (첫 시도)
+- Phase 1a/1d 재실행 완료
+- 테스트: **212/212 passing** (210 → 212, +2 new)
+- 결과: Piping 3,062 분해 — HIGH 2,926 / LOW 0 / LIKELY_BUG 136
+- 원인별 LIKELY_BUG 분포 (2026-04-12):
+  - `piping_no_metadata_unknown`: 128 (Tier 2 Piping w/o metadata, 대부분 legit)
+  - `piping_no_metadata_pipe_rack_folder`: 8 (잔여 — Tier 2 로 통과한 객체)
+  - `piping_no_metadata_pipe_trench_folder`: 0 (완전 해결)
+  - `piping_no_metadata_pipeline_folder`: 0 (완전 해결)
+  - `piping_no_metadata_steel_tee_substring`: 0 (완전 해결)
+
+**Class 분포 변화** (2026-04-07 → 2026-04-12):
+
+| Class | 04-07 | 04-12 | Δ | 해석 |
+|-------|------:|------:|---:|------|
+| Piping | 4,014 | 3,062 | -952 | 잘못 분류된 것들 제거 |
+| Structure | 5,926 | 4,840 | -1,086 | 일부가 Electrical/HVAC/Other 로 이동 |
+| Other | 697 | 2,159 | +1,462 | Pipe Rack/Trench 들이 여기로 |
+| Electrical | 449 | 1,053 | +604 | 제대로 분류된 cable/conduit |
+| HVAC | 72 | 125 | +53 | 제대로 분류된 duct |
+| Equipment | 851 | 770 | -81 | 일부가 Other 로 |
+| **Total** | 12,009 | 12,009 | 0 | ObjectId 100% 동일 |
 
 **Source fix (external)**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) → [PR #3](https://github.com/tygwan/DXTnavis/pull/3) (2026-04-11 제출, open/mergeable).
 

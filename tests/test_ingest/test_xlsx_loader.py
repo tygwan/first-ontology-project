@@ -154,14 +154,16 @@ def test_load_xlsx_no_korean_in_columns(xlsx_df: pd.DataFrame) -> None:
 
 
 def test_load_xlsx_class_distribution(xlsx_df: pd.DataFrame) -> None:
-    # Six expected classes from the XLSX snapshot
+    # Six expected classes from the 2026-04-12 XLSX snapshot
+    # (post DXTnavis PR #3 fix: negative-lookahead classifier)
     counts = xlsx_df["class_raw"].value_counts().to_dict()
-    assert counts["Structure"] == 5926
-    assert counts["Piping"] == 4014
-    assert counts["Equipment"] == 851
-    assert counts["Other"] == 697
-    assert counts["Electrical"] == 449
-    assert counts["HVAC"] == 72
+    assert counts["Structure"] == 4840
+    assert counts["Piping"] == 3062
+    assert counts["Equipment"] == 770
+    assert counts["Other"] == 2159
+    assert counts["Electrical"] == 1053
+    assert counts["HVAC"] == 125
+    assert sum(counts.values()) == 12009
 
 
 def test_load_xlsx_unique_object_ids(xlsx_df: pd.DataFrame) -> None:

@@ -25,8 +25,14 @@ PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
 # ---------------------------------------------------------------------------
 # Snapshot identifier (single authoritative snapshot)
 # ---------------------------------------------------------------------------
-
-SNAPSHOT: str = "2026-04-07"
+#
+# 2026-04-12: DXTnavis PR #3 (https://github.com/tygwan/DXTnavis/pull/3)
+#     produced a fixed XLSX using regex word-boundary + negative lookahead
+#     for composite nouns (Pipe Rack, Pipe Trench, etc.). The underlying
+#     Navisworks model is unchanged from 2026-04-07 (12,009 ObjectIds, same
+#     System Paths, same DisplayNames), so the non-XLSX raw files are reused
+#     by copy. See data/raw/dxtnavis/2026-04-12/README.md for the audit trail.
+SNAPSHOT: str = "2026-04-12"
 
 # ---------------------------------------------------------------------------
 # Data layer roots (Medallion architecture)
@@ -56,7 +62,7 @@ POWERBI_DIR: Path = DATA_POWERBI_ROOT / SNAPSHOT
 # ---------------------------------------------------------------------------
 
 RAW_ALL_PROPERTIES: Path = DATA_RAW / "AllProperties_20260407_184650.csv"
-RAW_REFINING_XLSX: Path = DATA_RAW / "Refining_ObjectID_20260407_192047.xlsx"
+RAW_REFINING_XLSX: Path = DATA_RAW / "Refining_ObjectID_20260412_064240.xlsx"
 RAW_ADJACENCY: Path = DATA_RAW / "adjacency.csv"
 RAW_GEOMETRY: Path = DATA_RAW / "geometry.csv"
 RAW_VALIDATION: Path = DATA_RAW / "validation.csv"

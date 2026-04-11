@@ -14,15 +14,15 @@
 ## 한눈에 보기
 
 **프로젝트 상태** (2026-04-12 기준):
-- Phase 0 ~ 1e: ✅ 완료 (210 테스트 통과)
-- Phase 2: ⏸ **Paused** — Q1 top-level taxonomy 결정 (D10), Q2~Q8 은 DXTnavis PR 대기 (D11)
-- 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ Resolved locally), 알려진 한계 3건
-- DXTnavis 원천 PR: 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) **Open, Mergeable** (2026-04-11 제출)
+- Phase 0 ~ 1e: ✅ 완료 (212 테스트 통과 — 2026-04-12 snapshot 재정렬 완료)
+- Phase 2: ⏸ **Paused** — Q1 top-level taxonomy 결정 (D10), Q2~Q8 재개 조건 충족 (D11 재개 가능)
+- 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ **Fully Resolved**), 알려진 한계 3건
+- DXTnavis 원천 PR: 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) **Open, Mergeable**, **로컬 빌드로 이미 적용됨**
   - ⚠️ Issue #2 에 제안한 `\b` fix 는 **불충분** — Pipe Rack 같은 composite noun 에 매치됨
   - ✅ 실제 fix: `pipe(?!\s+(rack|trench|support|way|bridge|shoe))` 로 negative lookahead
-  - ⚠️ Snapshot drift 발견: 2026-04-12 baseline 은 2026-04-07 과 클래스 분포가 다름
+  - ✅ 2026-04-12 snapshot 으로 전면 재정렬 완료 (config/classifier/tests/data)
 - **Standards**: dev-standards@0.1.0 (🟢 first consumer / reference implementation)
-- 다음 단계: PR #3 merge + 2026-04-12 XLSX export 획득 → Phase 1 재실행 → Phase 2 재개
+- 다음 단계: Phase 2 Q2~Q8 재평가 후 재개 (입력 데이터 안정화됨)
 - 병행 작업: Power BI 학습 (PBIP commit 전략으로 `dashboards/powerbi/`)
 
 ---
@@ -45,7 +45,7 @@
 
 | ID | Date | Severity | Title | Status | Archive |
 |----|------|:-:|-------|--------|---------|
-| M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | ✅ Resolved locally | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
+| M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | ✅ **Fully Resolved** (PR #3 + re-alignment) | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
 
 ### Known limitations (수용 / 연기)
 
@@ -103,7 +103,15 @@
              └── Actual fix uses negative lookahead
              └── Snapshot drift: 2026-04-12 baseline ≠ 2026-04-07
              └── 153 "Pipelines" objects are actually legit fittings
-2026-04-12   DXTnavis PR #3 feedback archived in M1 finding              (pending)
+2026-04-12   DXTnavis PR #3 feedback archived in M1 finding              b73102f
+             Stray XLSX cleanup + .gitignore patterns                    25aeb45
+             Phase 1 re-alignment to 2026-04-12 snapshot                 (pending)
+             ├── New raw: Refining_ObjectID_20260412_064240.xlsx
+             ├── xlsx_classifier.py: negative-lookahead regex (PR #3 port)
+             ├── Oracle test: 12,009/12,009 = 100% (first try)
+             ├── Test count re-baselined: 210 → 212 (+2 boundary tests)
+             ├── Class redistribution: Piping 4014→3062, Other 697→2159
+             └── M1 finding: Resolved locally → Fully Resolved
 ```
 
 ### Test count progression
@@ -115,12 +123,14 @@
 | 1a (config + oracle) | +32 | 79 |
 | 1a (clean + loader + sqlite) | +73 | 149 |
 | 1d (exporters) | +43 | 192 |
+| 1e (confidence layer) | +18 | 210 |
+| 1 re-alignment (2026-04-12) | +2 | 212 |
 
 ---
 
 ## 3. Findings (상세)
 
-### M1. XLSX substring matching misclassifies 997 Piping objects  🟠 MAJOR — ✅ Resolved locally
+### M1. XLSX substring matching misclassifies 997 Piping objects  🟠 MAJOR — ✅ Fully Resolved
 
 **발견 일자**: 2026-04-12
 **발견 경위**: Phase 1 완료 후 데이터 품질 감사 (semantic deep dive) 중
@@ -138,13 +148,18 @@
 - CSV 증거 5개: [data/](findings/2026-04-12-M1-piping-misclassification/data/)
 - DXTnavis PR draft: [dxtnavis-pr-draft.md](findings/2026-04-12-M1-piping-misclassification/dxtnavis-pr-draft.md)
 
-**외부 조치**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 제출됨 (2026-04-12).
+**외부 조치**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) → [PR #3](https://github.com/tygwan/DXTnavis/pull/3) open/mergeable.
 
-**로컬 해결 (Phase 1e)**: `classification_confidence` + `classification_confidence_reason` 2 컬럼을 Gold / PowerBI fact_objects / Foundry Object Type 전체에 추가.
+**Phase 1 (로컬 완화, Phase 1e, `6a337e0`)**: `classification_confidence` + `classification_confidence_reason` 2 컬럼을 Gold / PowerBI fact_objects / Foundry Object Type 전체에 추가.
 - Piping 4,014 분해: **HIGH 2,926 / LOW 91 / LIKELY_BUG 997**
 - 원인별 reason 세분화 (pipe_rack / pipe_trench / pipeline_folder / steel_tee_substring / unknown)
-- Phase 2 에서 `classification_confidence='HIGH'` 필터로 깨끗한 부분집합 사용 가능
-- 원천 수정 (DXTnavis Issue #2) 완료 시 Phase 1e deprecation 가능
+
+**Phase 2 (원천 수정 + 재정렬, 2026-04-12)**: DXTnavis PR #3 의 negative-lookahead regex 를 로컬 Python 포팅에 동일 적용하고, PR #3 로 재생성된 2026-04-12 XLSX snapshot 으로 전체 파이프라인 재실행.
+- 재정렬 task log: [`docs/tasklog/phase-1-realignment-20260412.md`](tasklog/phase-1-realignment-20260412.md)
+- 최종 클래스 분포: Piping 4,014→3,062, Structure 5,926→4,840, Other 697→2,159, Electrical 449→1,053, HVAC 72→125, Equipment 851→770
+- Piping 재분해: **HIGH 2,926 / LOW 0 / LIKELY_BUG 136** (unknown 128 + pipe_rack 잔여 8)
+- Oracle 테스트: 12,009/12,009 = 100% (첫 시도)
+- 테스트: 212/212 passing (210 → 212, +2 boundary tests)
 
 ---
 
@@ -326,25 +341,25 @@ BIMEntity
 - `connected_groups.csv` — 3,355 연결 그룹
 
 **의존성 상태**:
-- 현재 2026-04-07 스냅샷 고정
-- 🔴 알려진 버그: M1 (Issue #2) → 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) Open/Mergeable
-- **PR #3 의 중요 발견**:
+- 현재 **2026-04-12 스냅샷** 활성 (2026-04-07 은 historical baseline 으로 보존)
+- ✅ M1 (Issue #2) → 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) 의 regex fix **로컬 빌드에 포팅 완료**
+- **PR #3 의 중요 발견** (여전히 유효):
   - Issue #2 에 제안된 `\b` fix 는 **불충분** (Pipe Rack 같은 composite noun 에서 실패)
   - 실제 fix 는 negative lookahead 사용: `pipe(?!\s+(rack|trench|...))`
   - **Snapshot drift**: 2026-04-12 baseline 의 class 분포가 2026-04-07 과 다름 (원천 SP3D 모델 변경 추정)
-- ⏸ **Phase 2 가 이 PR 의 merge + 새 snapshot export 를 기다리는 중** — D11 참조
+- ✅ **Phase 2 재개 unblock** — D11 의 재개 체크리스트 전부 충족됨
 - 🟡 Data extraction wishlist (Issue #2 Part 2): 별도 follow-up PR 예정
+- ⏳ Upstream merge (user action): PR #3 아직 open → merge 후 DXTnavis release 받으면 "내가 만든 로컬 Python port" 와 완전히 동기화됨
 
 **연락 채널**: GitHub Issues/PRs on tygwan/DXTnavis
 
 **Blocking 관계**:
-- DXTnavis PR #3 (user action: merge) → 새 XLSX export → Phase 2 전체 (2a/2b/2c) 대기
-- Phase 2 → Phase 3/4/5/6/7 cascaded delay
+- ~~DXTnavis PR #3 → Phase 2 전체 (2a/2b/2c) 대기~~ → ✅ **Unblocked** (regex 로컬 적용 + 새 snapshot 활성)
+- Phase 2 Q2~Q8 재평가만 남음 (입력 데이터 안정화됨)
 
-**대기 기간 가치 활동**:
+**대기 기간 가치 활동** (재개 가능, but Phase 2 바로 진입 가능):
 - Power BI Desktop 학습 (PBIP commit 전략)
-- Python port 의 regex 패치 미리 준비
-- 2026-04-07 snapshot 으로 mock 대시보드 완성 (비교 baseline 역할)
+- dev-standards 개선
 
 ---
 
@@ -370,13 +385,9 @@ BIMEntity
 
 **해결**: Phase 1e 먼저 실행하기로 결정. 완료됨 (6a337e0). 자세한 내용은 D11 참조.
 
-### Q2. DXTnavis Issue #2 응답 대기 시간?
+### ~~Q2. DXTnavis Issue #2 응답 대기 시간?~~ ✅ Resolved
 
-**질문**: DXTnavis 측 수정 완료까지 얼마나 기다릴지?
-
-**상태** (2026-04-12): DXTnavis 측에서 PR 작성 예정. Phase 2 전체가 이 PR 을 기다리는 중 (D11). 대기 기간이 예상보다 길어지면:
-- Phase 1e 의 confidence column 이 장기 유지됨
-- 사용자는 대기 기간 동안 Power BI 대시보드, 문서화, dev-standards 개선 등 병렬 작업 가능
+**해결** (2026-04-12): PR #3 의 regex fix 를 Python 포트에 직접 적용하고 2026-04-12 snapshot 으로 재정렬 완료. Upstream merge 는 여전히 pending 이지만 local build 로 unblock 됨. 상세: [`docs/tasklog/phase-1-realignment-20260412.md`](tasklog/phase-1-realignment-20260412.md).
 
 ### ~~Q3. Phase 2 OWL 온톨로지 스키마 top-level 구조?~~ ✅ Resolved
 
@@ -384,21 +395,24 @@ BIMEntity
 
 ### Q4. Phase 2 Q2~Q8 재개 후 구조적 결정
 
-**질문**: DXTnavis PR merge 후, 새 데이터를 바탕으로 Phase 2 의 남은 7 개 구조적 질문을 재평가해야 함:
+**질문**: 2026-04-12 snapshot 재정렬 완료 후, 새 데이터를 바탕으로 Phase 2 의 남은 7 개 구조적 질문을 재평가해야 함:
 - Q2 클래스 계층 깊이
-- Q3 Piping LIKELY_BUG 처리 (PR 후엔 LIKELY_BUG 자체가 사라질 수 있음)
+- Q3 Piping LIKELY_BUG 처리 (PR #3 후 997 → 136 로 크게 감소, 대부분 "unknown" reason)
 - Q4 RDF serialization 포맷
 - Q5 Pipeline/PipeRun/Level individual 표현
 - Q6 ABox 파일 분할
 - Q7 Property datatype 전략
 - Q8 spatial_relationships.ttl 관계
 
-**상태**: D11 에 따라 대기. 재개 체크리스트는 D11 §재개 조건 참조.
+**상태**: ✅ **Unblocked** — D11 재개 체크리스트 전부 충족. 사용자 판단으로 Phase 2 진입 가능.
 
-**예상 변화**:
-- 새 XLSX 의 Piping 카운트 ~2,926 (현재 4,014 에서 ~1,088 감소)
-- Pipeline 147 → ~157 (FindKey 로직 수정 시)
-- classification_confidence 분포: 모두 HIGH 예상 → 컬럼 의의 재검토
+**실제 변화** (2026-04-07 → 2026-04-12):
+- Piping 4,014 → **3,062** (-952, 오분류 제거)
+- Structure 5,926 → **4,840** (-1,086, 일부가 Electrical/HVAC/Other 로)
+- Other 697 → **2,159** (+1,462, Pipe Rack/Trench 가 여기로)
+- Electrical 449 → **1,053** (+604)
+- classification_confidence 분포: Piping HIGH 2,926 / LOW 0 / LIKELY_BUG 136
+  - LIKELY_BUG 잔여 136 은 대부분 "unknown" reason — **컬럼 유지 가치 있음**
 
 ---
 
@@ -435,11 +449,12 @@ BIMEntity
 
 | 레이어 | 위치 | 포맷 |
 |--------|------|------|
-| Bronze (raw) | `data/raw/dxtnavis/2026-04-07/` | CSV, XLSX, JSON (읽기 전용) |
-| Silver (clean) | `data/clean/2026-04-07/` | Parquet |
-| Gold (enriched) | `data/enriched/2026-04-07/` | Parquet + SQLite |
-| PowerBI | `data/powerbi/2026-04-07/` | CSV |
-| Ontology | `data/ontology/2026-04-07/{object_types,link_types,owl}/` | Parquet / TTL |
+| Bronze (raw, **active**) | `data/raw/dxtnavis/2026-04-12/` | CSV, XLSX, JSON (읽기 전용) |
+| Bronze (historical) | `data/raw/dxtnavis/2026-04-07/` | 보존 (비교/감사용) |
+| Silver (clean) | `data/clean/2026-04-12/` | Parquet |
+| Gold (enriched) | `data/enriched/2026-04-12/` | Parquet + SQLite |
+| PowerBI | `data/powerbi/2026-04-12/` | CSV |
+| Ontology | `data/ontology/2026-04-12/{object_types,link_types,owl}/` | Parquet / TTL |
 | Backup (legacy) | `data/backup/dxtnavis-csharp-20260411/` | 읽기 전용 |
 
 ### 검증 / 실행 스크립트
@@ -464,4 +479,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-12 (M1 finding + archive rule 수립 시점)*
+*Last updated: 2026-04-12 (Phase 1 re-alignment to 2026-04-12 snapshot, M1 Fully Resolved)*
