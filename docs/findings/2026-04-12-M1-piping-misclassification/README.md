@@ -164,9 +164,139 @@ if (combined.Contains("pipe") || combined.Contains("valve") ||
   - `piping_no_metadata_steel_tee_substring`: 10
   - `piping_no_metadata_unknown`: 217
 
-**Source fix (external)**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) 에서 C# `InferClass` 의 regex word boundary 적용 기다림.
+**Source fix (external)**: [DXTnavis Issue #2](https://github.com/tygwan/DXTnavis/issues/2) → [PR #3](https://github.com/tygwan/DXTnavis/pull/3) (2026-04-11 제출, open/mergeable).
 
-**Deprecation path**: DXTnavis 원천 수정 + XLSX 재생성 완료되면 Phase 1e 의 confidence column 은 deprecation 가능 (모든 Piping 이 HIGH 가 되므로).
+**Deprecation path**: DXTnavis PR #3 merge + XLSX 재생성 완료되면 Phase 1e 의 confidence column 은 deprecation 가능 (모든 Piping 이 HIGH 가 되므로).
+
+---
+
+### 4.5 PR #3 feedback — 제안한 fix 가 불완전했음 (2026-04-12 접수)
+
+DXTnavis 측에서 Issue #2 에 제시된 `\b...\b` 패턴을 실제 적용 후 검증한 결과, **클래스 분포 변화 0 건** — 즉 fix 가 전혀 작동하지 않음.
+
+#### 원인 분석
+
+제안했던 패턴:
+```csharp
+@"\b(pipe|valve|flange|elbow|tee|reducer|nozzle|coupling)\b"
+```
+
+`Pipe Rack` 같은 **composite noun** (공백으로 분리된 두 단어) 에서:
+- `\bpipe\b` 에서 `\b` 앞뒤는 각각 공백/시작, 공백/word-boundary → **여전히 매치됨**
+- 즉 `pipe` 는 `"Pipe Rack"` 의 `Pipe` 부분에서 여전히 단어 경계로 인식됨
+- 기존 `.Contains("pipe")` 와 동일한 동작
+
+**나의 오류**: `\b` 의 semantic 을 "composite noun 단위" 로 착각. 실제로는 `\b` 가 알파벳과 공백/기호 사이의 전환만 감지하므로, 공백 분리된 구조물 명사는 여전히 매치됨.
+
+#### 올바른 fix (PR #3)
+
+```csharp
+@"\b(pipe(?!\s+(rack|trench|support|way|bridge|shoe))|valve|flange|elbow|tee|reducer|nozzle|coupling)\b"
+```
+
+**Negative lookahead** `(?!\s+(rack|trench|support|way|bridge|shoe))` 가 `pipe` 매치 후 뒤에 구조물 명사가 오는 경우를 거부.
+
+효과:
+- "Pipe Rack" → 매치 안 됨 (rack 이 뒤에 옴)
+- "Pipe Trench" → 매치 안 됨
+- "Pipe-1-0042" → 매치됨 (뒤에 `-1-0042`, 공백+명사 패턴 아님)
+- "90 Degree Direction Change" → 매치 안 됨 (애초에 pipe 단어 없음)
+
+#### Snapshot drift 발견 — 우리 baseline 과 다른 클래스 분포
+
+DXTnavis PR #3 검증은 **2026-04-12 snapshot** 기준인데, 우리 baseline (2026-04-07) 과 숫자가 크게 다름:
+
+| Class | 2026-04-07 (우리) | 2026-04-12 buggy | 2026-04-12 fixed |
+|-------|------------------:|-----------------:|-----------------:|
+| Piping | **4,014** | 3,903 | 3,062 |
+| Structure | **5,926** | 4,448 | 4,840 |
+| Other | **697** | 1,758 | 2,159 |
+| Electrical | **449** | 1,008 | 1,053 |
+| HVAC | **72** | 122 | 125 |
+| Equipment | **851** | 770 | 770 |
+| Total | 12,009 | 12,009 | 12,009 |
+
+**관찰**:
+- 총 객체 수는 동일
+- 클래스 분포는 대폭 재배치
+- 2026-04-07 ≠ 2026-04-12 (even before the fix)
+- 이는 **원천 SP3D 모델 변경** 또는 **DXTnavis 버전/파라미터 변경** 의 증거
+
+**함의**:
+- 우리가 Phase 2 재개 시 2026-04-12 (또는 더 나중) snapshot 을 받아야 함
+- Expected counts 가 변경되므로 **우리의 모든 test 가 count 재조정 필요**
+- 2026-04-07 baseline 은 historical 로만 보관
+
+#### 153 "Pipelines" 라벨 객체는 실제로는 올바름
+
+제가 M1 finding 초기 분석에서 "가짜 Pipeline 라벨" 이라고 의심했던 153 개 객체가 실은:
+
+- Tier 3 substring 매칭이 아닌 **Tier 2 property key 매칭** 으로 Piping 분류됨 (`SmartPlant 3D|Pipeline` 키 존재)
+- Spot check: `90 Degree Direction Change-3114`, `Concentric Size Change-1001`, `Flange-2101` 같은 **실제 배관 피팅**
+- `sp3d_pipeline = "Pipelines"` 값은 placeholder 지만, 객체 자체는 진짜 배관 컴포넌트
+- 따라서 이 153 건은 **Piping 이 정답**. 분류 버그가 아님
+
+**우리의 Phase 1e 구현 영향**: `classification_confidence_reason = "piping_no_metadata_pipeline_folder"` 로 분류한 12 건 (또는 유사한 것) 을 재검토해야 함. 실제로는 HIGH 가 될 가능성 있음.
+
+#### PR #3 실제 적용 결과
+
+| Class | Before (buggy) | After (fixed) | Δ |
+|-------|---------------:|--------------:|---:|
+| Piping | 3,903 | **3,062** | -841 |
+| Structure | 4,448 | **4,840** | +392 |
+| Other | 1,758 | **2,159** | +401 |
+| Electrical | 1,008 | 1,053 | +45 |
+| HVAC | 122 | 125 | +3 |
+| Equipment | 770 | 770 | 0 |
+
+**회귀 검증**: 파이프라인 속성 가진 2,773 객체 → 100% 여전히 Piping (leakage 0)
+
+**Pipe Rack 분석** (898 객체):
+- Piping 890 → 109 (109 는 랙 내부의 실제 피팅으로 검증)
+- Structure +392, Other +341, Electrical +45, HVAC +3
+
+#### Python port 영향 분석
+
+우리의 `xlsx_classifier.py` 가 **PR #3 패치를 동일하게 반영** 해야 함:
+
+```python
+# Current (incorrect)
+PIPING_KEYWORDS: tuple[str, ...] = (
+    "pipe", "valve", "flange", "elbow", "tee", "reducer", "nozzle", "coupling",
+)
+# Matches via: any(kw in combined for kw in PIPING_KEYWORDS)
+
+# Proposed new implementation
+import re
+
+PIPING_REGEX = re.compile(
+    r"\b(pipe(?!\s+(rack|trench|support|way|bridge|shoe))"
+    r"|valve|flange|elbow|tee|reducer|nozzle|coupling)\b",
+    re.IGNORECASE,
+)
+# Matches via: PIPING_REGEX.search(combined) is not None
+```
+
+이와 함께:
+- `test_oracle_100_percent_agreement` 는 새 snapshot 기준으로 재검증
+- `classification_confidence` 로직의 count 가 변경됨 (현재: HIGH 2,926 / LIKELY_BUG 997 → 변경 예상)
+- 모든 Gold parquet 재생성 + Phase 1d exporter 재실행
+- Phase 1e 테스트의 pinned count 갱신
+
+#### 재개 체크리스트 업데이트 (D11 보완)
+
+- [ ] DXTnavis PR #3 merge ← **user action**
+- [ ] DXTnavis 의 release / publish (필요 시)
+- [ ] **새 XLSX snapshot export** (2026-04-12 또는 최신)
+- [ ] `data/raw/dxtnavis/<new-date>/` 에 새 raw 파일 배치
+- [ ] `bimkg.config.SNAPSHOT` 상수 갱신
+- [ ] **Python classifier 업데이트**: regex negative lookahead 적용
+- [ ] Oracle 테스트 재구성 (새 expected counts)
+- [ ] `run_phase_1a()` 재실행 → Gold 재생성
+- [ ] `classification_confidence` 컬럼 재검토 — 아마 대부분 HIGH 가 되므로 **deprecation 여부 재평가**
+- [ ] Phase 1d exporter 재실행 → PowerBI/Foundry 산출물 갱신
+- [ ] 전체 테스트 210+ 통과 + expected counts 모두 갱신
+- [ ] Phase 2 Q2~Q8 재평가 후 재개
 
 ## 5. References
 
@@ -174,5 +304,7 @@ if (combined.Contains("pipe") || combined.Contains("valve") ||
 - **Original C# source**: https://github.com/tygwan/DXTnavis/blob/main/Services/RefinedXlsxExporter.cs#L298-L375
 - **Python port**: [`src/bimkg/ingest/xlsx_classifier.py`](../../../src/bimkg/ingest/xlsx_classifier.py)
 - **Oracle test**: [`tests/test_ingest/test_xlsx_classifier.py::test_oracle_100_percent_agreement`](../../../tests/test_ingest/test_xlsx_classifier.py)
-- **DXTnavis PR draft**: [`dxtnavis-pr-draft.md`](dxtnavis-pr-draft.md)
-- **Gold data**: `data/enriched/2026-04-07/bim_objects_enriched.parquet`
+- **DXTnavis PR draft (internal)**: [`dxtnavis-pr-draft.md`](dxtnavis-pr-draft.md)
+- **DXTnavis Issue #2**: https://github.com/tygwan/DXTnavis/issues/2
+- **DXTnavis PR #3 (open, mergeable)**: https://github.com/tygwan/DXTnavis/pull/3
+- **Gold data (current, 2026-04-07)**: `data/enriched/2026-04-07/bim_objects_enriched.parquet`

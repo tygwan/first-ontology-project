@@ -17,9 +17,13 @@
 - Phase 0 ~ 1e: ✅ 완료 (210 테스트 통과)
 - Phase 2: ⏸ **Paused** — Q1 top-level taxonomy 결정 (D10), Q2~Q8 은 DXTnavis PR 대기 (D11)
 - 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ Resolved locally), 알려진 한계 3건
-- DXTnavis 원천 PR: 📬 [Issue #2](https://github.com/tygwan/DXTnavis/issues/2) — PR 작성 예정, **Phase 2 blocking**
+- DXTnavis 원천 PR: 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) **Open, Mergeable** (2026-04-11 제출)
+  - ⚠️ Issue #2 에 제안한 `\b` fix 는 **불충분** — Pipe Rack 같은 composite noun 에 매치됨
+  - ✅ 실제 fix: `pipe(?!\s+(rack|trench|support|way|bridge|shoe))` 로 negative lookahead
+  - ⚠️ Snapshot drift 발견: 2026-04-12 baseline 은 2026-04-07 과 클래스 분포가 다름
 - **Standards**: dev-standards@0.1.0 (🟢 first consumer / reference implementation)
-- 다음 단계: DXTnavis PR merge + XLSX 재 export → Phase 1 재실행 → Phase 2 재개
+- 다음 단계: PR #3 merge + 2026-04-12 XLSX export 획득 → Phase 1 재실행 → Phase 2 재개
+- 병행 작업: Power BI 학습 (PBIP commit 전략으로 `dashboards/powerbi/`)
 
 ---
 
@@ -90,9 +94,16 @@
              PROJECT-JOURNAL.md created (this document)                  4214e6d
              Phase 1e — classification_confidence layer (M1 local fix)   6a337e0
              dev-standards@0.1.0 published; first consumer linked        b315437
-             Phase 2 planning checkpoint                                  (pending)
+             Phase 2 planning checkpoint                                  02d57e2
              └── D10: top-level taxonomy = sibling (BIMObject ‖ AnalysisArtifact)
              └── D11: Phase 2 Q2~Q8 paused pending DXTnavis PR
+             Power BI dashboard mockups (7 pages) generated              3707481
+2026-04-11   DXTnavis PR #3 submitted (upstream)
+             └── My \b...\b fix was incomplete (composite noun gotcha)
+             └── Actual fix uses negative lookahead
+             └── Snapshot drift: 2026-04-12 baseline ≠ 2026-04-07
+             └── 153 "Pipelines" objects are actually legit fittings
+2026-04-12   DXTnavis PR #3 feedback archived in M1 finding              (pending)
 ```
 
 ### Test count progression
@@ -316,16 +327,24 @@ BIMEntity
 
 **의존성 상태**:
 - 현재 2026-04-07 스냅샷 고정
-- 🔴 알려진 버그: M1 (Issue #2 제출)
-- 📬 Issue #2 에 대해 DXTnavis 측에서 PR 작성 예정 (2026-04-12 기준)
-- ⏸ **Phase 2 가 이 PR 을 기다리는 중** — D11 참조
-- 🟡 Data extraction wishlist (Issue #2 Part 2): ParentId 보존, Parquet 옵션, 관계 시트 등
+- 🔴 알려진 버그: M1 (Issue #2) → 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) Open/Mergeable
+- **PR #3 의 중요 발견**:
+  - Issue #2 에 제안된 `\b` fix 는 **불충분** (Pipe Rack 같은 composite noun 에서 실패)
+  - 실제 fix 는 negative lookahead 사용: `pipe(?!\s+(rack|trench|...))`
+  - **Snapshot drift**: 2026-04-12 baseline 의 class 분포가 2026-04-07 과 다름 (원천 SP3D 모델 변경 추정)
+- ⏸ **Phase 2 가 이 PR 의 merge + 새 snapshot export 를 기다리는 중** — D11 참조
+- 🟡 Data extraction wishlist (Issue #2 Part 2): 별도 follow-up PR 예정
 
-**연락 채널**: GitHub Issues on tygwan/DXTnavis
+**연락 채널**: GitHub Issues/PRs on tygwan/DXTnavis
 
 **Blocking 관계**:
-- DXTnavis Issue #2 → **Phase 2 전체 (2a/2b/2c)** 대기
+- DXTnavis PR #3 (user action: merge) → 새 XLSX export → Phase 2 전체 (2a/2b/2c) 대기
 - Phase 2 → Phase 3/4/5/6/7 cascaded delay
+
+**대기 기간 가치 활동**:
+- Power BI Desktop 학습 (PBIP commit 전략)
+- Python port 의 regex 패치 미리 준비
+- 2026-04-07 snapshot 으로 mock 대시보드 완성 (비교 baseline 역할)
 
 ---
 
