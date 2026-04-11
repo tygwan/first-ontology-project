@@ -1,23 +1,29 @@
 # Documentation Index
 
 이 디렉터리는 Ontology for CM 프로젝트의 모든 문서를 담고 있습니다.
-문서는 역할별로 4개 하위 디렉터리로 분류됩니다.
+문서는 역할별로 분류됩니다.
+
+> **🗂 프로젝트 전체 스토리를 한 번에 보고 싶다면**:
+> [`PROJECT-JOURNAL.md`](PROJECT-JOURNAL.md) — 문제, 결정, 타임라인을 한 문서에서 내비게이션.
 
 ## 언제 무엇을 읽어야 하나
 
 | 상황 | 읽을 문서 |
 |------|----------|
+| **"어떤 문제를 마주했었지?"** | [`PROJECT-JOURNAL.md`](PROJECT-JOURNAL.md) ← 단일 포털 |
 | 프로젝트를 처음 접할 때 | [../README.md](../README.md) + [plan/pipeline-implementation-plan.md](plan/pipeline-implementation-plan.md) |
-| 원본 데이터 구조를 알고 싶을 때 | [reference/DATA-SPECIFICATION.md](reference/DATA-SPECIFICATION.md) |
-| Phase 1a 설계 근거를 알고 싶을 때 | [analysis/phase-1a-data-realignment-design.md](analysis/phase-1a-data-realignment-design.md) |
-| XLSX 분류기 로직을 이해하고 싶을 때 | [analysis/refined-xlsx-exporter-logic.md](analysis/refined-xlsx-exporter-logic.md) |
-| 특정 Phase 가 어떻게 구현되었는지 | [tasklog/phase-N-*.md](tasklog/) |
-| 옛 C# 백엔드가 한 분석이 궁금할 때 | [reference/dxtnavis-2026-04-07-*.md](reference/) |
+| 발견된 데이터 이슈 상세 | [findings/](findings/) |
+| Phase 별 작업 기록 | [tasklog/](tasklog/) |
+| 설계 결정 근거 | [analysis/](analysis/) |
+| 원본 데이터 구조 | [reference/DATA-SPECIFICATION.md](reference/DATA-SPECIFICATION.md) |
+| XLSX 분류기 로직 상세 | [analysis/refined-xlsx-exporter-logic.md](analysis/refined-xlsx-exporter-logic.md) |
+| 옛 C# 백엔드 분석 자료 | [reference/dxtnavis-2026-04-07-*.md](reference/) |
 
 ## 디렉터리 구조
 
 ```
 docs/
+├── PROJECT-JOURNAL.md            단일 포털: 문제/결정/타임라인
 ├── README.md                         (이 문서)
 │
 ├── plan/                             계획 문서 — "앞으로 무엇을 할 것인가"
@@ -29,15 +35,16 @@ docs/
 │
 ├── tasklog/                          작업 기록 — "무엇을 했는가"
 │   ├── README.md
-│   ├── phase-0-bootstrap.md
-│   ├── phase-1a-xlsx-oracle.md
-│   └── phase-1b-unit-parser.md
+│   └── phase-*.md
+│
+├── findings/                         데이터 이슈 아카이브 — "무슨 문제에 부딫혔는가"
+│   ├── README.md                     (findings index)
+│   ├── TEMPLATE.md                   (new finding template)
+│   └── YYYY-MM-DD-ID-slug/           (per-issue folder with audit.py, data/, figures/)
 │
 └── reference/                        외부 참조 — "사전 자료는 무엇이 있었는가"
     ├── DATA-SPECIFICATION.md
-    ├── dxtnavis-2026-04-07-baseline-insights.md
-    ├── dxtnavis-2026-04-07-dashboard-master.md
-    └── dxtnavis-2026-04-07-powerbi-integration.md
+    └── dxtnavis-2026-04-07-*.md
 ```
 
 ## 문서 유형별 역할

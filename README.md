@@ -22,9 +22,11 @@ pytest
 
 ## Documentation
 
+- **🗂 [Project Journal](docs/PROJECT-JOURNAL.md)** — **단일 포털**: 프로젝트에서 마주한 문제, 결정, 타임라인을 한 문서에서 내비게이션
 - **[Implementation Plan](docs/plan/pipeline-implementation-plan.md)** — 7단계 파이프라인 전체 계획
 - **[Phase 1a Design](docs/analysis/phase-1a-data-realignment-design.md)** — 데이터 정렬 설계 결정
 - **[RefinedXlsxExporter Logic](docs/analysis/refined-xlsx-exporter-logic.md)** — XLSX 분류 로직 분석
+- **[Findings Archive](docs/findings/)** — 발견된 데이터 이슈 + 증거 자료
 - **[Task Logs](docs/tasklog/)** — 단계별 작업 기록
 - **[Reference Docs](docs/reference/)** — DXTnavis 데이터 명세 및 baseline 분석
 
