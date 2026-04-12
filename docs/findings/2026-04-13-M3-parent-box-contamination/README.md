@@ -1,7 +1,7 @@
 # 2026-04-13 — M3 — Parent box 객체가 adjacency 의 66% 를 오염
 
 **Severity**: 🟠 MAJOR
-**Status**: 🔄 Fixing (is_parent_box 플래그 추가 + 재분석 진행 중)
+**Status**: ✅ **Resolved locally** (is_parent_box 플래그 + 재분석 완료, DXTnavis Issue 대기)
 **Discovered by**: Phase 4 인접성 판정 기준 심층 조사
 **Affects**: adjacency graph, Louvain zones, precedence DAG, critical chain, Neo4j
 
@@ -75,9 +75,9 @@ DXTnavis 가 Navisworks 모델의 **모든 객체**를 adjacency.csv 에 포함.
 - [x] Phase 2 ABox 재생성 (parent_box → HierarchyNode 타입)
 - [x] 테스트 재기준선 (305 passing, +1 new)
 - [x] PROJECT-JOURNAL 업데이트 (M3 행 추가)
-- [ ] Phase 4 analytics 재실행 (clean graph 기반 — 7,840 nodes)
-- [ ] Neo4j 재로드
-- [ ] DXTnavis Issue 초안 작성
+- [x] Phase 4 analytics 재실행 — clean graph: 7,840 nodes, max degree 388 (was 5,161), 144 zones (was 29), critical chain 44 (was 53)
+- [x] Neo4j 재로드 — 전체 wipe + clean data import 완료
+- [x] DXTnavis Issue 초안 작성 — [`dxtnavis-issue-draft.md`](dxtnavis-issue-draft.md)
 
 ## 5. References
 
