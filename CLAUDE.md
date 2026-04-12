@@ -8,7 +8,7 @@
 
 - **Source**: https://github.com/tygwan/dev-standards
 - **Version pinned**: `0.1.0`
-- **Rules applied**: R1-R9 (see source for details)
+- **Rules applied**: R1-R10 (see source for details)
 - **Consumer role**: 🟢 First consumer / reference implementation
 
 ## Active memory rules
