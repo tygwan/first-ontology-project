@@ -46,6 +46,7 @@
 | ID | Date | Severity | Title | Status | Archive |
 |----|------|:-:|-------|--------|---------|
 | M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | ✅ **Fully Resolved** (PR #3 + re-alignment) | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
+| M2 | 2026-04-12 | 🟡 MINOR | Adjacency 는 AABB 기반 — 3단계 품질 분류 필요 | ✅ Resolved (tier 분류 도입) | [archive](findings/2026-04-12-M2-adjacency-tiers/README.md) |
 
 ### Known limitations (수용 / 연기)
 
