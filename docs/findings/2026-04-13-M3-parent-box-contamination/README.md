@@ -69,14 +69,15 @@ DXTnavis 가 Navisworks 모델의 **모든 객체**를 adjacency.csv 에 포함.
 ### 4.2 Action items
 
 - [x] Finding M3 아카이브
-- [ ] `clean.py` 에 `is_parent_box` 플래그 추가
-- [ ] Phase 1a 재실행 (Gold 재생성)
-- [ ] Phase 1d exporter 재실행
-- [ ] Phase 2 ABox 재생성 (parent_box 는 별도 타입 또는 제외)
-- [ ] Phase 4 analytics 재실행 (clean adjacency 기반)
-- [ ] 테스트 재기준선
+- [x] `clean.py` 에 `is_parent_box` 플래그 추가 (`053b6b3`)
+- [x] Phase 1a 재실행 (Gold 재생성 — 448 parent box 식별)
+- [x] Phase 1d exporter 재실행
+- [x] Phase 2 ABox 재생성 (parent_box → HierarchyNode 타입)
+- [x] 테스트 재기준선 (305 passing, +1 new)
+- [x] PROJECT-JOURNAL 업데이트 (M3 행 추가)
+- [ ] Phase 4 analytics 재실행 (clean graph 기반 — 7,840 nodes)
+- [ ] Neo4j 재로드
 - [ ] DXTnavis Issue 초안 작성
-- [ ] PROJECT-JOURNAL 업데이트
 
 ## 5. References
 
