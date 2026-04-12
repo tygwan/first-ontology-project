@@ -72,6 +72,9 @@
 | D9 | Finding archive 규칙 (5단계 프로세스) | 2026-04-12 | `memory/feedback_finding_archive.md` |
 | D10 | Phase 2 top-level taxonomy = sibling (BIMObject ‖ AnalysisArtifact) | Phase 2 planning | §4 D10 |
 | D11 | Phase 2 Q2~Q8 구현 대기 (DXTnavis PR 후 재개) | Phase 2 planning | §4 D11 |
+| D12 | LangChain agent 채택 (Phase 5) | Phase 5 설계 | [`docs/analysis/phase-5-llm-design.md`](analysis/phase-5-llm-design.md) |
+| D13 | 5개 retrieval tool 구성 (SQL, FTS5, SPARQL, Cypher, KPI) | Phase 5 설계 | 위 §4 |
+| D14 | System prompt 3파트 (도메인+도구+few-shot) | Phase 5 설계 | 위 §4 |
 
 ---
 
@@ -447,6 +450,7 @@ BIMEntity
 | 전체 프로젝트 개요 | [`README.md`](../README.md) |
 | **데이터 논리 체인** | [`docs/analysis/methodology-data-logic.md`](analysis/methodology-data-logic.md) |
 | Phase 구현 계획 | [`docs/plan/pipeline-implementation-plan.md`](plan/pipeline-implementation-plan.md) |
+| **Phase 5 LLM 설계** | [`docs/analysis/phase-5-llm-design.md`](analysis/phase-5-llm-design.md) |
 | Phase 1a 설계 논의 | [`docs/analysis/phase-1a-data-realignment-design.md`](analysis/phase-1a-data-realignment-design.md) |
 | XLSX classifier 로직 분석 | [`docs/analysis/refined-xlsx-exporter-logic.md`](analysis/refined-xlsx-exporter-logic.md) |
 | Phase 1 검증 가이드 | [`docs/analysis/phase-1-verification-guide.md`](analysis/phase-1-verification-guide.md) |
