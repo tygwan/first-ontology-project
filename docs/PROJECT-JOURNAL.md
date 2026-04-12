@@ -14,14 +14,16 @@
 ## 한눈에 보기
 
 **프로젝트 상태** (2026-04-13 기준):
-- Phase 0~1e, 2, 3, 4: ✅ 완료 (305 테스트 통과)
-- Phase 5 (LLM): ⏸ 다음 단계
-- 발견된 데이터 이슈: M1 (분류) ✅, M2 (adjacency AABB) ✅, M3 (parent box) ✅
-- DXTnavis Issues: [#2](https://github.com/tygwan/DXTnavis/issues/2) (분류), [#4](https://github.com/tygwan/DXTnavis/issues/4) (parent box) 제출됨
+- Phase 0~6: ✅ 완료 (336 테스트 통과, +2 E2E skipped)
+- Phase 7 (Streamlit UI): ⏸ 남음
+- Findings: M1 ✅, M2 ✅, M3 ✅ | DXTnavis Issues: #2, #4 제출됨
 - OWL: 28 classes, 477K triples | Neo4j: 261K edges | SHACL: 468 violations
-- 33 KPIs (건설 14 + 시설 17 + 공통 2) | 5 notebooks + 26 해석 + 25 PNGs
-- **Standards**: dev-standards@0.1.0 + PNG 저장 규칙 + A/B 테스트 패턴 (R10 추출 예정)
-- 다음: A/B 규칙 → dev-standards R10, 이후 Phase 5 LLM/GraphRAG
+- 33 KPIs | 5 notebooks + 26 해석 + 25 PNGs
+- **LLM**: LangGraph agent (Gemini 2.5 Flash) — 5 tools (SQL, FTS5, SPARQL, Cypher, KPI)
+- **FastAPI**: 12 REST endpoints (`uvicorn bimkg.api.main:app`)
+- **Foundry**: BIM-KG 프로젝트에 10 datasets 업로드 완료 (6 Object + 4 Link Type)
+- **Standards**: dev-standards R1-R10 (R10 = Decision Validation / A/B Testing)
+- 다음: Foundry Ontology 구성 → Workshop 앱 → Phase 7 Streamlit
 
 ---
 
@@ -133,6 +135,14 @@
              CM+Facility KPI system (33 KPIs, 4 levels)                  18564f5
              └── criticality, accessibility, corrosion, valve isolation
              Notebook interpretations (26 cells across 5 notebooks)      904aeba
+             Portfolio PAAR analysis (9 skill areas)                      2c42559
+             dev-standards R10: Decision Validation (A/B Testing)        bc05beb
+             Phase 5 design document (LangChain agent)                   12e1b2e
+             Phase 5: LLM/GraphRAG (5 tools, Gemini 2.5 Flash)          5c4e836
+             Phase 6: FastAPI backend (12 REST endpoints)                2e970f3
+             Palantir construction insights + ontology mapping           bacb1a8
+             Foundry upload: 10 datasets to BIM-KG project              a747552
+             └── pandas 2.x str dtype 호환 이슈 해결 + 문서화
 ```
 
 ### Test count progression
@@ -150,6 +160,8 @@
 | 4 (graph analytics) | +19 | 290 |
 | 3 (SHACL validation) | +14 | 304 |
 | M3 (parent box fix) | +1 | 305 |
+| 5 (LLM tools + agent) | +17 | 322 |
+| 6 (FastAPI) | +14 | 336 |
 
 ---
 
@@ -451,6 +463,10 @@ BIMEntity
 | **데이터 논리 체인** | [`docs/analysis/methodology-data-logic.md`](analysis/methodology-data-logic.md) |
 | Phase 구현 계획 | [`docs/plan/pipeline-implementation-plan.md`](plan/pipeline-implementation-plan.md) |
 | **Phase 5 LLM 설계** | [`docs/analysis/phase-5-llm-design.md`](analysis/phase-5-llm-design.md) |
+| **Palantir 건설 인사이트** | [`docs/analysis/palantir-construction-insights.md`](analysis/palantir-construction-insights.md) |
+| **Palantir 온톨로지 분석** | [`docs/analysis/palantir-ontology-for-construction.md`](analysis/palantir-ontology-for-construction.md) |
+| **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
+| **Portfolio PAAR 분석** | [`docs/reference/portfolio-paar-analysis.md`](reference/portfolio-paar-analysis.md) |
 | Phase 1a 설계 논의 | [`docs/analysis/phase-1a-data-realignment-design.md`](analysis/phase-1a-data-realignment-design.md) |
 | XLSX classifier 로직 분석 | [`docs/analysis/refined-xlsx-exporter-logic.md`](analysis/refined-xlsx-exporter-logic.md) |
 | Phase 1 검증 가이드 | [`docs/analysis/phase-1-verification-guide.md`](analysis/phase-1-verification-guide.md) |
@@ -481,6 +497,11 @@ BIMEntity
 | `src/bimkg/analytics/precedence.py` | 3-constraint DAG + critical chain + adjacency_tier |
 | `src/bimkg/analytics/kpi.py` | 33 KPIs (criticality, accessibility, corrosion, isolation) |
 | `src/bimkg/analytics/neo4j_export.py` | Neo4j CSV (nodes 3 + edges 6 types) |
+| `src/bimkg/llm/tools.py` | 5 retrieval tools (SQL, FTS5, SPARQL, Cypher, KPI) |
+| `src/bimkg/llm/agent.py` | LangGraph ReAct agent (Gemini/Claude) |
+| `src/bimkg/llm/prompts.py` | System prompt + few-shot examples |
+| `src/bimkg/api/main.py` | FastAPI 12 endpoints |
+| `src/bimkg/ingest/exporters/foundry_upload.py` | Foundry SDK upload (dtype fix 포함) |
 | `scripts/neo4j_import.sh` | Docker Neo4j 재현 가능 설정 + import |
 
 ### Data 위치
@@ -517,4 +538,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-13 (Phase 2/3/4 완료, M2/M3 해결, 33 KPIs, 5 notebooks 해석 완료)*
+*Last updated: 2026-04-13 (Phase 0~6 완료, 336 tests, Foundry 10 datasets 업로드, LLM agent, FastAPI)*

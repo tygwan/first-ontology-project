@@ -8,7 +8,7 @@
 
 **Data**: [DXTnavis](https://github.com/tygwan/DXTnavis) v1.4.0 snapshot `2026-04-12`
 **Target platform**: Palantir Foundry (Developer Tier) + Neo4j + Power BI
-**Tests**: 290 passing | **OWL triples**: 477K | **Neo4j edges**: 285K
+**Tests**: 336 passing | **OWL triples**: 477K | **Neo4j edges**: 261K | **Foundry**: 10 datasets uploaded
 
 ## Quick Start
 
@@ -72,16 +72,26 @@ first-ontology-project/
 │   │   ├── namespaces.py         # BIM, INST, SPATIAL namespace 정의
 │   │   ├── schema.py             # 28 OWL classes + 40 properties → bim-ontology.owl
 │   │   └── instances.py          # 12K objects + 220K spatial → 3 TTL files
-│   └── analytics/                # Phase 4 — Graph analytics
-│       ├── metrics.py            # Degree centrality, clustering
-│       ├── zones.py              # Louvain community (tunable resolution)
-│       ├── precedence.py         # Construction precedence DAG + critical chain
-│       └── neo4j_export.py       # Neo4j CSV (nodes + 5 edge types)
+│   ├── analytics/                # Phase 4 — Graph analytics + KPIs
+│   │   ├── metrics.py            # Degree centrality, clustering
+│   │   ├── zones.py              # Louvain community (tunable resolution)
+│   │   ├── precedence.py         # Construction precedence DAG + adjacency_tier
+│   │   ├── kpi.py                # 33 KPIs (criticality, accessibility, corrosion)
+│   │   └── neo4j_export.py       # Neo4j CSV (nodes + 6 edge types)
+│   ├── llm/                      # Phase 5 — LLM/GraphRAG
+│   │   ├── tools.py              # 5 retrieval tools (SQL, FTS5, SPARQL, Cypher, KPI)
+│   │   ├── agent.py              # LangGraph ReAct agent (Gemini/Claude)
+│   │   └── prompts.py            # System prompt + few-shot examples
+│   └── api/                      # Phase 6 — FastAPI backend
+│       └── main.py               # 12 REST endpoints
 │
-├── tests/                        # 290 tests
-│   ├── test_ingest/              # 212 tests (classifier, loader, clean, exporters)
-│   ├── test_ontology/            # 59 tests (TBox 33 + ABox 26)
-│   └── test_analytics/           # 19 tests (metrics, zones, precedence, neo4j)
+├── tests/                        # 336 tests (+2 E2E skipped)
+│   ├── test_ingest/              # 212 tests
+│   ├── test_ontology/            # 59 tests
+│   ├── test_analytics/           # 19 tests
+│   ├── test_validation/          # 14 tests
+│   ├── test_llm/                 # 19 tests (17 + 2 E2E)
+│   └── test_api/                 # 14 tests
 │
 ├── notebooks/                    # EDA + CM analysis + A/B tests
 │
@@ -107,18 +117,16 @@ first-ontology-project/
 | Phase | 상태 | 테스트 | 핵심 산출물 |
 |-------|------|------:|-----------|
 | 0. Bootstrap | ✅ | 3 | pyproject.toml, config.py |
-| 1a. Ingest | ✅ | 149 | Gold 218 cols, SQLite, oracle 100% |
-| 1b. Unit Parser | ✅ | 44 | SP3D → SI 단위 변환 |
-| 1d. Exports | ✅ | 43 | PowerBI 10 CSV + Foundry 10 parquet |
-| 1e. Confidence | ✅ | 18 | HIGH 2,926 / LIKELY_BUG 136 |
+| 1a~1e. Ingest | ✅ | 212 | Gold 219 cols, SQLite, oracle 100%, confidence |
 | 2. OWL Ontology | ✅ | 59 | TBox (28 classes) + ABox (477K triples) |
-| 4. Graph Analytics | ✅ | 19 | Precedence DAG (41K edges), critical chain, Neo4j |
-| 3. SHACL Validation | ⏸ | — | — |
-| 5. LLM/GraphRAG | ⏸ | — | — |
-| 6. FastAPI | ⏸ | — | — |
+| 3. SHACL Validation | ✅ | 14 | 6 shapes, 468 violations |
+| 4. Graph Analytics | ✅ | 19 | Precedence DAG, 33 KPIs, Neo4j 261K edges |
+| 5. LLM/GraphRAG | ✅ | 19 | 5 tools, Gemini 2.5 Flash agent |
+| 6. FastAPI | ✅ | 14 | 12 REST endpoints |
+| Foundry | ✅ | — | 10 datasets uploaded to BIM-KG project |
 | 7. Streamlit UI | ⏸ | — | — |
 
-**Total**: 290 tests passing
+**Total**: 336 tests passing (+2 E2E skipped)
 
 </details>
 
@@ -189,6 +197,7 @@ docker start bimkg-neo4j  # http://localhost:7474 (neo4j/bimkg2026)
 |----|:--------:|-------|--------|
 | M1 | MAJOR | XLSX substring matching misclassifies Piping | ✅ Fully Resolved |
 | M2 | MINOR | Adjacency is AABB-based — 3-tier classification | ✅ Resolved |
+| M3 | MAJOR | Parent box 448 objects contaminate 66% adjacency | ✅ Resolved locally |
 
 상세: [`docs/findings/`](docs/findings/)
 
