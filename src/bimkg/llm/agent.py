@@ -7,7 +7,6 @@ grounded in the BIM knowledge graph.
 
 from __future__ import annotations
 
-from langchain_anthropic import ChatAnthropic
 from langchain_core.tools import tool
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.prebuilt import create_react_agent
@@ -68,14 +67,24 @@ ALL_TOOLS = [sql_query, text_search, sparql_query, cypher_query, kpi_summary]
 # ---------------------------------------------------------------------------
 
 def create_bim_agent(
-    model: str = "claude-sonnet-4-20250514",
+    model: str = "gemini-2.5-flash",
+    provider: str = "google",
     temperature: float = 0.0,
 ) -> object:
     """Create and return a BIM query agent (LangGraph ReAct).
 
-    Requires ANTHROPIC_API_KEY environment variable.
+    Providers:
+    - "google": Gemini via GOOGLE_API_KEY (default)
+    - "anthropic": Claude via ANTHROPIC_API_KEY
     """
-    llm = ChatAnthropic(model=model, temperature=temperature)
+    if provider == "google":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        llm = ChatGoogleGenerativeAI(model=model, temperature=temperature)
+    elif provider == "anthropic":
+        from langchain_anthropic import ChatAnthropic
+        llm = ChatAnthropic(model=model, temperature=temperature)
+    else:
+        raise ValueError(f"Unknown provider: {provider}")
 
     agent = create_react_agent(
         llm,
@@ -91,8 +100,14 @@ def ask(question: str, agent=None) -> str:
     if agent is None:
         agent = create_bim_agent()
     result = agent.invoke({"messages": [HumanMessage(content=question)]})
-    # Extract the last AI message
+    # Extract the last AI message that has text content (not tool calls)
     for msg in reversed(result["messages"]):
-        if hasattr(msg, "content") and msg.content and not hasattr(msg, "tool_calls"):
-            return msg.content if isinstance(msg.content, str) else str(msg.content)
+        if msg.__class__.__name__ == "AIMessage":
+            content = msg.content
+            if isinstance(content, str) and content.strip():
+                return content
+            if isinstance(content, list):
+                texts = [c["text"] for c in content if isinstance(c, dict) and "text" in c]
+                if texts:
+                    return "\n".join(texts)
     return str(result)

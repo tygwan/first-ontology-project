@@ -45,15 +45,17 @@ class TestTools:
 
 
 @pytest.mark.skipif(
-    not os.environ.get("ANTHROPIC_API_KEY"),
-    reason="ANTHROPIC_API_KEY not set"
+    not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("GOOGLE_API_KEY")),
+    reason="No LLM API key set (ANTHROPIC_API_KEY or GOOGLE_API_KEY)"
 )
 class TestAgentE2E:
     """End-to-end tests with real API. Run manually with API key set."""
 
     @pytest.fixture(scope="class")
     def agent(self):
-        return create_bim_agent()
+        if os.environ.get("GOOGLE_API_KEY"):
+            return create_bim_agent(model="gemini-2.5-flash", provider="google")
+        return create_bim_agent(provider="anthropic")
 
     def test_pipeline_count(self, agent) -> None:
         from bimkg.llm.agent import ask
@@ -63,4 +65,4 @@ class TestAgentE2E:
     def test_plant_summary(self, agent) -> None:
         from bimkg.llm.agent import ask
         answer = ask("이 플랜트의 전체 객체 수와 총 중량을 알려줘", agent)
-        assert "12,009" in answer or "12009" in answer
+        assert "12,009" in answer or "12009" in answer or "12,009" in answer
