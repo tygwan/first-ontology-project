@@ -185,7 +185,7 @@ def _add_bool(
 
 def _add_identity_props(g: Graph, uri: URIRef, row: pd.Series) -> None:
     _add_str(g, uri, BIM.objectId, row, "object_id")
-    _add_str(g, uri, BIM.displayName, row, "title_display_name")
+    _add_str(g, uri, BIM.displayName, row, "display_name")
     _add_str(g, uri, BIM.systemPath, row, "system_path")
     _add_int(g, uri, BIM.level, row, "level")
     _add_str(g, uri, BIM.refinedClass, row, "refined_class")
