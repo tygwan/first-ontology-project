@@ -171,11 +171,13 @@ SP3D 속성은 문자열로 저장됨. 예: `"17 ft  1.48 in"`, `"0 lbm"`, `"150
 
 | 플래그 | 판정 기준 | True 개수 | 원본 근거 |
 |--------|----------|----------:|----------|
-| `is_container` | validation.csv verdict = "skipped_container" 또는 Level ≤ 5 에서 mesh 없음 | 3,353 | validation.csv + geometry.csv |
-| `is_analysis_volume` | display_name 에 "Insulation Volume" 또는 "Volume" 패턴 + bbox_volume > threshold | 145 | XLSX display_name + geometry.csv |
+| `is_container` | validation.csv verdict = "skipped_container" AND adjacency_count = 0 | 3,353 | validation.csv |
+| `is_analysis_volume` | display_name 에 "Insulation Volume" 또는 "Volume" 패�� | 145 | XLSX display_name |
 | `has_real_mesh` | vertex_count > 0 AND triangle_count > 0 | 8,656 | geometry.csv |
+| `is_parent_box` | **has_real_mesh=False AND bbox_volume > 99th pctile (36.3 m³)** (Finding M3) | 448 | geometry.csv |
 | `in_giant_group` | connected_groups.csv 에서 가장 큰 그룹 소속 | 8,626 | connected_groups.csv |
-| `is_bbox_placeholder` | bbox 가 원점(0,0,0) 또는 극단적 크기 | 가변 | geometry.csv |
+| `is_bbox_placeholder` | mesh_quality = "box_placeholder" | 가변 | validation.csv |
+| `graph_participant` | NOT (container OR analysis_volume OR parent_box OR bbox_placeholder) | **7,840** | 복합 |
 
 ### 4.2 이 플래그가 사용된 곳
 
@@ -184,18 +186,22 @@ SP3D 속성은 문자열로 저장됨. 예: `"17 ft  1.48 in"`, `"0 lbm"`, `"150
 | `is_container` | OWL 타이핑 → HierarchyNode (Container 분기), 물리 객체 분석에서 제외 |
 | `is_analysis_volume` | OWL 타이핑 → AnalysisVolume (AnalysisArtifact 분기), 물리 분석에서 제외 |
 | `has_real_mesh` | 메시 품질 분석, "빈 메시" 객체 공간 분포 시각화 |
+| `is_parent_box` | OWL 타이핑 → HierarchyNode, graph_participant 에서 제외, adjacency 오�� 방지 (M3) |
+| `graph_participant` | 모든 그래프 분석의 기본 필터 (Louvain, precedence, Neo4j IN_ZONE) |
 | `in_giant_group` | Foundry in_group Link Type, 그래프 연결성 검증 |
 
-### 4.3 플래그의 상호 관계
+### 4.3 플래그의 상호 관계 (M3 ���영)
 
 ```
 12,009 전체 객체
 ├── is_analysis_volume = True: 145 (AnalysisVolume)
 ├── is_container = True: 3,353 (HierarchyNode)
-│   (overlap 없음 — 두 플래그는 상호 배타)
-└── 나머지: 8,511 (PhysicalObject)
-    ├── has_real_mesh = True: ~8,500+
-    └── has_real_mesh = False: ~10 (메시 없는 물리 객체 — 데이터 품질 이슈)
+├── is_parent_box = True: 448 (HierarchyNode — M3 발견)
+│   └── 271 은 container 가 아닌 parent box (나머지 177 은 container 와 중복)
+├── is_bbox_placeholder = True: 223 (refined_class 유지, 그래프 제외)
+└── graph_participant = True: 7,840 (PhysicalObject — 분석 대상)
+    ├── has_real_mesh = True: 7,840
+    └── has_real_mesh = False: 0
 ```
 
 ---
@@ -276,6 +282,7 @@ DXTnavis 가 Navisworks API 로 바운딩 박스 간 근접을 계산. **물리�
 ```
 if is_analysis_volume == True → AnalysisVolume
 elif is_container == True → HierarchyNode
+elif is_parent_box == True → HierarchyNode          ← M3 추가
 else:
     refined_class → PhysicalObject 서브클래스 매핑:
         Piping → PipingComponent
@@ -286,18 +293,19 @@ else:
         Other → UncategorizedObject
 ```
 
-### 7.2 결과 분포
+### 7.2 결과 분포 (M3 반영)
 
 | OWL 클래스 | 개수 | 결정 근거 |
 |-----------|-----:|----------|
-| PipingComponent | 2,841 | refined_class=Piping, 비컨테이너, 비분석볼륨 |
-| StructuralMember | 2,659 | refined_class=Structure, 비컨테이너, 비분석볼륨 |
-| UncategorizedObject | 1,342 | refined_class=Other, 비컨테이너, 비분석볼륨 |
-| ElectricalComponent | 886 | refined_class=Electrical, 비컨테이너, 비분석볼륨 |
-| Equipment 서브클래스 (8종) | 715 | refined_class=Equipment + sp3d_eqp_type_0 |
-| HierarchyNode | 3,353 | is_container=True |
+| PipingComponent | 2,830 | graph_participant + refined_class=Piping |
+| StructuralMember | 2,583 | graph_participant + refined_class=Structure |
+| UncategorizedObject | 1,305 | graph_participant + refined_class=Other |
+| ElectricalComponent | 867 | graph_participant + refined_class=Electrical |
+| Equipment 서브클래스 (8종) | 704 | graph_participant + refined_class=Equipment + sp3d_eqp_type_0 |
+| **HierarchyNode** | **3,624** | **is_container (3,353) + is_parent_box (271 non-container)** |
 | AnalysisVolume | 145 | is_analysis_volume=True |
-| HvacComponent | 68 | refined_class=HVAC, 비컨테이너, 비분석볼륨 |
+| HvacComponent | 65 | graph_participant + refined_class=HVAC |
+| 기타 (bbox_placeholder 등) | 486 | refined_class 유지, graph_participant=False |
 | **계** | **12,009** | |
 
 ### 7.3 공유 개체 (Named Individuals)
@@ -316,14 +324,17 @@ else:
 
 ### 8.1 입력
 
-| 항목 | 값 | 설명 |
-|------|---|------|
-| 그래프 노드 | 8,511 | PhysicalObject 만 (container + analysis volume 제외) |
-| 그래프 간선 | 107,604 | adjacency 중 물리 객체 간 (undirected, deduplicated) |
-| 알고리즘 | Louvain community detection | modularity 최적화 |
-| resolution | 3.0 | 높을수록 더 작은 존 (1.0 → 17존, 3.0 → 29존) |
+| 항목 | M3 이전 | M3 이후 (현재) | 설명 |
+|------|-------:|---------------:|------|
+| 그래프 노드 | 8,511 | **7,840** | graph_participant=True (parent box + placeholder 제외) |
+| 그래프 간선 | 107,604 | **28,825** | clean graph — parent box 의 거대 BB 간선 제거 |
+| 최대 degree | 5,161 | **388** | 47m 거대 BB 노드 제거 |
+| Components | 1 | **55** | 거대 허브 제거 후 자연 분리 |
+| 알고리즘 | Louvain | Louvain | community detection |
+| resolution | 3.0 | 3.0 | |
+| **존 수** | 29 | **144** | 더 세밀한 시공 존 |
 
-### 8.2 A/B 테스트: Grid vs Louvain
+### 8.2 A/B 테스트: Grid vs Louvain (M3 이전 데이터, 역사적 참조)
 
 | 지표 | Grid 15m (90존) | Louvain (17존) | 승자 |
 |------|---------------:|---------------:|:----:|
@@ -332,14 +343,15 @@ else:
 | 존 내 평균 거리 | 낮음 | 높음 | Grid |
 | 파이프라인 분산 | 3.2 존/pipeline | 1.7 존/pipeline | Louvain |
 
-**결정**: Louvain 채택 (3/4 지표 승리). resolution=3.0 으로 조정하여 29존 (중앙값 301 객체).
+**결정**: Louvain 채택 (3/4 지표 승리). resolution=3.0 유지.
 
-### 8.3 결과
+> **참고**: M3 이후 clean graph 에서 Louvain (res=3.0) 은 144 존을 생성. 오염된 데이터에서 29 존이었던 이유는 degree-5,267 허브가 대부분의 노드를 하나의 커뮤니티로 묶었기 때문. 정리 후 자연스럽게 세밀한 존 분할이 됨.
+
+### 8.3 결과 (M3 이후)
 
 ```
-29 zones, median 301 objects, max 946, min 10
-Cross-zone edges: 56,666 / 215,208 (26.3%)
-Equipment 있는 존: 27 / 29 (양중 계획 필요)
+144 zones, cross-zone edges: 1,754 / 28,578 (6.1%)
+55 connected components (거대 허브 제거 후 자연 분리)
 ```
 
 ### 8.4 이 존 정보가 사용된 곳
@@ -347,8 +359,8 @@ Equipment 있는 존: 27 / 29 (양중 계획 필요)
 | 다운스트림 | 사용 방식 |
 |-----------|----------|
 | Precedence DAG | class_order 와 vertical 제약을 존 내에서만 적용 |
-| 존 간 의존성 | MUST_PRECEDE 간선이 존 경계를 넘으면 → ZONE_PRECEDES |
-| Neo4j IN_ZONE | 8,511 간선 (object → zone) |
+| 존 간 의존성 | MUST_PRECEDE 간선이 존 경계를 넘으면 → ZONE_PRECEDES (108 쌍) |
+| Neo4j IN_ZONE | 7,840 간선 (object → zone) |
 | 간트 차트 | 존 단위 공정계획 시각화 |
 | 공간 시공 파도 | 존 별 install_rank 를 좌표에 매핑 |
 
@@ -360,20 +372,20 @@ Equipment 있는 존: 27 / 29 (양중 계획 필요)
 
 | 제약 유형 | 논리 | 간선 수 | 원본 데이터 |
 |-----------|------|--------:|-----------|
-| **class_order** | 같은 존 안에서 Equipment → Structure → Piping → Electrical → HVAC | 80 | refined_class + zone_id |
-| **vertical** | 같은 존 + 같은 클래스 안에서 낮은 고도 먼저 (3m 단위 bin) | 253 | centroid_z + zone_id + refined_class |
-| **adjacency_interference** | Strong+Medium 인접 + 같은 클래스 → 아래쪽 먼저 | 17,752 | adjacency tier + refined_class + centroid_z |
+| **class_order** | 같은 존 안에서 Equipment → Structure → Piping → Electrical → HVAC | 150 | refined_class + zone_id |
+| **vertical** | 같은 존 + 같은 클래스 안에서 낮은 고도 먼저 (3m 단위 bin) | 332 | centroid_z + zone_id + refined_class |
+| **adjacency_interference** | Strong+Medium 인접 + 같은 클래스 → 아래쪽 먼저 | 17,732 | adjacency tier + refined_class + centroid_z |
 
-### 9.2 DAG 구성
+### 9.2 DAG 구성 (M3 이후)
 
-- 노드: 8,511 (PhysicalObject)
-- 간선: 18,085 (방향, 비순환 보장)
+- 노드: **7,840** (graph_participant=True)
+- 간선: **18,214** (방향, 비순환 보장)
 - cycle 이 발생하면 마지막 back-edge 제거로 DAG 유지
 
-### 9.3 Critical Path
+### 9.3 Critical Path (M3 이후)
 
-- 길이: **53 steps** (Strong+Medium 기반)
-- 시작: z=-0.2m 기초 슬라브 (Slab-1-0021)
+- 길이: **44 steps** (was 53 — parent box 제거로 9 steps 단축)
+- 시작: 기초 슬라브
 - 구성: 대부분 Structure 의 adjacency_interference (아래→위 진행)
 - 의미: "무한한 자원이 있어도 최소 53번의 순차 설치는 건너뛸 수 없다"
 
@@ -394,18 +406,18 @@ Precedence 간선이 존 경계를 넘으면 존 간 의존성이 됨:
 |------|-----:|------|------|
 | BIMObject | 12,009 | objectId, displayName, refinedClass, centroidX/Y/Z, dryWeightKg, confidence, criticalStep | Gold |
 | Pipeline | 147 | pipelineId, name | sp3d_pipeline 고유값 |
-| Zone | 29 | zoneId, zoneNumber, installRank, objectCount, equipmentCount, totalWeightKg | Louvain 결과 |
+| Zone | **144** | zoneId, zoneNumber, installRank, objectCount, equipmentCount, totalWeightKg | Louvain 결과 (M3 이후) |
 
-### 10.2 간선
+### 10.2 간선 (M3 이후)
 
 | 관계 | 개수 | 속성 | 논리 근거 |
 |------|-----:|------|----------|
-| ADJACENT_TO | 220,346 | relationType, distanceM, overlapM3, toleranceM | DXTnavis AABB 근접 (§6) |
-| MUST_PRECEDE | 18,085 | edgeType, onCriticalPath | 3종 제약 (§9) — Strong+Medium |
+| ADJACENT_TO | 220,346 | relationType, distanceM, overlapM3 | DXTnavis AABB 근접 (§6) |
+| MUST_PRECEDE | **18,214** | edgeType, onCriticalPath | 3종 제약 (§9) — Strong+Medium, clean graph |
 | HAS_PARENT | 12,008 | — | XLSX 계층 (parent_id) |
-| IN_ZONE | 8,511 | — | Louvain community (§8) |
+| IN_ZONE | **7,840** | — | Louvain community (§8), graph_participant only |
 | BELONGS_TO_PIPELINE | 2,926 | — | sp3d_pipeline 매핑 (§7.3) |
-| ZONE_PRECEDES | 82 | dependencies | 존 간 의존성 (§9.4) |
+| ZONE_PRECEDES | **108** | dependencies | 존 간 의존성 (§9.4) |
 
 ---
 
@@ -424,6 +436,7 @@ Precedence 간선이 존 경계를 넘으면 존 간 의존성이 됨:
 | Q5-B | Pipeline = Named Individual | SPARQL 즉시 질의 가능 | 147+334 = 481 개체 |
 | Q6-C | ABox 관심사별 분할 | spatial 분리 → 독립 재생성 | 파일 크기 비교 |
 | M2 | Adjacency 3-tier | max overlap 41K m³ = BB | A/B: 88→17→53 steps |
+| **M3** | **is_parent_box 플래그** | **448 meshless+oversized objects = 66% 오염** | **graph 8,511→7,840, degree 5,161→388, zones 29→144, chain 53→44** |
 | — | Louvain (res=3.0) | Grid 대비 3/4 지표 승리 | A/B test 4 metrics |
 | — | Strong+Medium precedence | 물리 접촉 + 간섭까지 포함 | A/B: 17 vs 53 vs 88 |
 
@@ -437,7 +450,9 @@ Precedence 간선이 존 경계를 넘으면 존 간 의존성이 됨:
 |-----------|-----------|----------|----------|
 | Gold `refined_class` | XLSX Class | 3-tier classifier + PR #3 regex | §2 |
 | Gold `dry_weight_kg` | AllProperties sp3d_dry_weight | unit_parser regex → SI | §3 |
-| Gold `is_container` | validation.csv + geometry.csv | verdict + level + mesh 조합 | §4 |
+| Gold `is_container` | validation.csv | verdict + adjacency_count 조합 | §4 |
+| Gold `is_parent_box` | geometry.csv | has_real_mesh=False + bbox > 99pctile (M3) | §4 |
+| Gold `graph_participant` | 복합 플래그 | NOT (container OR AV OR parent_box OR placeholder) | §4 |
 | Gold `classification_confidence` | sp3d_pipeline + metadata 컬럼 | pipeline ∩ metadata → HIGH/LOW/BUG | §5 |
 | OWL rdf:type | refined_class + 플래그 + eqp_type_0 | 우선순위 분기 | §7 |
 | OWL `bim:adjacentTo` | adjacency.csv | 대칭화 (110K → 220K) | §6 |
@@ -451,4 +466,4 @@ Precedence 간선이 존 경계를 넘으면 존 간 의존성이 됨:
 *이 문서는 프로젝트의 데이터 논리 체인을 추적하기 위한 참조 문서입니다.
 새로운 데이터나 분석이 추가되면 해당 섹션을 갱신합니다.*
 
-*Last updated: 2026-04-13*
+*Last updated: 2026-04-13 (M3 parent box contamination 반영)*
