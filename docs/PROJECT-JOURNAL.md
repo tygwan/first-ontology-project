@@ -424,12 +424,14 @@ BIMEntity
 | 찾고 싶은 것 | 위치 |
 |------------|------|
 | 전체 프로젝트 개요 | [`README.md`](../README.md) |
+| **데이터 논리 체인** | [`docs/analysis/methodology-data-logic.md`](analysis/methodology-data-logic.md) |
 | Phase 구현 계획 | [`docs/plan/pipeline-implementation-plan.md`](plan/pipeline-implementation-plan.md) |
 | Phase 1a 설계 논의 | [`docs/analysis/phase-1a-data-realignment-design.md`](analysis/phase-1a-data-realignment-design.md) |
 | XLSX classifier 로직 분석 | [`docs/analysis/refined-xlsx-exporter-logic.md`](analysis/refined-xlsx-exporter-logic.md) |
 | Phase 1 검증 가이드 | [`docs/analysis/phase-1-verification-guide.md`](analysis/phase-1-verification-guide.md) |
 | 완료된 Phase 별 기록 | [`docs/tasklog/`](tasklog/) |
 | 발견된 이슈 아카이브 | [`docs/findings/`](findings/) |
+| **EDA + CM 노트북** | [`notebooks/`](../notebooks/) (GitHub 에서 시각화 렌더링) |
 | DXTnavis 원천 데이터 명세 | [`docs/reference/DATA-SPECIFICATION.md`](reference/DATA-SPECIFICATION.md) |
 | 이전 backend 분석 (legacy) | [`docs/reference/dxtnavis-2026-04-07-*.md`](reference/) |
 
