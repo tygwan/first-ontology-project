@@ -130,7 +130,8 @@ class TestPrecedence:
         assert nx.is_directed_acyclic_graph(dag)
 
     def test_dag_has_nodes(self, dag) -> None:
-        assert dag.number_of_nodes() == 8511
+        """M3: graph_participant only → 7,840."""
+        assert dag.number_of_nodes() == 7840
 
     def test_dag_has_edges(self, dag) -> None:
         assert dag.number_of_edges() > 0

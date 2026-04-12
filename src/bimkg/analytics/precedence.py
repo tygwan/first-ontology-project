@@ -29,20 +29,56 @@ from bimkg.analytics.zones import INSTALL_ORDER
 VERTICAL_BIN_M: float = 3.0
 
 
+def _filter_adjacency_by_tier(
+    adjacency: pd.DataFrame,
+    tier: str = "strong_medium",
+) -> pd.DataFrame:
+    """Filter adjacency edges by connection quality tier.
+
+    Tiers (Finding M2):
+    - "strong": touch only (13K edges — physical contact)
+    - "strong_medium": touch + small overlap <0.01 m³ (87K — default)
+    - "all": no filtering (220K — includes BB noise)
+    """
+    if tier == "all":
+        return adjacency
+    if tier == "strong":
+        return adjacency[adjacency["relation_type"] == "touch"]
+    # strong_medium (default)
+    mask_strong = adjacency["relation_type"] == "touch"
+    mask_medium = (
+        (adjacency["relation_type"] == "overlap")
+        & (adjacency["overlap_volume_m3"] < 0.01)
+    )
+    return adjacency[mask_strong | mask_medium]
+
+
 def build_precedence_dag(
     gold: pd.DataFrame,
     adjacency: pd.DataFrame,
     zone_col: str = "zone_id",
+    adjacency_tier: str = "strong_medium",
 ) -> nx.DiGraph:
     """Build a precedence DAG from physical objects.
+
+    Parameters
+    ----------
+    adjacency_tier : str
+        "strong", "strong_medium" (default), or "all".
+        Controls which adjacency edges create interference constraints.
 
     Edges go from predecessor → successor (predecessor must install first).
     Each edge has an ``edge_type`` attribute: "class_order", "vertical", or
     "adjacency_interference".
     """
-    phys = gold[
-        (gold["is_container"] == False) & (gold["is_analysis_volume"] == False)
-    ].copy()
+    adjacency = _filter_adjacency_by_tier(adjacency, adjacency_tier)
+
+    if "graph_participant" in gold.columns:
+        phys = gold[gold["graph_participant"] == True].copy()
+    else:
+        phys = gold[
+            (gold["is_container"] == False) & (gold["is_analysis_volume"] == False)
+        ].copy()
     phys["install_rank"] = phys["refined_class"].map(INSTALL_ORDER).fillna(5)
     phys["z_bin"] = (phys["centroid_z"] / VERTICAL_BIN_M).round().astype(int)
 
