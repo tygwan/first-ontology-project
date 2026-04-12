@@ -14,13 +14,22 @@ def build_physical_graph(
     gold: pd.DataFrame,
     adjacency: pd.DataFrame,
 ) -> nx.Graph:
-    """Build undirected graph from physical objects only."""
-    phys_ids = set(
-        gold.loc[
-            (gold["is_container"] == False) & (gold["is_analysis_volume"] == False),
-            "object_id",
-        ]
-    )
+    """Build undirected graph from physical objects only.
+
+    Excludes containers, analysis volumes, and parent boxes (M3 finding).
+    Uses ``graph_participant`` flag if available, otherwise falls back
+    to explicit flag checks.
+    """
+    if "graph_participant" in gold.columns:
+        phys_ids = set(gold.loc[gold["graph_participant"] == True, "object_id"])
+    else:
+        mask = (
+            (gold["is_container"] == False)
+            & (gold["is_analysis_volume"] == False)
+        )
+        if "is_parent_box" in gold.columns:
+            mask = mask & (gold["is_parent_box"] == False)
+        phys_ids = set(gold.loc[mask, "object_id"])
     adj_phys = adjacency[
         adjacency["source_object_id"].isin(phys_ids)
         & adjacency["target_object_id"].isin(phys_ids)

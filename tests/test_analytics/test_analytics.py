@@ -72,7 +72,8 @@ def dag(gold_with_zones, adjacency) -> nx.DiGraph:
 
 class TestMetrics:
     def test_physical_graph_node_count(self, phys_graph) -> None:
-        assert phys_graph.number_of_nodes() == 8511
+        """M3: parent boxes excluded → 7,840 (was 8,511)."""
+        assert phys_graph.number_of_nodes() == 7840
 
     def test_physical_graph_excludes_containers(self, gold, phys_graph) -> None:
         container_ids = set(gold[gold["is_container"] == True]["object_id"])

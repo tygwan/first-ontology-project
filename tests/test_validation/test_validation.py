@@ -111,11 +111,13 @@ class TestFullValidation:
         assert full_validation.conforms is False
 
     def test_total_violations_expected(self, full_validation) -> None:
-        assert 700 <= full_validation.total_violations <= 800
+        """M3: fewer physical objects → fewer violations (739 → ~468)."""
+        assert 400 <= full_validation.total_violations <= 550
 
     def test_mesh_violations_dominant(self, full_validation) -> None:
+        """M3: parent boxes moved to HierarchyNode → mesh violations drop."""
         mesh = full_validation.by_shape.get("_prop_mesh", 0)
-        assert 650 <= mesh <= 700
+        assert 350 <= mesh <= 450
 
     def test_pipeline_violations(self, full_validation) -> None:
         pipeline = full_validation.by_shape.get("_prop_pipeline", 0)

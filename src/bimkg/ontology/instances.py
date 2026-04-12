@@ -137,6 +137,9 @@ def _assign_type(g: Graph, uri: URIRef, row: pd.Series) -> None:
     if row.get("is_container"):
         g.add((uri, RDF.type, BIM.HierarchyNode))
         return
+    if row.get("is_parent_box"):
+        g.add((uri, RDF.type, BIM.HierarchyNode))  # parent box = hierarchy node
+        return
 
     refined = row.get("refined_class", "Other")
     owl_class = REFINED_CLASS_MAP.get(refined, "UncategorizedObject")

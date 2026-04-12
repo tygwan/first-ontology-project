@@ -215,18 +215,20 @@ class TestIntegrationCounts:
         assert count == 2841
 
     def test_structural_member_count(self, full_graph: Graph) -> None:
+        """M3: some Structure parent boxes moved to HierarchyNode."""
         count = _sparql_count(full_graph, """
             PREFIX bim: <http://example.org/bim-ontology/>
             SELECT (COUNT(?s) AS ?c) WHERE { ?s a bim:StructuralMember }
         """)
-        assert count == 2659
+        assert count == 2583
 
     def test_hierarchy_node_count(self, full_graph: Graph) -> None:
+        """M3: 3353 containers + 271 parent boxes = 3624."""
         count = _sparql_count(full_graph, """
             PREFIX bim: <http://example.org/bim-ontology/>
             SELECT (COUNT(?s) AS ?c) WHERE { ?s a bim:HierarchyNode }
         """)
-        assert count == 3353
+        assert count == 3624
 
     def test_analysis_volume_count(self, full_graph: Graph) -> None:
         count = _sparql_count(full_graph, """
@@ -236,13 +238,14 @@ class TestIntegrationCounts:
         assert count == 145
 
     def test_equipment_subclass_total(self, full_graph: Graph) -> None:
+        """M3: some Equipment parent boxes moved to HierarchyNode."""
         count = _sparql_count(full_graph, """
             PREFIX bim: <http://example.org/bim-ontology/>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             SELECT (COUNT(?s) AS ?c)
             WHERE { ?s a ?t . ?t rdfs:subClassOf* bim:Equipment }
         """)
-        assert count == 715
+        assert count == 704
 
     def test_pipeline_individuals(self, full_graph: Graph) -> None:
         """147 unique pipelines in AllProperties (K3: XLSX has 157 via FindKey)."""

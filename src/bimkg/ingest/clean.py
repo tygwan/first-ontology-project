@@ -319,10 +319,19 @@ def add_flags(df: pd.DataFrame) -> pd.DataFrame:
 
     out["has_own_geometry"] = out["has_real_mesh"].fillna(False).astype(bool)
 
+    # Parent box detection (Finding M3): objects with no mesh but oversized bbox
+    # are hierarchy nodes / system groups whose bbox is an aggregation of children.
+    # Threshold: 99th percentile of bbox for objects that DO have real mesh.
+    _has_mesh = out["has_real_mesh"].fillna(False)
+    _bbox = out["bbox_volume_m3"].fillna(0)
+    _bbox_threshold = _bbox[_has_mesh].quantile(0.99) if _has_mesh.any() else 0
+    out["is_parent_box"] = (~_has_mesh) & (_bbox > _bbox_threshold)
+
     out["graph_participant"] = (
         ~out["is_container"]
         & ~out["is_bbox_placeholder"]
         & ~out["is_analysis_volume"]
+        & ~out["is_parent_box"]
     )
 
     return out

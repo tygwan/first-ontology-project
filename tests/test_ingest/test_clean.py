@@ -211,6 +211,7 @@ class TestAddFlags:
                 "adjacency_count": [0, 5],
                 "has_real_mesh": [False, True],
                 "display_name": ["A", "B"],
+                "bbox_volume_m3": [0.0, 1.0],
             }
         )
         out = add_flags(df)
@@ -224,6 +225,7 @@ class TestAddFlags:
                 "adjacency_count": [1],
                 "has_real_mesh": [False],
                 "display_name": ["X"],
+                "bbox_volume_m3": [0.0],
             }
         )
         assert not add_flags(df)["is_container"].iloc[0]
@@ -235,22 +237,38 @@ class TestAddFlags:
                 "adjacency_count": [10, 10],
                 "has_real_mesh": [True, True],
                 "display_name": ["Insulation Volume-001", "Beam-002"],
+                "bbox_volume_m3": [1.0, 1.0],
             }
         )
         out = add_flags(df)
         assert out["is_analysis_volume"].tolist() == [True, False]
 
-    def test_graph_participant_excludes_flagged(self) -> None:
+    def test_is_parent_box_detected(self) -> None:
+        """M3: no mesh + oversized bbox → parent box."""
         df = pd.DataFrame(
             {
-                "mesh_quality": ["skipped_container", "box_placeholder", "full_mesh"],
-                "adjacency_count": [0, 5, 10],
-                "has_real_mesh": [False, False, True],
-                "display_name": ["A", "B", "C"],
+                "mesh_quality": ["full_mesh", "full_mesh", "full_mesh"],
+                "adjacency_count": [10, 10, 10],
+                "has_real_mesh": [True, True, False],
+                "display_name": ["Pipe-1", "Beam-2", "Structure"],
+                "bbox_volume_m3": [0.5, 1.0, 50000.0],
             }
         )
         out = add_flags(df)
-        assert out["graph_participant"].tolist() == [False, False, True]
+        assert out["is_parent_box"].tolist() == [False, False, True]
+
+    def test_graph_participant_excludes_flagged(self) -> None:
+        df = pd.DataFrame(
+            {
+                "mesh_quality": ["skipped_container", "box_placeholder", "full_mesh", "full_mesh"],
+                "adjacency_count": [0, 5, 10, 10],
+                "has_real_mesh": [False, False, True, False],
+                "display_name": ["A", "B", "C", "BigParent"],
+                "bbox_volume_m3": [0.0, 0.0, 1.0, 99999.0],
+            }
+        )
+        out = add_flags(df)
+        assert out["graph_participant"].tolist() == [False, False, True, False]
 
 
 class TestAddTitle:
