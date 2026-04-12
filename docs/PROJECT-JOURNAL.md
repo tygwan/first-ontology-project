@@ -13,17 +13,15 @@
 
 ## 한눈에 보기
 
-**프로젝트 상태** (2026-04-12 기준):
-- Phase 0 ~ 1e: ✅ 완료 (212 테스트 통과 — 2026-04-12 snapshot 재정렬 완료)
-- Phase 2: ⏸ **Paused** — Q1 top-level taxonomy 결정 (D10), Q2~Q8 재개 조건 충족 (D11 재개 가능)
-- 발견된 데이터 이슈: 🟠 1건 MAJOR (✅ **Fully Resolved**), 알려진 한계 3건
-- DXTnavis 원천 PR: 🟢 [PR #3](https://github.com/tygwan/DXTnavis/pull/3) **Open, Mergeable**, **로컬 빌드로 이미 적용됨**
-  - ⚠️ Issue #2 에 제안한 `\b` fix 는 **불충분** — Pipe Rack 같은 composite noun 에 매치됨
-  - ✅ 실제 fix: `pipe(?!\s+(rack|trench|support|way|bridge|shoe))` 로 negative lookahead
-  - ✅ 2026-04-12 snapshot 으로 전면 재정렬 완료 (config/classifier/tests/data)
-- **Standards**: dev-standards@0.1.0 (🟢 first consumer / reference implementation)
-- 다음 단계: Phase 2 Q2~Q8 재평가 후 재개 (입력 데이터 안정화됨)
-- 병행 작업: Power BI 학습 (PBIP commit 전략으로 `dashboards/powerbi/`)
+**프로젝트 상태** (2026-04-13 기준):
+- Phase 0~1e, 2, 3, 4: ✅ 완료 (305 테스트 통과)
+- Phase 5 (LLM): ⏸ 다음 단계
+- 발견된 데이터 이슈: M1 (분류) ✅, M2 (adjacency AABB) ✅, M3 (parent box) ✅
+- DXTnavis Issues: [#2](https://github.com/tygwan/DXTnavis/issues/2) (분류), [#4](https://github.com/tygwan/DXTnavis/issues/4) (parent box) 제출됨
+- OWL: 28 classes, 477K triples | Neo4j: 261K edges | SHACL: 468 violations
+- 33 KPIs (건설 14 + 시설 17 + 공통 2) | 5 notebooks + 26 해석 + 25 PNGs
+- **Standards**: dev-standards@0.1.0 + PNG 저장 규칙 + A/B 테스트 패턴 (R10 추출 예정)
+- 다음: A/B 규칙 → dev-standards R10, 이후 Phase 5 LLM/GraphRAG
 
 ---
 
@@ -107,13 +105,31 @@
              └── 153 "Pipelines" objects are actually legit fittings
 2026-04-12   DXTnavis PR #3 feedback archived in M1 finding              b73102f
              Stray XLSX cleanup + .gitignore patterns                    25aeb45
-             Phase 1 re-alignment to 2026-04-12 snapshot                 (pending)
-             ├── New raw: Refining_ObjectID_20260412_064240.xlsx
+             Phase 1 re-alignment to 2026-04-12 snapshot                 cd11661
              ├── xlsx_classifier.py: negative-lookahead regex (PR #3 port)
-             ├── Oracle test: 12,009/12,009 = 100% (first try)
-             ├── Test count re-baselined: 210 → 212 (+2 boundary tests)
-             ├── Class redistribution: Piping 4014→3062, Other 697→2159
-             └── M1 finding: Resolved locally → Fully Resolved
+             ├── Oracle test: 12,009/12,009 = 100%, Class redistribution
+             └── M1 finding: Fully Resolved
+             Phase 2: OWL ontology (28 classes, 477K triples)            2185055
+             ├── TBox: bim-ontology.owl (8 obj + 32 data props)
+             └── ABox: bim-objects.ttl + bim-spatial.ttl + bim-shared.ttl
+             EDA notebook (01_eda.ipynb)                                 f833084
+             CM A/B test notebook (02_construction_management.ipynb)     252f7fb
+             └── Grid vs Louvain → Louvain 채택 (3/4 지표 승리)
+             Phase 4: Graph analytics (precedence DAG, Neo4j)            8b0dcc9
+             └── Critical chain 53 steps (S+M, pre-M3)
+             Finding M2: Adjacency = AABB, 3-tier 분류                  cc7b562
+             └── Strong/Medium/Weak → A/B: 88→53→17 steps
+             Phase 3: SHACL validation (6 shapes, 739 violations)        2a2d242
+             Methodology: data logic chain document                      4ea2199
+2026-04-13   Finding M3: Parent box 448개 → adjacency 66% 오염           053b6b3
+             ├── is_parent_box 플래그 추가, graph: 8,511→7,840
+             ├── Max degree: 5,161→388, Zones: 29→144
+             ├── Critical chain: 53→44, Neo4j 재로드
+             └── DXTnavis Issue #4 제출                                  3f9bd6f
+             Infra: tier param + Neo4j script + PNG retrofit             82437ea
+             CM+Facility KPI system (33 KPIs, 4 levels)                  18564f5
+             └── criticality, accessibility, corrosion, valve isolation
+             Notebook interpretations (26 cells across 5 notebooks)      904aeba
 ```
 
 ### Test count progression
@@ -127,6 +143,10 @@
 | 1d (exporters) | +43 | 192 |
 | 1e (confidence layer) | +18 | 210 |
 | 1 re-alignment (2026-04-12) | +2 | 212 |
+| 2 (OWL ontology) | +59 | 271 |
+| 4 (graph analytics) | +19 | 290 |
+| 3 (SHACL validation) | +14 | 304 |
+| M3 (parent box fix) | +1 | 305 |
 
 ---
 
@@ -448,6 +468,16 @@ BIMEntity
 | `src/bimkg/ingest/sqlite_writer.py` | Parquet + SQLite 출력 + run_phase_1a() |
 | `src/bimkg/ingest/exporters/powerbi.py` | 10 CSV star schema |
 | `src/bimkg/ingest/exporters/foundry.py` | 6 Object + 4 Link Type parquet |
+| `src/bimkg/ontology/schema.py` | OWL TBox (28 classes, 40 properties) |
+| `src/bimkg/ontology/instances.py` | ABox (12K objects, 220K spatial, 505 shared) |
+| `src/bimkg/validation/shapes.py` | SHACL shapes (6 rules) |
+| `src/bimkg/validation/validate.py` | pySHACL runner + ValidationResult |
+| `src/bimkg/analytics/metrics.py` | graph_participant graph, degree centrality |
+| `src/bimkg/analytics/zones.py` | Louvain community detection |
+| `src/bimkg/analytics/precedence.py` | 3-constraint DAG + critical chain + adjacency_tier |
+| `src/bimkg/analytics/kpi.py` | 33 KPIs (criticality, accessibility, corrosion, isolation) |
+| `src/bimkg/analytics/neo4j_export.py` | Neo4j CSV (nodes 3 + edges 6 types) |
+| `scripts/neo4j_import.sh` | Docker Neo4j 재현 가능 설정 + import |
 
 ### Data 위치
 
@@ -483,4 +513,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-12 (Phase 1 re-alignment to 2026-04-12 snapshot, M1 Fully Resolved)*
+*Last updated: 2026-04-13 (Phase 2/3/4 완료, M2/M3 해결, 33 KPIs, 5 notebooks 해석 완료)*
