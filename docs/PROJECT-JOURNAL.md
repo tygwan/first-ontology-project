@@ -148,6 +148,16 @@
              ├── branch empty 이슈 해결 (main→master)
              ├── 6 Object Types 생성 완료 (Ontology Manager)
              └── Foundry setup guide 작성                                0def9ba
+             Medallion Data Flow 다이어그램 검토 + 직접 수정 적용         e46e631
+             ├── 5개 issue 식별 (Unit conv 연결 누락, Bronze 3개 누락 등)
+             ├── Figma MCP plugin 으로 직접 수정 (board 노드 28개 추가/변경)
+             └── R11 후보 architecture documentation 규칙 제안
+             Data engineering 스킬 5종 적용 (Airflow/OL/Profile/Catalog/Lineage)
+             ├── Airflow 3.x DAG (7 tasks, 14 Assets)
+             ├── OpenLineage v2 events (14 events, ColumnLineage facets)
+             ├── ydata-profiling (Gold 219 cols, 270 quality alerts)
+             ├── Warehouse catalog (SQLite 7 tables, 62.9 MB)
+             └── Lineage impact analysis (24 datasets, downstream/upstream maps)
 ```
 
 ### Test count progression
@@ -470,7 +480,14 @@ BIMEntity
 | **Phase 5 LLM 설계** | [`docs/analysis/phase-5-llm-design.md`](analysis/phase-5-llm-design.md) |
 | **Palantir 건설 인사이트** | [`docs/analysis/palantir-construction-insights.md`](analysis/palantir-construction-insights.md) |
 | **Palantir 온톨로지 분석** | [`docs/analysis/palantir-ontology-for-construction.md`](analysis/palantir-ontology-for-construction.md) |
+| **🎨 시각화 자료 통합 인덱스** | [`docs/VISUALIZATIONS.md`](VISUALIZATIONS.md) ← **모든 다이어그램/그래프/PNG 한눈에** |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
+| **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
+| **Medallion 다이어그램 검토** | [`docs/analysis/medallion-data-flow-review.md`](analysis/medallion-data-flow-review.md) |
+| **Profiling HTML 리포트** | [`docs/reference/profiling/`](reference/profiling/) |
+| **Warehouse 카탈로그** | [`docs/reference/warehouse-catalog/`](reference/warehouse-catalog/) |
+| **Lineage impact 분석** | [`docs/reference/lineage/`](reference/lineage/) |
+| **Architecture HTML (portfolio)** | [`portfolio/architecture-diagrams.html`](../portfolio/architecture-diagrams.html) |
 | **Portfolio PAAR 분석** | [`docs/reference/portfolio-paar-analysis.md`](reference/portfolio-paar-analysis.md) |
 | Phase 1a 설계 논의 | [`docs/analysis/phase-1a-data-realignment-design.md`](analysis/phase-1a-data-realignment-design.md) |
 | XLSX classifier 로직 분석 | [`docs/analysis/refined-xlsx-exporter-logic.md`](analysis/refined-xlsx-exporter-logic.md) |
