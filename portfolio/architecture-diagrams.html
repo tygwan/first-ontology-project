@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>BIM Knowledge Graph Pipeline - Architecture Diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --white: #FFFFFF;
+  --dark: #191F28;
+  --gray: #8B95A1;
+  --light-gray: #F2F4F6;
+  --blue: #3182F6;
+  --orange: #FF9800;
+  --green: #00C471;
+  --purple: #9C27B0;
+  --dark-gray: #333D4B;
+  --light-blue: #E8F3FF;
+  --red: #F44336;
+  --teal: #009688;
+  --indigo: #3F51B5;
+  --amber: #FFC107;
+  --pink: #E91E63;
+  --cyan: #00BCD4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F8F9FA;
+  color: var(--dark);
+}
+
+/* Navigation */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--white);
+  border-bottom: 1px solid #E5E8EB;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  z-index: 100;
+  gap: 32px;
+}
+.nav-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--dark);
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--light-blue);
+  color: var(--blue);
+}
+
+/* Page container */
+.page {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 96px 48px 80px;
+}
+
+/* Section = one Figma page equivalent */
+.section {
+  margin-bottom: 120px;
+  scroll-margin-top: 80px;
+}
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 8px;
+}
+.section-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.section-desc {
+  font-size: 15px;
+  color: var(--gray);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+/* Diagram frame - matches Figma style */
+.diagram-frame {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
+.diagram-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+.diagram-subtitle {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+
+/* Numbered card style (from Figma) */
+.card {
+  background: var(--light-gray);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+}
+.card-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+.card-text {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+/* Stats bar */
+.stats-bar {
+  background: var(--light-blue);
+  border-radius: 12px;
+  padding: 20px 32px;
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.stat {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+/* Horizontal pipeline flow */
+.flow-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+.flow-arrow {
+  width: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  font-size: 20px;
+}
+.flow-arrow svg {
+  width: 28px;
+  height: 14px;
+}
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+.grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+
+/* Tree diagram */
+.tree { padding: 20px 0; }
+.tree-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tree-level {
+  margin-left: 0;
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+  padding-left: 0;
+}
+.tree-indent-1 { padding-left: 32px; }
+.tree-indent-2 { padding-left: 64px; }
+.tree-indent-3 { padding-left: 96px; }
+.tree-indent-4 { padding-left: 128px; }
+.tree-connector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+}
+
+/* Medallion layers */
+.medallion-layer {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+}
+.medallion-bronze { background: #FFF3E0; border: 2px solid #FF9800; }
+.medallion-silver { background: #F3E5F5; border: 2px solid #9C27B0; }
+.medallion-gold { background: #FFF8E1; border: 2px solid #FFC107; }
+.medallion-badge {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+/* KPI gauge */
+.kpi-card {
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.kpi-level {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.kpi-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark);
+  line-height: 1.4;
+}
+
+/* API endpoint row */
+.endpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: var(--light-gray);
+}
+.method-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  min-width: 50px;
+  text-align: center;
+}
+.method-get { background: #E8F5E9; color: #2E7D32; }
+.method-post { background: #E3F2FD; color: #1565C0; }
+.endpoint-path {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'SF Mono', 'Cascadia Code', monospace;
+  color: var(--dark);
+}
+.endpoint-desc {
+  font-size: 12px;
+  color: var(--gray);
+  margin-left: auto;
+}
+
+/* SHACL shapes */
+.shape-card {
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 4px solid;
+}
+.shape-error { background: #FFEBEE; border-color: #F44336; }
+.shape-warning { background: #FFF3E0; border-color: #FF9800; }
+.shape-info { background: #E3F2FD; border-color: #2196F3; }
+
+/* Phase timeline */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--blue), var(--purple), var(--green));
+  border-radius: 2px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid #E5E8EB;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -33px;
+  top: 24px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--blue);
+  background: var(--white);
+}
+.timeline-item:nth-child(2)::before { border-color: var(--orange); }
+.timeline-item:nth-child(3)::before { border-color: var(--green); }
+.timeline-item:nth-child(4)::before { border-color: var(--purple); }
+.timeline-item:nth-child(5)::before { border-color: var(--blue); }
+.timeline-item:nth-child(6)::before { border-color: var(--dark-gray); }
+.timeline-item:nth-child(7)::before { border-color: var(--teal); }
+
+/* Tag */
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* Finding card */
+.finding-card {
+  border-radius: 16px;
+  padding: 24px;
+  border: 2px solid;
+  position: relative;
+}
+.finding-resolved { border-color: var(--green); background: #F0FFF4; }
+.finding-badge {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--green);
+}
+
+/* DAG visualization */
+.dag-box {
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+}
+
+/* Tool card */
+.tool-card {
+  background: var(--light-gray);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.tool-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Tech stack */
+.tech-group {
+  margin-bottom: 24px;
+}
+.tech-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.tech-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--light-gray);
+  margin-right: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.tech-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Footer */
+.footer-note {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 12px;
+}
+
+/* Responsive print */
+@media print {
+  .nav { display: none; }
+  .page { padding-top: 24px; }
+  .section { page-break-before: always; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+  <span class="nav-title">BIM-KG Portfolio</span>
+  <div class="nav-links">
+    <a href="#pipeline" class="active">Pipeline</a>
+    <a href="#medallion">Medallion</a>
+    <a href="#ontology">Ontology</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#llm">LLM Agent</a>
+    <a href="#api">API</a>
+    <a href="#findings">Findings</a>
+    <a href="#tech">Tech Stack</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ============================================================ -->
+<!-- PAGE 2: Full Pipeline Architecture -->
+<!-- ============================================================ -->
+<section class="section" id="pipeline">
+  <div class="section-label">Page 2</div>
+  <h2 class="section-title">Full Pipeline Architecture</h2>
+  <p class="section-desc">7-Phase modular pipeline: Raw SP3D data to production-ready knowledge graph platform</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">End-to-End Data Pipeline</div>
+    <div class="diagram-subtitle">DXTnavis v1.4.0 snapshot 2026-04-07 &rarr; Multi-platform deployment</div>
+
+    <div class="flow-horizontal" style="margin-bottom: 32px;">
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--orange);">P0</div>
+        <div class="card-title">Bootstrap</div>
+        <div class="card-text">config.py<br>pyproject.toml<br>uv environment</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--orange);">P1</div>
+        <div class="card-title">Ingest</div>
+        <div class="card-text">5 sub-phases<br>135 &rarr; 175 cols<br>Medallion Architecture</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--green);">P2</div>
+        <div class="card-title">OWL Ontology</div>
+        <div class="card-text">28 classes<br>477K triples<br>TBox + ABox</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--green);">P3</div>
+        <div class="card-title">SHACL</div>
+        <div class="card-text">6 shapes<br>739 violations<br>Data quality gate</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--purple);">P4</div>
+        <div class="card-title">Graph Analytics</div>
+        <div class="card-text">144 Louvain zones<br>33 KPIs<br>Precedence DAG</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--blue);">P5</div>
+        <div class="card-title">LLM Agent</div>
+        <div class="card-text">5 retrieval tools<br>ReAct pattern<br>Gemini 2.5 Flash</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div class="card" style="min-width: 160px; flex-shrink: 0;">
+        <div class="card-num" style="background: var(--dark-gray);">P6</div>
+        <div class="card-title">REST API</div>
+        <div class="card-text">12 endpoints<br>FastAPI + Swagger<br>Production-ready</div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <span class="stat">12,009 Objects</span>
+      <span class="stat">220K Relations</span>
+      <span class="stat">477K Triples</span>
+      <span class="stat">261K Edges</span>
+      <span class="stat">336 Tests</span>
+      <span class="stat">33 KPIs</span>
+      <span class="stat">144 Zones</span>
+      <span class="stat">10 Foundry Datasets</span>
+    </div>
+  </div>
+
+  <!-- Output Targets -->
+  <div class="diagram-frame">
+    <div class="diagram-title">Multi-Platform Output</div>
+    <div class="diagram-subtitle">Single pipeline, 6 output targets</div>
+    <div class="grid-3" style="margin-top: 24px;">
+      <div class="card">
+        <div class="card-num" style="background: var(--dark-gray);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="card-title">Palantir Foundry</div>
+        <div class="card-text">10 datasets live<br>6 Object Types + 4 Link Types<br>BIM-KG project</div>
+      </div>
+      <div class="card">
+        <div class="card-num" style="background: var(--amber);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4-3-9s1.34-9 3-9"/></svg>
+        </div>
+        <div class="card-title">Power BI</div>
+        <div class="card-text">12-file star schema<br>65 cols x 12K facts<br>3,355 dimensions</div>
+      </div>
+      <div class="card">
+        <div class="card-num" style="background: var(--green);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-7.07-2.93l2.83-2.83m8.49-8.49l2.83-2.83M2 12h4m12 0h4m-2.93 7.07l-2.83-2.83M6.76 6.76L3.93 3.93"/></svg>
+        </div>
+        <div class="card-title">Neo4j</div>
+        <div class="card-text">261K edges<br>5 relationship types<br>Docker container</div>
+      </div>
+      <div class="card">
+        <div class="card-num" style="background: var(--blue);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/></svg>
+        </div>
+        <div class="card-title">SQLite + Parquet</div>
+        <div class="card-text">bimkg.db local<br>Silver + Gold parquet<br>218 columns</div>
+      </div>
+      <div class="card">
+        <div class="card-num" style="background: var(--purple);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="card-title">OWL/TTL</div>
+        <div class="card-text">bim-ontology.owl<br>3 Turtle files<br>477K triples</div>
+      </div>
+      <div class="card">
+        <div class="card-num" style="background: var(--teal);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        </div>
+        <div class="card-title">FastAPI</div>
+        <div class="card-text">12 REST endpoints<br>Swagger docs<br>LLM query endpoint</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 3: Medallion Architecture Detail -->
+<!-- ============================================================ -->
+<section class="section" id="medallion">
+  <div class="section-label">Page 3</div>
+  <h2 class="section-title">Medallion Architecture</h2>
+  <p class="section-desc">Bronze &rarr; Silver &rarr; Gold layered data processing with strict lineage tracking</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">Data Ingestion Pipeline (Phase 1)</div>
+    <div class="diagram-subtitle">5 sub-phases: xlsx_loader &rarr; xlsx_classifier &rarr; unit_parser &rarr; clean &rarr; sqlite_writer</div>
+
+    <div class="grid-3" style="margin-top: 24px; gap: 32px;">
+      <!-- Bronze -->
+      <div class="medallion-layer medallion-bronze">
+        <div class="medallion-badge" style="background: #FF9800;">BRONZE</div>
+        <div style="margin-top: 8px;">
+          <div style="font-size: 18px; font-weight: 700; color: #E65100; margin-bottom: 12px;">Raw Ingestion</div>
+          <div style="font-size: 13px; color: #BF360C; line-height: 1.8;">
+            <strong>xlsx_loader</strong><br>
+            11 DXTnavis files<br>
+            135 columns (snake_case)<br>
+            12,009 object rows<br>
+            110,173 adjacency rows<br>
+            <span style="font-size: 11px; color: #E65100; font-weight: 600; margin-top: 8px; display: block;">+ xlsx_classifier (6-class)</span>
+          </div>
+        </div>
+      </div>
+      <!-- Silver -->
+      <div class="medallion-layer medallion-silver">
+        <div class="medallion-badge" style="background: #9C27B0;">SILVER</div>
+        <div style="margin-top: 8px;">
+          <div style="font-size: 18px; font-weight: 700; color: #6A1B9A; margin-bottom: 12px;">Typed &amp; Snake-cased</div>
+          <div style="font-size: 13px; color: #4A148C; line-height: 1.8;">
+            <strong>135 columns</strong> (1:1 XLSX)<br>
+            snake_case + type casting<br>
+            level &rarr; Int64<br>
+            4 Parquet files<br>
+            <span style="font-size: 11px; color: #6A1B9A; font-weight: 600; margin-top: 8px; display: block;">No enrichment &mdash; raw fidelity preserved</span>
+          </div>
+        </div>
+      </div>
+      <!-- Gold -->
+      <div class="medallion-layer medallion-gold">
+        <div class="medallion-badge" style="background: #F9A825;">GOLD</div>
+        <div style="margin-top: 8px;">
+          <div style="font-size: 18px; font-weight: 700; color: #F57F17; margin-bottom: 12px;">Enriched &amp; Indexed</div>
+          <div style="font-size: 13px; color: #E65100; line-height: 1.8;">
+            <strong>~175 columns</strong><br>
+            Silver + validation + geometry<br>
+            + groups + flags + <strong>SI units</strong><br>
+            + lineage + title + confidence<br>
+            218 cols in bimkg.db + FTS5<br>
+            <span style="font-size: 11px; color: #F57F17; font-weight: 600; margin-top: 8px; display: block;">unit_parser: sp3d_* &rarr; 11 SI cols</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classification breakdown -->
+    <div style="margin-top: 40px;">
+      <div style="font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 16px;">Classification Distribution (6+1 Categories)</div>
+      <div style="display: flex; gap: 4px; height: 40px; border-radius: 10px; overflow: hidden;">
+        <div style="flex: 4840; background: var(--blue); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">Structure 4,840</div>
+        <div style="flex: 3062; background: var(--orange); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">Piping 3,062</div>
+        <div style="flex: 2159; background: var(--gray); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">Other 2,159</div>
+        <div style="flex: 1053; background: var(--indigo); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 700;">Elec 1,053</div>
+        <div style="flex: 770; background: var(--purple); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 700;">Equip 770</div>
+        <div style="flex: 125; background: var(--teal); display: flex; align-items: center; justify-content: center; color: white; font-size: 9px; font-weight: 700;">HVAC</div>
+      </div>
+      <div class="footer-note" style="margin-top: 8px;">Total: 12,009 objects | Classifier: 1:1 C# port with negative lookahead regex (M1 fix applied)</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 4: OWL Ontology Class Hierarchy -->
+<!-- ============================================================ -->
+<section class="section" id="ontology">
+  <div class="section-label">Page 4</div>
+  <h2 class="section-title">OWL Ontology Class Hierarchy</h2>
+  <p class="section-desc">28 classes organized in two sibling trees: BIMObject for physical entities, AnalysisArtifact for computed zones</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">Class Hierarchy (TBox)</div>
+    <div class="diagram-subtitle">Decision D10: Top-level = sibling structure (BIMObject || AnalysisArtifact)</div>
+
+    <div style="margin-top: 24px;">
+      <!-- Root -->
+      <div class="tree-level">
+        <span class="tree-node" style="background: var(--dark); color: white;">BIMEntity</span>
+        <span style="color: var(--gray); font-size: 12px;">(root)</span>
+      </div>
+
+      <!-- Level 1 -->
+      <div class="tree-level tree-indent-1">
+        <span class="tree-node" style="background: var(--blue); color: white;">BIMObject</span>
+        <span class="tree-node" style="background: var(--purple); color: white;">AnalysisArtifact</span>
+      </div>
+
+      <!-- BIMObject children -->
+      <div class="tree-level tree-indent-2">
+        <span class="tree-node" style="background: #E3F2FD; color: var(--blue);">PhysicalObject</span>
+        <span class="tree-node" style="background: #E3F2FD; color: var(--blue);">Container</span>
+      </div>
+
+      <!-- PhysicalObject children -->
+      <div class="tree-level tree-indent-3">
+        <span class="tree-node" style="background: #FFF3E0; color: #E65100;">PipingComponent</span>
+        <span class="tree-node" style="background: #E3F2FD; color: #1565C0;">StructuralMember</span>
+        <span class="tree-node" style="background: #F3E5F5; color: #6A1B9A;">Equipment</span>
+        <span class="tree-node" style="background: #E8F5E9; color: #2E7D32;">ElectricalComponent</span>
+        <span class="tree-node" style="background: #E0F7FA; color: #00695C;">HvacComponent</span>
+        <span class="tree-node" style="background: #ECEFF1; color: #37474F;">UncategorizedObject</span>
+      </div>
+
+      <!-- Equipment subclasses -->
+      <div class="tree-level tree-indent-4">
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">ProcessEquipment</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">ElectricalEquipment</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">ArchitecturalEquipment</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">HvacEquipment</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">CivilElements</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">CivilEquipment</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">BlackBoxSystems</span>
+        <span class="tree-node" style="background: #FCE4EC; color: #880E4F; font-size: 11px;">UnclassifiedEquipment</span>
+      </div>
+
+      <!-- Container children -->
+      <div class="tree-level tree-indent-3" style="margin-top: 16px;">
+        <span style="color: var(--gray); font-size: 12px; margin-right: 8px;">Container &rarr;</span>
+        <span class="tree-node" style="background: #E3F2FD; color: #1565C0;">HierarchyNode</span>
+      </div>
+
+      <!-- AnalysisArtifact children -->
+      <div class="tree-level tree-indent-2" style="margin-top: 16px;">
+        <span style="color: var(--gray); font-size: 12px; margin-right: 8px;">AnalysisArtifact &rarr;</span>
+        <span class="tree-node" style="background: #EDE7F6; color: #4527A0;">AnalysisVolume</span>
+      </div>
+
+      <!-- Context classes -->
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 2px dashed #E5E8EB;">
+        <div style="font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 12px;">Context Classes (7 shared references)</div>
+        <div class="tree-level">
+          <span class="tree-node" style="background: #ECEFF1; color: #455A64;">Context</span>
+          <span style="color: var(--gray); font-size: 14px;">&rarr;</span>
+          <span class="tree-node" style="background: #FFF3E0; color: #BF360C;">Pipeline</span>
+          <span class="tree-node" style="background: #FFF3E0; color: #BF360C;">PipeRun</span>
+          <span class="tree-node" style="background: #E8F5E9; color: #1B5E20;">Level</span>
+          <span class="tree-node" style="background: #E3F2FD; color: #0D47A1;">ConnectedGroup</span>
+          <span class="tree-node" style="background: #ECEFF1; color: #37474F;">Material</span>
+          <span class="tree-node" style="background: #ECEFF1; color: #37474F;">Specification</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar" style="margin-top: 32px;">
+      <span class="stat">28 OWL Classes</span>
+      <span class="stat">477K Triples</span>
+      <span class="stat">21 Main + 7 Context</span>
+      <span class="stat">4 Hierarchy Levels</span>
+    </div>
+  </div>
+
+  <!-- SHACL Validation -->
+  <div class="diagram-frame">
+    <div class="diagram-title">SHACL Validation Shapes (Phase 3)</div>
+    <div class="diagram-subtitle">6 NodeShape definitions &mdash; 739 total violations detected</div>
+
+    <div class="grid-3" style="margin-top: 24px;">
+      <div class="shape-card shape-error">
+        <div style="font-size: 10px; font-weight: 700; color: #F44336; margin-bottom: 6px;">ERROR</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">PipingMustHavePipeline</div>
+        <div style="font-size: 12px; color: var(--gray);">Every PipingComponent must have &ge;1 belongsToPipeline link</div>
+      </div>
+      <div class="shape-card shape-error">
+        <div style="font-size: 10px; font-weight: 700; color: #F44336; margin-bottom: 6px;">ERROR</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">WeightNonNegative</div>
+        <div style="font-size: 12px; color: var(--gray);">dryWeightKg &ge; 0 when present</div>
+      </div>
+      <div class="shape-card shape-error">
+        <div style="font-size: 10px; font-weight: 700; color: #F44336; margin-bottom: 6px;">ERROR</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">ObjectMustHaveCoords</div>
+        <div style="font-size: 12px; color: var(--gray);">centroidX, centroidY, centroidZ required</div>
+      </div>
+      <div class="shape-card shape-warning">
+        <div style="font-size: 10px; font-weight: 700; color: #FF9800; margin-bottom: 6px;">WARNING</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">EquipmentMustHaveName</div>
+        <div style="font-size: 12px; color: var(--gray);">Equipment + 8 subclasses must have displayName</div>
+      </div>
+      <div class="shape-card shape-warning">
+        <div style="font-size: 10px; font-weight: 700; color: #FF9800; margin-bottom: 6px;">WARNING</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">PhysicalMustHaveMesh</div>
+        <div style="font-size: 12px; color: var(--gray);">PhysicalObject should have hasRealMesh = true</div>
+      </div>
+      <div class="shape-card shape-info">
+        <div style="font-size: 10px; font-weight: 700; color: #2196F3; margin-bottom: 6px;">INFO</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">PipingConfidence</div>
+        <div style="font-size: 12px; color: var(--gray);">PipingComponent must have classificationConfidence</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 5: Graph Analytics -->
+<!-- ============================================================ -->
+<section class="section" id="analytics">
+  <div class="section-label">Page 5</div>
+  <h2 class="section-title">Graph Analytics &amp; KPI System</h2>
+  <p class="section-desc">Louvain community detection, construction precedence DAG, and 33 multi-level KPIs</p>
+
+  <!-- Louvain Zones -->
+  <div class="diagram-frame">
+    <div class="diagram-title">Louvain Zone Detection</div>
+    <div class="diagram-subtitle">144 construction zones from spatial adjacency graph</div>
+
+    <div class="grid-2" style="margin-top: 24px;">
+      <div>
+        <div style="font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 16px;">Adjacency Tiers (M2 Finding)</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 60px; height: 40px; border-radius: 8px; background: #2E7D32; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700;">Strong</div>
+            <div style="flex: 1; height: 12px; background: #E8F5E9; border-radius: 6px; overflow: hidden;">
+              <div style="width: 6%; height: 100%; background: #2E7D32; border-radius: 6px;"></div>
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--dark); min-width: 50px;">13K</span>
+            <span style="font-size: 11px; color: var(--gray);">touch only</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 60px; height: 40px; border-radius: 8px; background: #FF9800; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700;">Medium</div>
+            <div style="flex: 1; height: 12px; background: #FFF3E0; border-radius: 6px; overflow: hidden;">
+              <div style="width: 40%; height: 100%; background: #FF9800; border-radius: 6px;"></div>
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--dark); min-width: 50px;">87K</span>
+            <span style="font-size: 11px; color: var(--gray);">&lt;0.01 m&sup3; overlap</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 60px; height: 40px; border-radius: 8px; background: #F44336; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700;">All</div>
+            <div style="flex: 1; height: 12px; background: #FFEBEE; border-radius: 6px; overflow: hidden;">
+              <div style="width: 100%; height: 100%; background: #F44336; border-radius: 6px;"></div>
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--dark); min-width: 50px;">220K</span>
+            <span style="font-size: 11px; color: var(--gray);">no filter (AABB)</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 16px;">Zone Parameters</div>
+        <div style="background: var(--light-gray); border-radius: 12px; padding: 20px; font-family: 'SF Mono', monospace; font-size: 13px; line-height: 2;">
+          <span style="color: var(--purple);">resolution</span> = <span style="color: var(--blue);">1.0</span><br>
+          <span style="color: var(--purple);">seed</span> = <span style="color: var(--blue);">42</span><br>
+          <span style="color: var(--purple);">VERTICAL_BIN_M</span> = <span style="color: var(--blue);">3.0</span> m<br>
+          <span style="color: var(--purple);">zones</span> = <span style="color: var(--blue);">144</span> communities<br>
+          <span style="color: var(--purple);">critical_path</span> = <span style="color: var(--blue);">17</span>&ndash;<span style="color: var(--blue);">88</span> steps
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Construction Precedence DAG -->
+  <div class="diagram-frame">
+    <div class="diagram-title">Construction Precedence DAG</div>
+    <div class="diagram-subtitle">3 constraint types determine installation order</div>
+
+    <div style="display: flex; gap: 24px; margin-top: 24px;">
+      <div class="card" style="flex: 1; border-left: 4px solid var(--blue);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; margin-bottom: 8px;">Constraint 1</div>
+        <div class="card-title">Class Order</div>
+        <div class="card-text">Equipment &rarr; Structure &rarr; Piping &rarr; Electrical &rarr; HVAC &rarr; Other</div>
+        <div style="display: flex; gap: 4px; margin-top: 12px;">
+          <span class="tag" style="background: #E8F5E9; color: #2E7D32;">Rank 0</span>
+          <span class="tag" style="background: #E3F2FD; color: #1565C0;">Rank 1</span>
+          <span class="tag" style="background: #FFF3E0; color: #E65100;">Rank 2</span>
+          <span class="tag" style="background: #EDE7F6; color: #4527A0;">Rank 3</span>
+          <span class="tag" style="background: #E0F7FA; color: #00695C;">Rank 4</span>
+          <span class="tag" style="background: #ECEFF1; color: #455A64;">Rank 5</span>
+        </div>
+      </div>
+      <div class="card" style="flex: 1; border-left: 4px solid var(--green);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; margin-bottom: 8px;">Constraint 2</div>
+        <div class="card-title">Vertical</div>
+        <div class="card-text">Lower elevation installs first.<br>z_bin = floor(z / 3.0m)<br>Bottom-up construction sequence</div>
+      </div>
+      <div class="card" style="flex: 1; border-left: 4px solid var(--purple);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--purple); text-transform: uppercase; margin-bottom: 8px;">Constraint 3</div>
+        <div class="card-title">Adjacency Interference</div>
+        <div class="card-text">Adjacent objects of same class:<br>lower z goes first.<br>Prevents spatial conflicts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 33 KPIs -->
+  <div class="diagram-frame">
+    <div class="diagram-title">33 KPI System</div>
+    <div class="diagram-subtitle">Multi-level metrics: Object &rarr; Zone &rarr; Pipeline &rarr; Plant</div>
+
+    <div style="margin-top: 24px;">
+      <!-- Object Level -->
+      <div style="margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 10px;">
+          <span class="kpi-level" style="background: #FFF3E0; color: #E65100;">Object Level (4)</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag" style="background: #FFF3E0; color: #BF360C;">equipment_criticality_score</span>
+          <span class="tag" style="background: #FFF3E0; color: #BF360C;">maintenance_accessibility_index</span>
+          <span class="tag" style="background: #FFF3E0; color: #BF360C;">corrosion_risk_index</span>
+          <span class="tag" style="background: #FFF3E0; color: #BF360C;">is_isolation_valve</span>
+        </div>
+      </div>
+      <!-- Zone Level -->
+      <div style="margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 10px;">
+          <span class="kpi-level" style="background: #E8F5E9; color: #2E7D32;">Zone Level (7)</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_object_count</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_total_weight_kg</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_equipment_count</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_mean_corrosion_risk</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_mean_accessibility</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_critical_equipment_count</span>
+          <span class="tag" style="background: #E8F5E9; color: #1B5E20;">zone_shutdown_impact</span>
+        </div>
+      </div>
+      <!-- Pipeline Level -->
+      <div style="margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 10px;">
+          <span class="kpi-level" style="background: #E3F2FD; color: #1565C0;">Pipeline Level (8)</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_object_count</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_total_weight_kg</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_mean_pressure_kpa</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_mean_temperature_c</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_zone_span</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_valve_count</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_isolation_sections</span>
+          <span class="tag" style="background: #E3F2FD; color: #0D47A1;">pipeline_corrosion_risk</span>
+        </div>
+      </div>
+      <!-- Plant Level -->
+      <div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--purple); margin-bottom: 10px;">
+          <span class="kpi-level" style="background: #EDE7F6; color: #4527A0;">Plant Level (8)</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">total_objects</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">total_physical_objects</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">total_weight_tonnes</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">critical_chain_length</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">max_parallel_zones</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">high_criticality_equipment</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">high_corrosion_pipelines</span>
+          <span class="tag" style="background: #EDE7F6; color: #311B92;">low_accessibility_zones</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 6: LLM Agent Architecture -->
+<!-- ============================================================ -->
+<section class="section" id="llm">
+  <div class="section-label">Page 6</div>
+  <h2 class="section-title">LLM Agent Architecture</h2>
+  <p class="section-desc">ReAct pattern with 5 retrieval tools orchestrated by LangGraph</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">GraphRAG Multi-Tool Agent</div>
+    <div class="diagram-subtitle">Decision D12: LangChain ReAct agent (not custom orchestration) | D13: 5 retrieval tools</div>
+
+    <!-- Agent flow -->
+    <div style="display: flex; align-items: center; gap: 24px; margin-top: 24px; margin-bottom: 40px;">
+      <div style="background: var(--dark); color: white; padding: 20px 28px; border-radius: 16px; text-align: center; min-width: 140px;">
+        <div style="font-size: 20px; margin-bottom: 4px;">&#x1F464;</div>
+        <div style="font-size: 14px; font-weight: 600;">User Query</div>
+        <div style="font-size: 11px; color: #8B95A1;">Natural language</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div style="background: var(--blue); color: white; padding: 20px 28px; border-radius: 16px; text-align: center; min-width: 180px;">
+        <div style="font-size: 14px; font-weight: 700;">LangGraph Agent</div>
+        <div style="font-size: 12px; color: #B3D4FC; margin-top: 4px;">Gemini 2.5 Flash</div>
+        <div style="font-size: 11px; color: #B3D4FC;">ReAct: Reason + Act</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div style="background: var(--green); color: white; padding: 20px 28px; border-radius: 16px; text-align: center; min-width: 140px;">
+        <div style="font-size: 14px; font-weight: 700;">Tool Selection</div>
+        <div style="font-size: 12px; color: #A5D6A7;">5 tools available</div>
+      </div>
+      <div class="flow-arrow"><svg viewBox="0 0 28 14"><path d="M0 7h22M18 2l6 5-6 5" fill="none" stroke="#3182F6" stroke-width="2"/></svg></div>
+      <div style="background: var(--purple); color: white; padding: 20px 28px; border-radius: 16px; text-align: center; min-width: 140px;">
+        <div style="font-size: 14px; font-weight: 700;">Answer</div>
+        <div style="font-size: 12px; color: #CE93D8;">Synthesized result</div>
+      </div>
+    </div>
+
+    <!-- 5 Tools -->
+    <div style="font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 16px;">Retrieval Tools</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="tool-card">
+        <div class="tool-icon" style="background: var(--blue); color: white;">SQL</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">sql_query</div>
+          <div style="font-size: 12px; color: var(--gray);">Read-only SQL on bimkg.db<br>12,009 bim_objects + 220,346 bim_adjacency</div>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background: var(--orange); color: white;">FTS</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">text_search</div>
+          <div style="font-size: 12px; color: var(--gray);">FTS5 full-text search<br>display_name, sp3d_pipeline, system_path</div>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background: var(--green); color: white;">RDF</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">sparql_query</div>
+          <div style="font-size: 12px; color: var(--gray);">SPARQL on OWL TBox + ABox<br>rdflib in-memory graph</div>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background: var(--purple); color: white;">Neo</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">cypher_query</div>
+          <div style="font-size: 12px; color: var(--gray);">Cypher on Neo4j<br>bolt connection, 261K edges</div>
+        </div>
+      </div>
+      <div class="tool-card" style="grid-column: span 2;">
+        <div class="tool-icon" style="background: var(--dark-gray); color: white;">KPI</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">kpi_summary</div>
+          <div style="font-size: 12px; color: var(--gray);">Pre-computed KPIs for zone/pipeline/plant level &mdash; 33 metrics across 4 hierarchy levels</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 7: REST API -->
+<!-- ============================================================ -->
+<section class="section" id="api">
+  <div class="section-label">Page 7</div>
+  <h2 class="section-title">REST API Endpoints</h2>
+  <p class="section-desc">FastAPI backend with 12 endpoints, Swagger docs, and LLM query integration</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">API Surface (Phase 6)</div>
+    <div class="diagram-subtitle">FastAPI + Uvicorn | Swagger at /docs</div>
+
+    <div style="margin-top: 24px;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Object Queries</div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/objects</span>
+        <span class="endpoint-desc">List BIM objects with optional filters</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/objects/{object_id}</span>
+        <span class="endpoint-desc">Get single object by ID</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/objects/{object_id}/neighbors</span>
+        <span class="endpoint-desc">Get adjacent objects</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/search</span>
+        <span class="endpoint-desc">Full-text search</span>
+      </div>
+
+      <div style="font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">Graph Queries</div>
+      <div class="endpoint-row">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/graph/cypher</span>
+        <span class="endpoint-desc">Execute Cypher query</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/graph/pipelines</span>
+        <span class="endpoint-desc">List pipelines with object counts</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/graph/classes</span>
+        <span class="endpoint-desc">Get class distribution</span>
+      </div>
+
+      <div style="font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">Ontology & KPI</div>
+      <div class="endpoint-row">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/ontology/sparql</span>
+        <span class="endpoint-desc">Execute SPARQL query</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/kpi/plant</span>
+        <span class="endpoint-desc">Plant-level KPI summary</span>
+      </div>
+      <div class="endpoint-row">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/kpi/pipeline/{name}</span>
+        <span class="endpoint-desc">Pipeline-level KPI</span>
+      </div>
+
+      <div style="font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">LLM Integration</div>
+      <div class="endpoint-row" style="border: 2px solid var(--blue);">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/llm/query</span>
+        <span class="endpoint-desc">Natural language query via LangGraph agent</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 8: Data Quality Findings -->
+<!-- ============================================================ -->
+<section class="section" id="findings">
+  <div class="section-label">Page 8</div>
+  <h2 class="section-title">Data Quality Findings</h2>
+  <p class="section-desc">3 major findings discovered, analyzed, and resolved through systematic 6-step archive process</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">Issue Discovery &amp; Resolution</div>
+    <div class="diagram-subtitle">All findings archived with audit script + CSV evidence + matplotlib figures</div>
+
+    <div class="grid-3" style="margin-top: 24px;">
+      <div class="finding-card finding-resolved">
+        <div class="finding-badge">Resolved</div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 4px;">M1</div>
+        <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 8px;">Piping Misclassification</div>
+        <div style="font-size: 12px; color: var(--gray); line-height: 1.6; margin-bottom: 12px;">
+          Substring matching bug: "pipe rack" classified as Piping instead of Structure.
+        </div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--green);">
+          Fix: Negative lookahead regex + classification_confidence layer
+        </div>
+        <div style="font-size: 11px; color: var(--gray); margin-top: 8px;">DXTnavis PR #3 applied</div>
+      </div>
+      <div class="finding-card finding-resolved">
+        <div class="finding-badge">Resolved</div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 4px;">M2</div>
+        <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 8px;">Adjacency Quality</div>
+        <div style="font-size: 12px; color: var(--gray); line-height: 1.6; margin-bottom: 12px;">
+          AABB-based adjacency includes false positives. 220K edges too noisy for analytics.
+        </div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--green);">
+          Fix: 3-tier classification (strong 13K / medium 87K / all 220K)
+        </div>
+        <div style="font-size: 11px; color: var(--gray); margin-top: 8px;">Critical path: 17&rarr;53&rarr;88 steps</div>
+      </div>
+      <div class="finding-card finding-resolved">
+        <div class="finding-badge">Resolved</div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 4px;">M3</div>
+        <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 8px;">Parent Box Contamination</div>
+        <div style="font-size: 12px; color: var(--gray); line-height: 1.6; margin-bottom: 12px;">
+          448 hierarchy container objects inflated adjacency counts and skewed zone detection.
+        </div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--green);">
+          Fix: is_parent_box flag + graph filtering
+        </div>
+        <div style="font-size: 11px; color: var(--gray); margin-top: 8px;">Graph edges reduced significantly</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6-step process -->
+  <div class="diagram-frame">
+    <div class="diagram-title">Finding Archive Process</div>
+    <div class="diagram-subtitle">6-step systematic archival for every data quality issue</div>
+
+    <div style="display: flex; gap: 12px; margin-top: 24px;">
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">1</div>
+        <div style="font-size: 12px; font-weight: 600;">Discover</div>
+        <div style="font-size: 11px; color: var(--gray);">Identify anomaly</div>
+      </div>
+      <div style="display: flex; align-items: center; color: var(--blue);">&rarr;</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">2</div>
+        <div style="font-size: 12px; font-weight: 600;">Audit Script</div>
+        <div style="font-size: 11px; color: var(--gray);">Reproduce with code</div>
+      </div>
+      <div style="display: flex; align-items: center; color: var(--blue);">&rarr;</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">3</div>
+        <div style="font-size: 12px; font-weight: 600;">CSV Evidence</div>
+        <div style="font-size: 11px; color: var(--gray);">Export affected rows</div>
+      </div>
+      <div style="display: flex; align-items: center; color: var(--blue);">&rarr;</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">4</div>
+        <div style="font-size: 12px; font-weight: 600;">Visualize</div>
+        <div style="font-size: 11px; color: var(--gray);">matplotlib PNG</div>
+      </div>
+      <div style="display: flex; align-items: center; color: var(--blue);">&rarr;</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">5</div>
+        <div style="font-size: 12px; font-weight: 600;">README</div>
+        <div style="font-size: 11px; color: var(--gray);">5-section doc</div>
+      </div>
+      <div style="display: flex; align-items: center; color: var(--blue);">&rarr;</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--green); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 8px;">6</div>
+        <div style="font-size: 12px; font-weight: 600;">Commit</div>
+        <div style="font-size: 11px; color: var(--gray);">Git archive</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 9: Technology Stack -->
+<!-- ============================================================ -->
+<section class="section" id="tech">
+  <div class="section-label">Page 9</div>
+  <h2 class="section-title">Technology Stack</h2>
+  <p class="section-desc">End-to-end Python ecosystem with semantic web, graph database, and LLM integration</p>
+
+  <div class="diagram-frame">
+    <div class="diagram-title">Full Stack Overview</div>
+    <div class="diagram-subtitle">3,878 LOC (src) + 3,554 LOC (notebooks) + 336 tests</div>
+
+    <div style="margin-top: 24px;">
+      <div class="tech-group">
+        <div class="tech-group-title">Data Processing</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--blue);"></span>pandas</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--blue);"></span>pyarrow</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--blue);"></span>openpyxl</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--blue);"></span>sqlite3</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--blue);"></span>numpy</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Semantic Web / Ontology</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--green);"></span>rdflib</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--green);"></span>owlrl</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--green);"></span>pyshacl</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Graph Analytics</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--purple);"></span>networkx</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--purple);"></span>Neo4j 5</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--purple);"></span>neo4j (driver)</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">LLM / AI</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--orange);"></span>langchain_core</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--orange);"></span>langgraph</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--orange);"></span>langchain_google_genai</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--orange);"></span>Gemini 2.5 Flash</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">API / Backend</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--teal);"></span>FastAPI</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--teal);"></span>uvicorn</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--teal);"></span>pydantic</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Visualization</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--pink);"></span>matplotlib</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--pink);"></span>Jupyter Notebooks (5)</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Platform / Deployment</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--dark-gray);"></span>Palantir Foundry</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--dark-gray);"></span>Power BI</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--dark-gray);"></span>Docker (Neo4j)</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Testing / Quality</div>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--red);"></span>pytest</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--red);"></span>pytest-cov</span>
+        <span class="tech-item"><span class="tech-dot" style="background: var(--red);"></span>336 tests / 23 files</span>
+      </div>
+
+      <div class="tech-group">
+        <div class="tech-group-title">Build / Environment</div>
+        <span class="tech-item"><span class="tech-dot" style="background: #795548;"></span>uv</span>
+        <span class="tech-item"><span class="tech-dot" style="background: #795548;"></span>pyproject.toml</span>
+        <span class="tech-item"><span class="tech-dot" style="background: #795548;"></span>Makefile</span>
+        <span class="tech-item"><span class="tech-dot" style="background: #795548;"></span>Python 3.11+</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project metrics summary -->
+  <div class="diagram-frame" style="background: linear-gradient(135deg, #191F28 0%, #333D4B 100%); color: white;">
+    <div style="font-size: 22px; font-weight: 700; margin-bottom: 24px;">Project Summary</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--blue);">12,009</div>
+        <div style="font-size: 13px; color: #8B95A1;">BIM Objects</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--green);">477K</div>
+        <div style="font-size: 13px; color: #8B95A1;">OWL Triples</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--purple);">261K</div>
+        <div style="font-size: 13px; color: #8B95A1;">Neo4j Edges</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--orange);">336</div>
+        <div style="font-size: 13px; color: #8B95A1;">Tests Passing</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--cyan);">33</div>
+        <div style="font-size: 13px; color: #8B95A1;">KPIs</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--amber);">144</div>
+        <div style="font-size: 13px; color: #8B95A1;">Louvain Zones</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--teal);">12</div>
+        <div style="font-size: 13px; color: #8B95A1;">API Endpoints</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 36px; font-weight: 800; color: var(--pink);">10</div>
+        <div style="font-size: 13px; color: #8B95A1;">Foundry Datasets</div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 32px; font-size: 13px; color: #8B95A1;">
+      Phase 0&ndash;6 Complete &nbsp;|&nbsp; DXTnavis v1.4.0 &nbsp;|&nbsp; 7 Notebooks &nbsp;|&nbsp; 3,878 LOC
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Smooth scroll + active nav highlighting
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.getAttribute('href').slice(1);
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section');
+  const links = document.querySelectorAll('.nav-links a');
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>

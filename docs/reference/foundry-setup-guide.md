@@ -141,7 +141,38 @@ Foundry 좌측 → Ontology → Ontology Manager (또는 데이터셋 → Create
 - BelongsToPipeline: bim_belongs_to_pipeline (object_id → pipeline_name)
 - InGroup: bim_in_group (object_id → group_id)
 
-## 5. Dataset RIDs
+## 5. 스크린샷 부록
+
+작업 중 마주친 화면들. 각 캡처는 `docs/reference/foundry-setup-figures/` 에 저장.
+
+### 5.1 Step 1 — Datasource backing 선택 ✅
+
+![step1-datasource-existing-piping](foundry-setup-figures/step1-datasource-existing-piping.png)
+
+`Use existing datasource` 선택 → `/Datayoon-09825c/BIM-KG/piping` (또는 다른 dataset)
+지정. 이 단계가 끝나야 Step 3 의 property 드롭다운에 컬럼이 나타남.
+
+### 5.2 Step 3 — Source 가 "User input / actions" 인 잘못된 상태 ❌
+
+![step3-source-user-input-bug](foundry-setup-figures/step3-source-user-input-bug.png)
+
+Source 컬럼이 기본값 `User input / actions` 로 되어있어 dataset 의 컬럼이
+보이지 않는 상태. Property 드롭다운에는 `Unique ID` (system-generated) 만 표시됨.
+**해결**: Source 를 `Datasource column` (또는 dataset 이름) 으로 변경.
+
+### 5.3 Step 3 — Properties 추가했지만 Primary key 미선택 ❌
+
+![step3-properties-pk-not-set](foundry-setup-figures/step3-properties-pk-not-set.png)
+
+Property 행을 두 개 추가했지만 Source 가 여전히 `User input / actions` 라
+실제 dataset 컬럼이 매핑되지 않음. Primary key 와 Title 드롭다운이 빨간
+border 로 미설정 표시. **해결**: 5.2 와 동일 — Source 를 `Datasource column`
+으로 변경 → property 가 219개 컬럼으로 채워짐 → `object_id` PK, `display_name`
+Title 선택 가능.
+
+---
+
+## 6. Dataset RIDs
 
 ```
 bim_piping:               ri.foundry.main.dataset.2388ddc2-3c83-4ef3-a7df-fef11024bb4e

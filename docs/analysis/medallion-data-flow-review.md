@@ -7,6 +7,10 @@
 
 ## 현재 다이어그램 (Figma)
 
+수정 전 baseline 스크린샷:
+
+![Medallion Data Flow — before fix](medallion-data-flow-figures/before-fix-2026-04-14.png)
+
 ```
 Bronze Layer          Silver Layer              Gold Layer              Output
 ─────────────       ──────────────           ──────────────         ──────────────
@@ -152,6 +156,25 @@ R11 후보 규칙:
 - 프로젝트에 architecture 다이어그램이 있으면, **코드 변경 시 다이어그램 갱신 체크** 포함
 - 다이어그램은 **소스 (Figma/draw.io)** 와 **렌더링 (PNG)** 을 모두 보관
 - 매 Phase 완료 시 다이어그램 검토를 task log 체크리스트에 포함
+
+---
+
+## 적용 완료 (2026-04-14)
+
+Figma MCP 플러그인을 통해 위 5개 fix 를 보드에 직접 반영 완료:
+
+| Fix | 적용 방법 | Figma 노드 ID |
+|-----|-----------|--------------|
+| 1. Unit conversion 연결 | `AllProperties.csv (1:3) → Unit conversion (1:16)` connector 추가 | `8:77` |
+| 2. Bronze 3개 추가 | Bronze section (1:12) 을 320×1200 으로 확장 + ShapeWithText 3개 | geometry=`8:81`, validation=`8:85`, connected_groups=`8:89` |
+| 3. Gold cols 라벨 | `Enriched Parquet (1:26)` 텍스트 "218 cols" → "219 cols" | `1:26` |
+| 4. Analytics layer | 신규 section "Analytics Layer" (10:105) + 4 노드 + Enriched Parquet 에서 4 화살표 | SHACL=`10:106`, Louvain=`10:110`, DAG=`10:114`, KPIs=`10:118` |
+| 5. Output 추가 | Output section (1:51) 을 320×1200 으로 확장 + LLM Agent / FastAPI | FastAPI=`9:95`, LLM Agent=`9:99` |
+| 6. Analytics→Output 흐름 | 7개 화살표 (SHACL→OWL, Louvain/DAG→Neo4j, KPIs→PowerBI/Foundry/FastAPI/LLM) | `11:125`–`11:149` |
+
+외곽 section (1:2) 은 2592×945 → 3300×1500 으로 확장.
+
+**보드 URL**: <https://www.figma.com/board/NE51FDJ9hFzOPJP5qgBxTU/Medallion-Data-Flow>
 
 ---
 

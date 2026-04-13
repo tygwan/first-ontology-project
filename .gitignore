@@ -35,6 +35,9 @@ ENV/
 *.swo
 *~
 
+# MCP config (contains API tokens)
+.mcp.json
+
 # OS
 .DS_Store
 Thumbs.db
@@ -64,3 +67,6 @@ htmlcov/
 # Logs
 *.log
 logs/
+
+# Temp working dir (캡처는 docs/reference/* 또는 docs/analysis/* 로 이동시킴)
+/temp/
