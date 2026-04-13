@@ -158,6 +158,10 @@
              ├── ydata-profiling (Gold 219 cols, 270 quality alerts)
              ├── Warehouse catalog (SQLite 7 tables, 62.9 MB)
              └── Lineage impact analysis (24 datasets, downstream/upstream maps)
+             dev-standards v0.3.0 (R11 Portfolio Writing 추가)
+             ├── R11 = first MAY 규칙 (PAAR + 2-part narrative + Visual Asset)
+             ├── CLAUDE.md bump (0.2.0 → 0.3.0)
+             └── R11 Portfolio gap analysis 작성 (Phase A/B/C 적용 계획)
 ```
 
 ### Test count progression
@@ -481,6 +485,7 @@ BIMEntity
 | **Palantir 건설 인사이트** | [`docs/analysis/palantir-construction-insights.md`](analysis/palantir-construction-insights.md) |
 | **Palantir 온톨로지 분석** | [`docs/analysis/palantir-ontology-for-construction.md`](analysis/palantir-ontology-for-construction.md) |
 | **🎨 시각화 자료 통합 인덱스** | [`docs/VISUALIZATIONS.md`](VISUALIZATIONS.md) ← **모든 다이어그램/그래프/PNG 한눈에** |
+| **R11 Portfolio gap analysis** | [`docs/analysis/r11-portfolio-gap-analysis.md`](analysis/r11-portfolio-gap-analysis.md) |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
 | **Medallion 다이어그램 검토** | [`docs/analysis/medallion-data-flow-review.md`](analysis/medallion-data-flow-review.md) |
