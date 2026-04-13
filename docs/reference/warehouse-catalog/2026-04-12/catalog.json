@@ -1,0 +1,3484 @@
+{
+  "snapshot": "2026-04-12",
+  "database": "data/enriched/2026-04-12/bimkg.db",
+  "storage": {
+    "file_size_bytes": 65970176,
+    "page_size": 4096,
+    "page_count": 16106,
+    "freelist_count": 137,
+    "journal_mode": "delete",
+    "auto_vacuum": 0,
+    "user_version": 0,
+    "encoding": "UTF-8"
+  },
+  "tables": [
+    {
+      "name": "bim_adjacency",
+      "row_count": 220346,
+      "column_count": 10,
+      "is_fts_shadow": false,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "source_object_id",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 1,
+          "name": "target_object_id",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 2,
+          "name": "source_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 3,
+          "name": "target_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 4,
+          "name": "distance_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 5,
+          "name": "overlap_volume_m3",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 6,
+          "name": "relation_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 7,
+          "name": "source_category",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 8,
+          "name": "target_category",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 9,
+          "name": "tolerance_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {
+        "source_object_id": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8656,
+          "distinct_pct": 3.93
+        },
+        "target_object_id": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8656,
+          "distinct_pct": 3.93
+        },
+        "source_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5477,
+          "distinct_pct": 2.49
+        },
+        "target_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5477,
+          "distinct_pct": 2.49
+        },
+        "distance_m": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3116,
+          "distinct_pct": 1.41
+        },
+        "overlap_volume_m3": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 14497,
+          "distinct_pct": 6.58
+        },
+        "relation_type": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3,
+          "distinct_pct": 0.0
+        },
+        "source_category": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 582,
+          "distinct_pct": 0.26
+        },
+        "target_category": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 582,
+          "distinct_pct": 0.26
+        },
+        "tolerance_m": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5,
+          "distinct_pct": 0.0
+        }
+      },
+      "sample_queries": [
+        "SELECT source_object_id, COUNT(*) AS degree FROM bim_adjacency   GROUP BY source_object_id ORDER BY degree DESC LIMIT 10;",
+        "SELECT relation_type, COUNT(*) FROM bim_adjacency GROUP BY relation_type;"
+      ]
+    },
+    {
+      "name": "bim_objects",
+      "row_count": 12009,
+      "column_count": 219,
+      "is_fts_shadow": false,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "class_raw",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 1,
+          "name": "object_id",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 2,
+          "name": "display_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 3,
+          "name": "system_path",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 4,
+          "name": "level",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 5,
+          "name": "sp3d_approval_status",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 6,
+          "name": "sp3d_area",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 7,
+          "name": "sp3d_bend_radius",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 8,
+          "name": "sp3d_bom_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 9,
+          "name": "sp3d_cardinal_point",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 10,
+          "name": "sp3d_commodity_code",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 11,
+          "name": "sp3d_commodity_option",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 12,
+          "name": "sp3d_composition",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 13,
+          "name": "sp3d_construction_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 14,
+          "name": "sp3d_constuction_type",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 15,
+          "name": "sp3d_cross_section",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 16,
+          "name": "sp3d_cut_length",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 17,
+          "name": "sp3d_date_created",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 18,
+          "name": "sp3d_date_last_modified",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 19,
+          "name": "sp3d_depth",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 20,
+          "name": "sp3d_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 21,
+          "name": "sp3d_design_max_pressure",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 22,
+          "name": "sp3d_design_max_temperature",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 23,
+          "name": "sp3d_diameter",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 24,
+          "name": "sp3d_dry_cg",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 25,
+          "name": "sp3d_dry_weight",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 26,
+          "name": "sp3d_dry_cgx",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 27,
+          "name": "sp3d_dry_cgy",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 28,
+          "name": "sp3d_dry_cgz",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 29,
+          "name": "sp3d_encasement",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 30,
+          "name": "sp3d_end_prep",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 31,
+          "name": "sp3d_end_standard",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 32,
+          "name": "sp3d_eqp_type_0",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 33,
+          "name": "sp3d_eqp_type_1",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 34,
+          "name": "sp3d_eqp_type_2",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 35,
+          "name": "sp3d_eqp_type_3",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 36,
+          "name": "sp3d_equipment_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 37,
+          "name": "sp3d_fire_rating",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 38,
+          "name": "sp3d_fireproofing_label",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 39,
+          "name": "sp3d_flow_direction",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 40,
+          "name": "sp3d_height",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 41,
+          "name": "sp3d_insulation_material",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 42,
+          "name": "sp3d_insulation_purpose",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 43,
+          "name": "sp3d_insulation_thickness",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 44,
+          "name": "sp3d_is_curved",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 45,
+          "name": "sp3d_iso_sheet_no",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 46,
+          "name": "sp3d_length",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 47,
+          "name": "sp3d_location",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 48,
+          "name": "sp3d_manufacturer",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 49,
+          "name": "sp3d_material",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 50,
+          "name": "sp3d_material_grade",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 51,
+          "name": "sp3d_material_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 52,
+          "name": "sp3d_material_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 53,
+          "name": "sp3d_max_recommended_pressure_loss",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 54,
+          "name": "sp3d_max_recommended_velocity",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 55,
+          "name": "sp3d_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 56,
+          "name": "sp3d_nesting_date",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 57,
+          "name": "sp3d_net_surface_area",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 58,
+          "name": "sp3d_net_volume",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 59,
+          "name": "sp3d_npd",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 60,
+          "name": "sp3d_part_number",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 61,
+          "name": "sp3d_percent_fill",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 62,
+          "name": "sp3d_permission_group_id",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 63,
+          "name": "sp3d_pipeline",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 64,
+          "name": "sp3d_pipe_run",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 65,
+          "name": "sp3d_port_no",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 66,
+          "name": "sp3d_rating",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 67,
+          "name": "sp3d_reference",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 68,
+          "name": "sp3d_reporting_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 69,
+          "name": "sp3d_run_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 70,
+          "name": "sp3d_section_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 71,
+          "name": "sp3d_shape",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 72,
+          "name": "sp3d_short_code",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 73,
+          "name": "sp3d_size",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 74,
+          "name": "sp3d_sp3d_moniker",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 75,
+          "name": "sp3d_spec_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 76,
+          "name": "sp3d_specification",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 77,
+          "name": "sp3d_specification_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 78,
+          "name": "sp3d_spool",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 79,
+          "name": "sp3d_status",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 80,
+          "name": "sp3d_stress_system_no",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 81,
+          "name": "sp3d_support_assembly",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 82,
+          "name": "sp3d_support_dry_weight",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 83,
+          "name": "sp3d_support_location",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 84,
+          "name": "sp3d_surface_area",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 85,
+          "name": "sp3d_system_path",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 86,
+          "name": "sp3d_thickening_technique",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 87,
+          "name": "sp3d_thickness",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 88,
+          "name": "sp3d_tightness",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 89,
+          "name": "sp3d_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 90,
+          "name": "sp3d_user_created",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 91,
+          "name": "sp3d_user_last_modified",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 92,
+          "name": "sp3d_volume",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 93,
+          "name": "sp3d_weight",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 94,
+          "name": "sp3d_wet_weight",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 95,
+          "name": "sp3d_wet_cgx",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 96,
+          "name": "sp3d_wet_cgy",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 97,
+          "name": "sp3d_wet_cgz",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 98,
+          "name": "sp3d_width",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 99,
+          "name": "nav_material_shininess",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 100,
+          "name": "nav_material_specular_g",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 101,
+          "name": "nav_material_specular_r",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 102,
+          "name": "nav_material_specular_b",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 103,
+          "name": "nav_material_emissive_g",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 104,
+          "name": "nav_material_emissive_r",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 105,
+          "name": "nav_material_emissive_b",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 106,
+          "name": "nav_material_diffuse_g",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 107,
+          "name": "nav_material_diffuse_r",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 108,
+          "name": "nav_material_diffuse_b",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 109,
+          "name": "nav_material_ambient_g",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 110,
+          "name": "nav_material_ambient_r",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 111,
+          "name": "nav_material_ambient_b",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 112,
+          "name": "nav_material_transparency",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 113,
+          "name": "nav_item_guid",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 114,
+          "name": "nav_item_internal_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 115,
+          "name": "nav_item_unit",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 116,
+          "name": "nav_item_layer",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 117,
+          "name": "nav_item_source_file",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 118,
+          "name": "nav_item_source_file_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 119,
+          "name": "nav_item_hidden",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 120,
+          "name": "nav_item_icon",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 121,
+          "name": "nav_item_type",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 122,
+          "name": "nav_item_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 123,
+          "name": "nav_item_author",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 124,
+          "name": "nav_item_material",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 125,
+          "name": "nav_item_file_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 126,
+          "name": "nav_item_required",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 127,
+          "name": "nav_geom_primitives",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 128,
+          "name": "nav_geom_text",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 129,
+          "name": "nav_geom_triangles",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 130,
+          "name": "nav_geom_lines",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 131,
+          "name": "nav_geom_solids",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 132,
+          "name": "nav_geom_snap_points",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 133,
+          "name": "nav_geom_points",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 134,
+          "name": "nav_geom_fragments",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 135,
+          "name": "parent_id",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 136,
+          "name": "nav_class_display_name",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 137,
+          "name": "level_val",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 138,
+          "name": "is_leaf",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 139,
+          "name": "child_count",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 140,
+          "name": "has_geometry",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 141,
+          "name": "is_hidden",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 142,
+          "name": "has_geometry_property",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 143,
+          "name": "geop_primitives",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 144,
+          "name": "geop_has_triangles",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 145,
+          "name": "geop_has_lines",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 146,
+          "name": "geop_solid",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 147,
+          "name": "geop_has_text",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 148,
+          "name": "geop_has_snap_points",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 149,
+          "name": "geop_has_points",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 150,
+          "name": "geop_fragments",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 151,
+          "name": "has_bbox",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 152,
+          "name": "bbox_volume_val",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 153,
+          "name": "container_status",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 154,
+          "name": "tess_result",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 155,
+          "name": "tess_failure_reason",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 156,
+          "name": "mesh_quality",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 157,
+          "name": "vertex_count",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 158,
+          "name": "triangle_count",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 159,
+          "name": "adjacency_count",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 160,
+          "name": "group_id",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 161,
+          "name": "glb_exists",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 162,
+          "name": "glb_size_bytes",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 163,
+          "name": "has_mesh",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 164,
+          "name": "has_real_mesh",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 165,
+          "name": "verdict",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 166,
+          "name": "bbox_min_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 167,
+          "name": "bbox_min_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 168,
+          "name": "bbox_min_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 169,
+          "name": "bbox_max_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 170,
+          "name": "bbox_max_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 171,
+          "name": "bbox_max_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 172,
+          "name": "centroid_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 173,
+          "name": "centroid_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 174,
+          "name": "centroid_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 175,
+          "name": "bbox_volume_m3",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 176,
+          "name": "has_mesh_geom",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 177,
+          "name": "mesh_uri",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 178,
+          "name": "mesh_quality_geom",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 179,
+          "name": "vertex_count_geom",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 180,
+          "name": "triangle_count_geom",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 181,
+          "name": "group_size",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 182,
+          "name": "group_edge_count",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 183,
+          "name": "group_total_volume",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 184,
+          "name": "group_dominant_category",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 185,
+          "name": "group_bbox_min_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 186,
+          "name": "group_bbox_min_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 187,
+          "name": "group_bbox_min_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 188,
+          "name": "group_bbox_max_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 189,
+          "name": "group_bbox_max_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 190,
+          "name": "group_bbox_max_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 191,
+          "name": "group_centroid_x",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 192,
+          "name": "group_centroid_y",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 193,
+          "name": "group_centroid_z",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 194,
+          "name": "is_container",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 195,
+          "name": "is_bbox_placeholder",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 196,
+          "name": "is_analysis_volume",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 197,
+          "name": "has_own_geometry",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 198,
+          "name": "is_parent_box",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 199,
+          "name": "graph_participant",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 200,
+          "name": "dry_weight_kg",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 201,
+          "name": "wet_weight_kg",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 202,
+          "name": "length_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 203,
+          "name": "width_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 204,
+          "name": "depth_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 205,
+          "name": "height_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 206,
+          "name": "bend_radius_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 207,
+          "name": "design_pressure_kpa",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 208,
+          "name": "design_temperature_c",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 209,
+          "name": "npd_end1_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 210,
+          "name": "npd_end2_m",
+          "type": "REAL",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 211,
+          "name": "original_class",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 212,
+          "name": "refined_class",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 213,
+          "name": "refining_rule",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 214,
+          "name": "refining_rule_version",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 215,
+          "name": "ingested_at_utc",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 216,
+          "name": "title",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 217,
+          "name": "classification_confidence",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 218,
+          "name": "classification_confidence_reason",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {
+        "class_raw": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "object_id": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 12009,
+          "distinct_pct": 100.0
+        },
+        "display_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8365,
+          "distinct_pct": 69.66
+        },
+        "system_path": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 11077,
+          "distinct_pct": 92.24
+        },
+        "level": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 10,
+          "distinct_pct": 0.08
+        },
+        "sp3d_approval_status": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_area": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 7,
+          "distinct_pct": 0.06
+        },
+        "sp3d_bend_radius": {
+          "null_count": 11967,
+          "null_pct": 99.65,
+          "distinct_count": 14,
+          "distinct_pct": 0.12
+        },
+        "sp3d_bom_description": {
+          "null_count": 11302,
+          "null_pct": 94.11,
+          "distinct_count": 112,
+          "distinct_pct": 0.93
+        },
+        "sp3d_cardinal_point": {
+          "null_count": 10445,
+          "null_pct": 86.98,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "sp3d_commodity_code": {
+          "null_count": 8917,
+          "null_pct": 74.25,
+          "distinct_count": 83,
+          "distinct_pct": 0.69
+        },
+        "sp3d_commodity_option": {
+          "null_count": 9100,
+          "null_pct": 75.78,
+          "distinct_count": 8,
+          "distinct_pct": 0.07
+        },
+        "sp3d_composition": {
+          "null_count": 11929,
+          "null_pct": 99.33,
+          "distinct_count": 9,
+          "distinct_pct": 0.07
+        },
+        "sp3d_construction_type": {
+          "null_count": 8521,
+          "null_pct": 70.96,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_constuction_type": {
+          "null_count": 12009,
+          "null_pct": 100.0,
+          "distinct_count": 0,
+          "distinct_pct": 0.0
+        },
+        "sp3d_cross_section": {
+          "null_count": 11990,
+          "null_pct": 99.84,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "sp3d_cut_length": {
+          "null_count": 9205,
+          "null_pct": 76.65,
+          "distinct_count": 1096,
+          "distinct_pct": 9.13
+        },
+        "sp3d_date_created": {
+          "null_count": 4626,
+          "null_pct": 38.52,
+          "distinct_count": 2335,
+          "distinct_pct": 19.44
+        },
+        "sp3d_date_last_modified": {
+          "null_count": 4626,
+          "null_pct": 38.52,
+          "distinct_count": 1744,
+          "distinct_pct": 14.52
+        },
+        "sp3d_depth": {
+          "null_count": 10445,
+          "null_pct": 86.98,
+          "distinct_count": 26,
+          "distinct_pct": 0.22
+        },
+        "sp3d_description": {
+          "null_count": 8769,
+          "null_pct": 73.02,
+          "distinct_count": 130,
+          "distinct_pct": 1.08
+        },
+        "sp3d_design_max_pressure": {
+          "null_count": 9653,
+          "null_pct": 80.38,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        },
+        "sp3d_design_max_temperature": {
+          "null_count": 9653,
+          "null_pct": 80.38,
+          "distinct_count": 9,
+          "distinct_pct": 0.07
+        },
+        "sp3d_diameter": {
+          "null_count": 11973,
+          "null_pct": 99.7,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        },
+        "sp3d_dry_cg": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 48,
+          "distinct_pct": 0.4
+        },
+        "sp3d_dry_weight": {
+          "null_count": 6874,
+          "null_pct": 57.24,
+          "distinct_count": 1557,
+          "distinct_pct": 12.97
+        },
+        "sp3d_dry_cgx": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 88,
+          "distinct_pct": 0.73
+        },
+        "sp3d_dry_cgy": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 61,
+          "distinct_pct": 0.51
+        },
+        "sp3d_dry_cgz": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 21,
+          "distinct_pct": 0.17
+        },
+        "sp3d_encasement": {
+          "null_count": 11282,
+          "null_pct": 93.95,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "sp3d_end_prep": {
+          "null_count": 11502,
+          "null_pct": 95.78,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "sp3d_end_standard": {
+          "null_count": 11502,
+          "null_pct": 95.78,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_eqp_type_0": {
+          "null_count": 11856,
+          "null_pct": 98.73,
+          "distinct_count": 7,
+          "distinct_pct": 0.06
+        },
+        "sp3d_eqp_type_1": {
+          "null_count": 11857,
+          "null_pct": 98.73,
+          "distinct_count": 14,
+          "distinct_pct": 0.12
+        },
+        "sp3d_eqp_type_2": {
+          "null_count": 11876,
+          "null_pct": 98.89,
+          "distinct_count": 20,
+          "distinct_pct": 0.17
+        },
+        "sp3d_eqp_type_3": {
+          "null_count": 11907,
+          "null_pct": 99.15,
+          "distinct_count": 9,
+          "distinct_pct": 0.07
+        },
+        "sp3d_equipment_name": {
+          "null_count": 11502,
+          "null_pct": 95.78,
+          "distinct_count": 110,
+          "distinct_pct": 0.92
+        },
+        "sp3d_fire_rating": {
+          "null_count": 11929,
+          "null_pct": 99.33,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_fireproofing_label": {
+          "null_count": 11282,
+          "null_pct": 93.95,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_flow_direction": {
+          "null_count": 8576,
+          "null_pct": 71.41,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "sp3d_height": {
+          "null_count": 11964,
+          "null_pct": 99.63,
+          "distinct_count": 32,
+          "distinct_pct": 0.27
+        },
+        "sp3d_insulation_material": {
+          "null_count": 11816,
+          "null_pct": 98.39,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_insulation_purpose": {
+          "null_count": 11846,
+          "null_pct": 98.64,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_insulation_thickness": {
+          "null_count": 11816,
+          "null_pct": 98.39,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_is_curved": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_iso_sheet_no": {
+          "null_count": 12009,
+          "null_pct": 100.0,
+          "distinct_count": 0,
+          "distinct_pct": 0.0
+        },
+        "sp3d_length": {
+          "null_count": 10319,
+          "null_pct": 85.93,
+          "distinct_count": 1129,
+          "distinct_pct": 9.4
+        },
+        "sp3d_location": {
+          "null_count": 6957,
+          "null_pct": 57.93,
+          "distinct_count": 4723,
+          "distinct_pct": 39.33
+        },
+        "sp3d_manufacturer": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_material": {
+          "null_count": 9602,
+          "null_pct": 79.96,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        },
+        "sp3d_material_grade": {
+          "null_count": 11687,
+          "null_pct": 97.32,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_material_name": {
+          "null_count": 11803,
+          "null_pct": 98.28,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_material_type": {
+          "null_count": 11940,
+          "null_pct": 99.43,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_max_recommended_pressure_loss": {
+          "null_count": 11940,
+          "null_pct": 99.43,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_max_recommended_velocity": {
+          "null_count": 11940,
+          "null_pct": 99.43,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_name": {
+          "null_count": 4119,
+          "null_pct": 34.3,
+          "distinct_count": 5738,
+          "distinct_pct": 47.78
+        },
+        "sp3d_nesting_date": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_net_surface_area": {
+          "null_count": 11752,
+          "null_pct": 97.86,
+          "distinct_count": 100,
+          "distinct_pct": 0.83
+        },
+        "sp3d_net_volume": {
+          "null_count": 11752,
+          "null_pct": 97.86,
+          "distinct_count": 92,
+          "distinct_pct": 0.77
+        },
+        "sp3d_npd": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 60,
+          "distinct_pct": 0.5
+        },
+        "sp3d_part_number": {
+          "null_count": 11641,
+          "null_pct": 96.94,
+          "distinct_count": 47,
+          "distinct_pct": 0.39
+        },
+        "sp3d_percent_fill": {
+          "null_count": 11941,
+          "null_pct": 99.43,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "sp3d_permission_group_id": {
+          "null_count": 4674,
+          "null_pct": 38.92,
+          "distinct_count": 8,
+          "distinct_pct": 0.07
+        },
+        "sp3d_pipeline": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 147,
+          "distinct_pct": 1.22
+        },
+        "sp3d_pipe_run": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 334,
+          "distinct_pct": 2.78
+        },
+        "sp3d_port_no": {
+          "null_count": 11502,
+          "null_pct": 95.78,
+          "distinct_count": 21,
+          "distinct_pct": 0.17
+        },
+        "sp3d_rating": {
+          "null_count": 11502,
+          "null_pct": 95.78,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        },
+        "sp3d_reference": {
+          "null_count": 10445,
+          "null_pct": 86.98,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_reporting_type": {
+          "null_count": 9075,
+          "null_pct": 75.57,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_run_name": {
+          "null_count": 11402,
+          "null_pct": 94.95,
+          "distinct_count": 229,
+          "distinct_pct": 1.91
+        },
+        "sp3d_section_name": {
+          "null_count": 10445,
+          "null_pct": 86.98,
+          "distinct_count": 54,
+          "distinct_pct": 0.45
+        },
+        "sp3d_shape": {
+          "null_count": 11765,
+          "null_pct": 97.97,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "sp3d_short_code": {
+          "null_count": 9309,
+          "null_pct": 77.52,
+          "distinct_count": 40,
+          "distinct_pct": 0.33
+        },
+        "sp3d_size": {
+          "null_count": 10978,
+          "null_pct": 91.41,
+          "distinct_count": 66,
+          "distinct_pct": 0.55
+        },
+        "sp3d_sp3d_moniker": {
+          "null_count": 4119,
+          "null_pct": 34.3,
+          "distinct_count": 7890,
+          "distinct_pct": 65.7
+        },
+        "sp3d_spec_name": {
+          "null_count": 11402,
+          "null_pct": 94.95,
+          "distinct_count": 10,
+          "distinct_pct": 0.08
+        },
+        "sp3d_specification": {
+          "null_count": 11282,
+          "null_pct": 93.95,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "sp3d_specification_description": {
+          "null_count": 11282,
+          "null_pct": 93.95,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "sp3d_spool": {
+          "null_count": 11992,
+          "null_pct": 99.86,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_status": {
+          "null_count": 4626,
+          "null_pct": 38.52,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "sp3d_stress_system_no": {
+          "null_count": 12009,
+          "null_pct": 100.0,
+          "distinct_count": 0,
+          "distinct_pct": 0.0
+        },
+        "sp3d_support_assembly": {
+          "null_count": 11294,
+          "null_pct": 94.05,
+          "distinct_count": 129,
+          "distinct_pct": 1.07
+        },
+        "sp3d_support_dry_weight": {
+          "null_count": 11640,
+          "null_pct": 96.93,
+          "distinct_count": 50,
+          "distinct_pct": 0.42
+        },
+        "sp3d_support_location": {
+          "null_count": 11294,
+          "null_pct": 94.05,
+          "distinct_count": 128,
+          "distinct_pct": 1.07
+        },
+        "sp3d_surface_area": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 73,
+          "distinct_pct": 0.61
+        },
+        "sp3d_system_path": {
+          "null_count": 4253,
+          "null_pct": 35.42,
+          "distinct_count": 3368,
+          "distinct_pct": 28.05
+        },
+        "sp3d_thickening_technique": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_thickness": {
+          "null_count": 11808,
+          "null_pct": 98.33,
+          "distinct_count": 8,
+          "distinct_pct": 0.07
+        },
+        "sp3d_tightness": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "sp3d_type": {
+          "null_count": 11432,
+          "null_pct": 95.2,
+          "distinct_count": 11,
+          "distinct_pct": 0.09
+        },
+        "sp3d_user_created": {
+          "null_count": 4674,
+          "null_pct": 38.92,
+          "distinct_count": 8,
+          "distinct_pct": 0.07
+        },
+        "sp3d_user_last_modified": {
+          "null_count": 4674,
+          "null_pct": 38.92,
+          "distinct_count": 11,
+          "distinct_pct": 0.09
+        },
+        "sp3d_volume": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 66,
+          "distinct_pct": 0.55
+        },
+        "sp3d_weight": {
+          "null_count": 11961,
+          "null_pct": 99.6,
+          "distinct_count": 8,
+          "distinct_pct": 0.07
+        },
+        "sp3d_wet_weight": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 67,
+          "distinct_pct": 0.56
+        },
+        "sp3d_wet_cgx": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 88,
+          "distinct_pct": 0.73
+        },
+        "sp3d_wet_cgy": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 61,
+          "distinct_pct": 0.51
+        },
+        "sp3d_wet_cgz": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 21,
+          "distinct_pct": 0.17
+        },
+        "sp3d_width": {
+          "null_count": 10237,
+          "null_pct": 85.24,
+          "distinct_count": 48,
+          "distinct_pct": 0.4
+        },
+        "nav_material_shininess": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_material_specular_g": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 15,
+          "distinct_pct": 0.12
+        },
+        "nav_material_specular_r": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 15,
+          "distinct_pct": 0.12
+        },
+        "nav_material_specular_b": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 17,
+          "distinct_pct": 0.14
+        },
+        "nav_material_emissive_g": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_material_emissive_r": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_material_emissive_b": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_material_diffuse_g": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 16,
+          "distinct_pct": 0.13
+        },
+        "nav_material_diffuse_r": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 17,
+          "distinct_pct": 0.14
+        },
+        "nav_material_diffuse_b": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 16,
+          "distinct_pct": 0.13
+        },
+        "nav_material_ambient_g": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 16,
+          "distinct_pct": 0.13
+        },
+        "nav_material_ambient_r": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 16,
+          "distinct_pct": 0.13
+        },
+        "nav_material_ambient_b": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 17,
+          "distinct_pct": 0.14
+        },
+        "nav_material_transparency": {
+          "null_count": 4023,
+          "null_pct": 33.5,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "nav_item_guid": {
+          "null_count": 4118,
+          "null_pct": 34.29,
+          "distinct_count": 7891,
+          "distinct_pct": 65.71
+        },
+        "nav_item_internal_type": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3430,
+          "distinct_pct": 28.56
+        },
+        "nav_item_unit": {
+          "null_count": 12008,
+          "null_pct": 99.99,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_layer": {
+          "null_count": 11874,
+          "null_pct": 98.88,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_source_file": {
+          "null_count": 1,
+          "null_pct": 0.01,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_source_file_name": {
+          "null_count": 12008,
+          "null_pct": 99.99,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_hidden": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_icon": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "nav_item_type": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3433,
+          "distinct_pct": 28.59
+        },
+        "nav_item_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8365,
+          "distinct_pct": 69.66
+        },
+        "nav_item_author": {
+          "null_count": 12008,
+          "null_pct": 99.99,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_material": {
+          "null_count": 12009,
+          "null_pct": 100.0,
+          "distinct_count": 0,
+          "distinct_pct": 0.0
+        },
+        "nav_item_file_name": {
+          "null_count": 12008,
+          "null_pct": 99.99,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_item_required": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_geom_primitives": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 305,
+          "distinct_pct": 2.54
+        },
+        "nav_geom_text": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_geom_triangles": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "nav_geom_lines": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "nav_geom_solids": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "nav_geom_snap_points": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_geom_points": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "nav_geom_fragments": {
+          "null_count": 4024,
+          "null_pct": 33.51,
+          "distinct_count": 44,
+          "distinct_pct": 0.37
+        },
+        "parent_id": {
+          "null_count": 1,
+          "null_pct": 0.01,
+          "distinct_count": 3974,
+          "distinct_pct": 33.09
+        },
+        "nav_class_display_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3433,
+          "distinct_pct": 28.59
+        },
+        "level_val": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 10,
+          "distinct_pct": 0.08
+        },
+        "is_leaf": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "child_count": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 49,
+          "distinct_pct": 0.41
+        },
+        "has_geometry": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "is_hidden": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "has_geometry_property": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "geop_primitives": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 306,
+          "distinct_pct": 2.55
+        },
+        "geop_has_triangles": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "geop_has_lines": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "geop_solid": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "geop_has_text": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "geop_has_snap_points": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "geop_has_points": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "geop_fragments": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 45,
+          "distinct_pct": 0.37
+        },
+        "has_bbox": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "bbox_volume_val": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3524,
+          "distinct_pct": 29.34
+        },
+        "container_status": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "tess_result": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "tess_failure_reason": {
+          "null_count": 7985,
+          "null_pct": 66.49,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "mesh_quality": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "vertex_count": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 298,
+          "distinct_pct": 2.48
+        },
+        "triangle_count": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 296,
+          "distinct_pct": 2.46
+        },
+        "adjacency_count": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 238,
+          "distinct_pct": 1.98
+        },
+        "group_id": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3355,
+          "distinct_pct": 27.94
+        },
+        "glb_exists": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "glb_size_bytes": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 495,
+          "distinct_pct": 4.12
+        },
+        "has_mesh": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "has_real_mesh": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "verdict": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "bbox_min_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4736,
+          "distinct_pct": 39.44
+        },
+        "bbox_min_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4194,
+          "distinct_pct": 34.92
+        },
+        "bbox_min_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3584,
+          "distinct_pct": 29.84
+        },
+        "bbox_max_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4760,
+          "distinct_pct": 39.64
+        },
+        "bbox_max_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4228,
+          "distinct_pct": 35.21
+        },
+        "bbox_max_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3646,
+          "distinct_pct": 30.36
+        },
+        "centroid_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4649,
+          "distinct_pct": 38.71
+        },
+        "centroid_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3953,
+          "distinct_pct": 32.92
+        },
+        "centroid_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4344,
+          "distinct_pct": 36.17
+        },
+        "bbox_volume_m3": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5025,
+          "distinct_pct": 41.84
+        },
+        "has_mesh_geom": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "mesh_uri": {
+          "null_count": 3353,
+          "null_pct": 27.92,
+          "distinct_count": 8656,
+          "distinct_pct": 72.08
+        },
+        "mesh_quality_geom": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 5,
+          "distinct_pct": 0.04
+        },
+        "vertex_count_geom": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 298,
+          "distinct_pct": 2.48
+        },
+        "triangle_count_geom": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 296,
+          "distinct_pct": 2.46
+        },
+        "group_size": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "group_edge_count": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 3,
+          "distinct_pct": 0.02
+        },
+        "group_total_volume": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 807,
+          "distinct_pct": 6.72
+        },
+        "group_dominant_category": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2873,
+          "distinct_pct": 23.92
+        },
+        "group_bbox_min_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1066,
+          "distinct_pct": 8.88
+        },
+        "group_bbox_min_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1010,
+          "distinct_pct": 8.41
+        },
+        "group_bbox_min_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 559,
+          "distinct_pct": 4.65
+        },
+        "group_bbox_max_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1064,
+          "distinct_pct": 8.86
+        },
+        "group_bbox_max_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1011,
+          "distinct_pct": 8.42
+        },
+        "group_bbox_max_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 551,
+          "distinct_pct": 4.59
+        },
+        "group_centroid_x": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 890,
+          "distinct_pct": 7.41
+        },
+        "group_centroid_y": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 820,
+          "distinct_pct": 6.83
+        },
+        "group_centroid_z": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 685,
+          "distinct_pct": 5.7
+        },
+        "is_container": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "is_bbox_placeholder": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "is_analysis_volume": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "has_own_geometry": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "is_parent_box": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "graph_participant": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "dry_weight_kg": {
+          "null_count": 6874,
+          "null_pct": 57.24,
+          "distinct_count": 1557,
+          "distinct_pct": 12.97
+        },
+        "wet_weight_kg": {
+          "null_count": 11893,
+          "null_pct": 99.03,
+          "distinct_count": 67,
+          "distinct_pct": 0.56
+        },
+        "length_m": {
+          "null_count": 10319,
+          "null_pct": 85.93,
+          "distinct_count": 1115,
+          "distinct_pct": 9.28
+        },
+        "width_m": {
+          "null_count": 10237,
+          "null_pct": 85.24,
+          "distinct_count": 47,
+          "distinct_pct": 0.39
+        },
+        "depth_m": {
+          "null_count": 10445,
+          "null_pct": 86.98,
+          "distinct_count": 26,
+          "distinct_pct": 0.22
+        },
+        "height_m": {
+          "null_count": 11964,
+          "null_pct": 99.63,
+          "distinct_count": 32,
+          "distinct_pct": 0.27
+        },
+        "bend_radius_m": {
+          "null_count": 11967,
+          "null_pct": 99.65,
+          "distinct_count": 14,
+          "distinct_pct": 0.12
+        },
+        "design_pressure_kpa": {
+          "null_count": 9653,
+          "null_pct": 80.38,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        },
+        "design_temperature_c": {
+          "null_count": 9653,
+          "null_pct": 80.38,
+          "distinct_count": 9,
+          "distinct_pct": 0.07
+        },
+        "npd_end1_m": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 17,
+          "distinct_pct": 0.14
+        },
+        "npd_end2_m": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 18,
+          "distinct_pct": 0.15
+        },
+        "original_class": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "refined_class": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 6,
+          "distinct_pct": 0.05
+        },
+        "refining_rule": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "refining_rule_version": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "ingested_at_utc": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 1,
+          "distinct_pct": 0.01
+        },
+        "title": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8365,
+          "distinct_pct": 69.66
+        },
+        "classification_confidence": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 2,
+          "distinct_pct": 0.02
+        },
+        "classification_confidence_reason": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 4,
+          "distinct_pct": 0.03
+        }
+      },
+      "sample_queries": [
+        "SELECT refined_class, COUNT(*) FROM bim_objects GROUP BY refined_class ORDER BY 2 DESC;",
+        "SELECT * FROM bim_objects WHERE pipeline = 'P-10147' AND is_container = 0;",
+        "SELECT pipeline, COUNT(*) AS objects, SUM(dry_weight_kg) AS total_kg   FROM bim_objects WHERE refined_class='PipingComponent'   GROUP BY pipeline ORDER BY total_kg DESC LIMIT 20;"
+      ]
+    },
+    {
+      "name": "bim_objects_fts",
+      "row_count": 12009,
+      "column_count": 4,
+      "is_fts_shadow": false,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "object_id",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 1,
+          "name": "display_name",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 2,
+          "name": "sp3d_pipeline",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "ordinal": 3,
+          "name": "system_path",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {
+        "object_id": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 12009,
+          "distinct_pct": 100.0
+        },
+        "display_name": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 8365,
+          "distinct_pct": 69.66
+        },
+        "sp3d_pipeline": {
+          "null_count": 9083,
+          "null_pct": 75.63,
+          "distinct_count": 147,
+          "distinct_pct": 1.22
+        },
+        "system_path": {
+          "null_count": 0,
+          "null_pct": 0.0,
+          "distinct_count": 11077,
+          "distinct_pct": 92.24
+        }
+      },
+      "sample_queries": [
+        "SELECT object_id, display_name FROM bim_objects_fts   WHERE bim_objects_fts MATCH 'pump' LIMIT 20;"
+      ]
+    },
+    {
+      "name": "bim_objects_fts_config",
+      "row_count": 1,
+      "column_count": 2,
+      "is_fts_shadow": true,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "k",
+          "type": "",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "ordinal": 1,
+          "name": "v",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {},
+      "sample_queries": []
+    },
+    {
+      "name": "bim_objects_fts_data",
+      "row_count": 437,
+      "column_count": 2,
+      "is_fts_shadow": true,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": true
+        },
+        {
+          "ordinal": 1,
+          "name": "block",
+          "type": "BLOB",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {},
+      "sample_queries": []
+    },
+    {
+      "name": "bim_objects_fts_docsize",
+      "row_count": 12009,
+      "column_count": 2,
+      "is_fts_shadow": true,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": true
+        },
+        {
+          "ordinal": 1,
+          "name": "sz",
+          "type": "BLOB",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {},
+      "sample_queries": []
+    },
+    {
+      "name": "bim_objects_fts_idx",
+      "row_count": 531,
+      "column_count": 3,
+      "is_fts_shadow": true,
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "segid",
+          "type": "",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "ordinal": 1,
+          "name": "term",
+          "type": "",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "ordinal": 2,
+          "name": "pgno",
+          "type": "",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ],
+      "column_stats": {},
+      "sample_queries": []
+    }
+  ],
+  "indexes_existing": [],
+  "indexes_recommended": [
+    {
+      "table": "bim_objects",
+      "column": "refined_class",
+      "rationale": "Filter by classification"
+    },
+    {
+      "table": "bim_objects",
+      "column": "pipeline",
+      "rationale": "Group/filter by pipeline (157 distinct)"
+    },
+    {
+      "table": "bim_objects",
+      "column": "level",
+      "rationale": "Filter by floor level"
+    },
+    {
+      "table": "bim_objects",
+      "column": "is_container",
+      "rationale": "Hide container parents from analytics"
+    },
+    {
+      "table": "bim_objects",
+      "column": "is_analysis_volume",
+      "rationale": "Hide analysis volumes from graph"
+    },
+    {
+      "table": "bim_adjacency",
+      "column": "source_object_id",
+      "rationale": "Outgoing edge lookup (FK join)"
+    },
+    {
+      "table": "bim_adjacency",
+      "column": "target_object_id",
+      "rationale": "Incoming edge lookup (FK join)"
+    }
+  ],
+  "logical_foreign_keys": [
+    {
+      "from_table": "bim_adjacency",
+      "from_column": "source_object_id",
+      "to_table": "bim_objects",
+      "to_column": "object_id"
+    },
+    {
+      "from_table": "bim_adjacency",
+      "from_column": "target_object_id",
+      "to_table": "bim_objects",
+      "to_column": "object_id"
+    }
+  ]
+}

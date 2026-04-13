@@ -1,0 +1,646 @@
+{
+  "snapshot": "2026-04-12",
+  "jobs": {
+    "phase_1a_silver_gold": {
+      "name": "phase_1a_silver_gold",
+      "namespace": "bimkg",
+      "description": "Phase 1a: Bronze -> Silver -> Gold. XLSX classifier + unit conversion + column rename + derived flags + confidence layer.",
+      "source_path": "src/bimkg/ingest/sqlite_writer.py"
+    },
+    "phase_1d_powerbi_export": {
+      "name": "phase_1d_powerbi_export",
+      "namespace": "bimkg",
+      "description": "Phase 1d: Gold -> Power BI 10-CSV star schema",
+      "source_path": "src/bimkg/ingest/exporters/powerbi.py"
+    },
+    "phase_1d_foundry_export": {
+      "name": "phase_1d_foundry_export",
+      "namespace": "bimkg",
+      "description": "Phase 1d: Gold -> 10 Foundry datasets via palantir-sdk. 6 ObjectType-backing tables + 4 LinkType-backing tables.",
+      "source_path": "src/bimkg/ingest/exporters/foundry_upload.py"
+    },
+    "phase_2_owl_tbox": {
+      "name": "phase_2_owl_tbox",
+      "namespace": "bimkg",
+      "description": "Phase 2: Generate OWL TBox (class hierarchy + properties)",
+      "source_path": "src/bimkg/ontology/schema.py"
+    },
+    "phase_2_owl_abox": {
+      "name": "phase_2_owl_abox",
+      "namespace": "bimkg",
+      "description": "Phase 2: Generate OWL ABox instances (12K objects, 220K spatial triples)",
+      "source_path": "src/bimkg/ontology/instances.py"
+    },
+    "phase_3_shacl_shapes": {
+      "name": "phase_3_shacl_shapes",
+      "namespace": "bimkg",
+      "description": "Phase 3: Generate SHACL shapes for data quality validation",
+      "source_path": "src/bimkg/validation/shapes.py"
+    },
+    "phase_4_neo4j_export": {
+      "name": "phase_4_neo4j_export",
+      "namespace": "bimkg",
+      "description": "Phase 4: Build physical graph + Louvain zones + precedence DAG -> Neo4j CSV",
+      "source_path": "src/bimkg/analytics/neo4j_export.py"
+    }
+  },
+  "datasets": {
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "description": "Bronze: Refining ObjectID classification (XLSX, 12,009 rows \u00d7 6 class labels). Source: DXTnavis PR #3 with negative-lookahead regex for composite nouns."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "description": "Bronze: SP3D AllProperties (CSV, 12,009 rows \u00d7 136 cols). Contains raw imperial-unit string values (e.g. '284.23 lbm', '17 ft  1.48 in')."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "description": "Bronze: Producer-emitted spatial adjacency edges (110,173 rows). Replaces AABB-derived adjacency (Insight 2: 35.4% precision)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "description": "Bronze: BBox, centroid, mesh metadata per ObjectID."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/validation.csv",
+      "description": "Bronze: Mesh quality verdicts (used to derive is_container flag)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "description": "Bronze: 3,355 connected components (group_id, group_size)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "description": "Gold: 12,009 BIM objects \u00d7 219 enriched columns. Includes refined_class (7 categories), SI-unit physics columns, derived flags (is_container, is_analysis_volume, is_parent_box, graph_participant), confidence layer."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "description": "Gold: Symmetric closure of producer adjacency (220,346 edges = 110,173 \u00d7 2)."
+    },
+    "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db": {
+      "key": "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db",
+      "namespace": "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db",
+      "name": "bimkg.db",
+      "description": "Gold: SQLite warehouse with bim_objects, bim_adjacency, bim_hierarchy, bim_connected_groups + FTS5 full-text index on display_name."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/powerbi/2026-04-12/",
+      "description": "Power BI star schema: 10 CSV files (dim_class, dim_pipeline, dim_level, fact_objects, fact_adjacency, etc.)."
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_piping",
+      "description": "Foundry dataset: PipingComponent rows. RID: ri.foundry.main.dataset.2388ddc2-3c83-4ef3-a7df-fef11024bb4e"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_structural",
+      "description": "Foundry dataset: StructuralMember rows. RID: ri.foundry.main.dataset.32658e86-ad1b-4adb-8acf-c3c409a21661"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_equipment",
+      "description": "Foundry dataset: Equipment rows. RID: ri.foundry.main.dataset.5e250030-37c1-4475-aaac-8a9e9bf42e64"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_electrical",
+      "description": "Foundry dataset: ElectricalComponent rows. RID: ri.foundry.main.dataset.29338c90-e5be-4db7-86f9-eb0449340873"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_hvac",
+      "description": "Foundry dataset: HvacComponent rows. RID: ri.foundry.main.dataset.914af224-32c8-48c5-b419-47eab341e33b"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_other",
+      "description": "Foundry dataset: UncategorizedObject rows. RID: ri.foundry.main.dataset.87c921ea-cfcb-4ba5-b656-4bcacde11804"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "description": "Foundry dataset: AdjacentTo link rows. RID: ri.foundry.main.dataset.d6f789d4-54d7-49d1-9351-b20e825624dc"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "description": "Foundry dataset: HasParent link rows. RID: ri.foundry.main.dataset.159d949e-fe9b-4267-a20e-57512e0600d8"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "description": "Foundry dataset: BelongsToPipeline link rows. RID: ri.foundry.main.dataset.97db7363-a24e-4cd8-870c-39450ba9bbfa"
+    },
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group": {
+      "key": "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "namespace": "palantir-foundry://datayoon.usw-18.palantirfoundry.com",
+      "name": "/Datayoon-09825c/BIM-KG/bim_in_group",
+      "description": "Foundry dataset: InGroup link rows. RID: ri.foundry.main.dataset.0e57446a-bbc6-4443-bec8-7cbf58103e65"
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/ontology/2026-04-12/owl/bim-ontology.owl",
+      "description": "OWL TBox: BIMObject hierarchy (PhysicalObject, Container, AnalysisVolume), object properties (adjacentTo symmetric, belongsToPipeline, hasParent), data properties (objectId, dryWeight, centroid_x/y/z, etc.)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "description": "OWL ABox: ~477K triples across 3 TTL files (objects, adjacency, hierarchy)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-shapes.ttl": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-shapes.ttl",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/ontology/2026-04-12/owl/bim-shapes.ttl",
+      "description": "SHACL shapes: 6 NodeShapes (PipingMustHavePipeline, EquipmentMustHaveName, PhysicalObjectMustHaveMesh, PipingLevelGuard, NoAnalysisVolumeInGraph, WeightNonNegative)."
+    },
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/": {
+      "key": "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "namespace": "file:///home/taegwan-dev/dev/first-ontology-project",
+      "name": "data/ontology/2026-04-12/neo4j/",
+      "description": "Neo4j CSV bundle: 261K edges across 6 relationship types (ADJACENT_TO, PRECEDES, BELONGS_TO_PIPELINE, HAS_PARENT, IN_ZONE, IN_GROUP) + nodes."
+    }
+  },
+  "edges_in": [
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "phase_1a_silver_gold"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "phase_1d_powerbi_export"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "phase_1d_foundry_export"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "phase_1d_foundry_export"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "phase_2_owl_abox"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "phase_2_owl_abox"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl",
+      "phase_2_owl_abox"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "phase_4_neo4j_export"
+    ],
+    [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "phase_4_neo4j_export"
+    ]
+  ],
+  "edges_out": [
+    [
+      "phase_1a_silver_gold",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet"
+    ],
+    [
+      "phase_1a_silver_gold",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    [
+      "phase_1a_silver_gold",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    [
+      "phase_1d_powerbi_export",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline"
+    ],
+    [
+      "phase_1d_foundry_export",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group"
+    ],
+    [
+      "phase_2_owl_tbox",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl"
+    ],
+    [
+      "phase_2_owl_abox",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl"
+    ],
+    [
+      "phase_3_shacl_shapes",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-shapes.ttl"
+    ],
+    [
+      "phase_4_neo4j_export",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/"
+    ]
+  ],
+  "downstream": {
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet": [
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline",
+      "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/"
+    ],
+    "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline": [],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-shapes.ttl": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/": []
+  },
+  "upstream": {
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv"
+    ],
+    "sqlite:///home/taegwan-dev/dev/first-ontology-project/data/enriched/2026-04-12/bimkg.db::bimkg.db": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/powerbi/2026-04-12/": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_piping": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_structural": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_equipment": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_electrical": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_hvac": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_other": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_adjacent_to": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_has_parent": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_belongs_to_pipeline": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "palantir-foundry://datayoon.usw-18.palantirfoundry.com::/Datayoon-09825c/BIM-KG/bim_in_group": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-objects.ttl": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-ontology.owl"
+    ],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/owl/bim-shapes.ttl": [],
+    "file:///home/taegwan-dev/dev/first-ontology-project::data/ontology/2026-04-12/neo4j/": [
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_objects_enriched.parquet",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/Refining_ObjectID_20260412_064240.xlsx",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/AllProperties_20260407_184650.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/adjacency.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/geometry.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/validation.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/raw/dxtnavis/2026-04-12/connected_groups.csv",
+      "file:///home/taegwan-dev/dev/first-ontology-project::data/enriched/2026-04-12/bim_adjacency_sym.parquet"
+    ]
+  }
+}
