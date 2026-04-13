@@ -143,6 +143,11 @@
              Palantir construction insights + ontology mapping           bacb1a8
              Foundry upload: 10 datasets to BIM-KG project              a747552
              └── pandas 2.x str dtype 호환 이슈 해결 + 문서화
+2026-04-14   dev-standards v0.2.0 (R10 추가)                             ef428ef
+             Foundry re-upload: master branch + bim_ prefix 재명명       
+             ├── branch empty 이슈 해결 (main→master)
+             ├── 6 Object Types 생성 완료 (Ontology Manager)
+             └── Foundry setup guide 작성                                0def9ba
 ```
 
 ### Test count progression
