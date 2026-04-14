@@ -54,6 +54,14 @@
 | M3 | 2026-04-13 | 🟠 MAJOR | Parent box 객체 448개가 adjacency 66% 오염 | ✅ Resolved locally (is_parent_box + 재분석 완료) | [archive](findings/2026-04-13-M3-parent-box-contamination/README.md) |
 | M4 | 2026-04-15 | 🟠 MAJOR | gap_fallback.fbx 의 788 mesh ↔ object_id 매핑 (`항목 - GUID` 한국어 property + 48 Geometry GUID 누락) | 🟡 **Partially Resolved** (740 Properties70 GUID + 48 centroid 매칭 = 100% 로컬 커버, DXTnavis PR 제출 대기) | [archive](findings/2026-04-15-M4-fbx-guid-mapping/README.md) |
 
+### AI FDE Collaboration Sessions
+
+각 세션에서 Ontology 설계에 대해 어떤 결정을 내렸는지 Decision Record 형식으로 기록.
+
+| Date | Phase | Key Decisions | Link |
+|---|---|---|---|
+| 2026-04-15 | 1 Exploration | D-AIFDE-1 (6 ObjType + Interface), D-AIFDE-2 (BimPipeline 승격, Group/Zone defer), D-AIFDE-3 (전체 포함 + Object Set 필터), D-AIFDE-4 (단일 adjacentTo link), D-AIFDE-5 (3D + Pipeline 우선) | [session log](analysis/ai-fde-sessions/2026-04-15-phase1-exploration.md) |
+
 ### Known limitations (수용 / 연기)
 
 | ID | Description | Impact | Status |
