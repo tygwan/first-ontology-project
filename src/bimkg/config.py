@@ -70,6 +70,13 @@ RAW_CONNECTED_GROUPS: Path = DATA_RAW / "connected_groups.csv"
 RAW_TESSELLATION_FAILURES: Path = DATA_RAW / "tessellation_failures.csv"
 RAW_MANIFEST: Path = DATA_RAW / "manifest.json"
 
+#: FBX gap_fallback 관련 파일 (M4 finding 참조)
+#: - mesh/: 8,219 개별 GLB (full_mesh/box_placeholder + fbx_supplemented export 포함)
+#: - fbx_metadata/: FBX Properties70에서 추출한 SP3D 속성 + mesh↔object_id 매핑
+RAW_MESH_DIR: Path = DATA_RAW / "mesh"
+RAW_FBX_METADATA_DIR: Path = DATA_RAW / "fbx_metadata"
+RAW_FBX_MAPPING: Path = RAW_FBX_METADATA_DIR / "fbx_mesh_mapping_final.parquet"
+
 # ---------------------------------------------------------------------------
 # Silver — Phase 1a clean parquet outputs
 # ---------------------------------------------------------------------------

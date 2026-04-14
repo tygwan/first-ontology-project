@@ -579,6 +579,14 @@ def build_bim_objects_gold(
           -> add_si_units
           -> add_lineage
           -> add_title
+          -> add_classification_confidence
+
+    Note on FBX metadata (M4 finding): ``gap_fallback.fbx`` carries SP3D
+    properties (moniker, system path, BOM desc, etc.) for its 740 labeled
+    meshes. These were verified to be 100% duplicates of XLSX values,
+    so no merge is performed here. The FBX→ObjectId mapping at
+    ``data/raw/dxtnavis/<snapshot>/fbx_metadata/`` is used solely to
+    locate GLB files (see ``scripts/export_fbx_meshes_to_glb.py``).
     """
     silver = build_bim_objects_silver(xlsx_path)
     hierarchy = load_hierarchy_from_all_properties(all_properties_path)[

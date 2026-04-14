@@ -36,20 +36,22 @@ from bimkg import config
 # Foundry connection
 # ---------------------------------------------------------------------------
 
-#: Dataset RIDs in the BIM-KG project (created 2026-04-13)
+#: Dataset RIDs in the BIM-KG project (updated 2026-04-15 — bim_* prefix).
+#: These are resolved from Compass paths ``/Datayoon-09825c/BIM-KG/<name>``
+#: via ``client.get_dataset(path)`` at upload time if this dict goes stale.
 DATASET_RIDS: dict[str, str] = {
-    # Object Types
-    "piping": "ri.foundry.main.dataset.778244d2-0ce5-44a2-a435-71779b88ce2d",
-    "structural": "ri.foundry.main.dataset.8eeea063-8f0d-4f23-bcf5-d4173288d781",
-    "equipment": "ri.foundry.main.dataset.11fdd704-8222-4d6d-83c5-da6ef1fc6f81",
-    "electrical": "ri.foundry.main.dataset.84025009-9f7a-42a6-a1f9-109d9417feb1",
-    "hvac": "ri.foundry.main.dataset.550025af-28ad-4295-a34f-d20e4f7aa8cf",
-    "other": "ri.foundry.main.dataset.93fce9fa-a4c1-4f2a-b190-2e4d4d9c573c",
-    # Link Types
-    "adjacent_to": "ri.foundry.main.dataset.7cfeea67-54bb-4b61-a4f9-d1f93a4bb00b",
-    "has_parent": "ri.foundry.main.dataset.7bda3303-25b2-4920-ba80-fbfcc16b43dc",
-    "belongs_to_pipeline": "ri.foundry.main.dataset.4584de0b-0a91-4877-a042-a66c25a7dc7c",
-    "in_group": "ri.foundry.main.dataset.f06741ac-d37f-49ca-9473-018fc73a8ea6",
+    # Object Types (6) — class-split BIM objects (12,009 total)
+    "piping": "ri.foundry.main.dataset.2388ddc2-3c83-4ef3-a7df-fef11024bb4e",
+    "structural": "ri.foundry.main.dataset.32658e86-ad1b-4adb-8acf-c3c409a21661",
+    "equipment": "ri.foundry.main.dataset.5e250030-37c1-4475-aaac-8a9e9bf42e64",
+    "electrical": "ri.foundry.main.dataset.29338c90-e5be-4db7-86f9-eb0449340873",
+    "hvac": "ri.foundry.main.dataset.914af224-32c8-48c5-b419-47eab341e33b",
+    "other": "ri.foundry.main.dataset.87c921ea-cfcb-4ba5-b656-4bcacde11804",
+    # Link Types (4) — 137,116 relationship rows
+    "adjacent_to": "ri.foundry.main.dataset.d6f789d4-54d7-49d1-9351-b20e825624dc",
+    "has_parent": "ri.foundry.main.dataset.159d949e-fe9b-4267-a20e-57512e0600d8",
+    "belongs_to_pipeline": "ri.foundry.main.dataset.97db7363-a24e-4cd8-870c-39450ba9bbfa",
+    "in_group": "ri.foundry.main.dataset.0e57446a-bbc6-4443-bec8-7cbf58103e65",
 }
 
 LOCAL_FILES: dict[str, Path] = {
@@ -115,23 +117,41 @@ def create_foundry_client(
     return DatasetsClient(DatasetServices(ctx))
 
 
+OBJECT_TYPES: tuple[str, ...] = (
+    "piping", "structural", "equipment", "electrical", "hvac", "other",
+)
+LINK_TYPES: tuple[str, ...] = (
+    "adjacent_to", "has_parent", "belongs_to_pipeline", "in_group",
+)
+
+
 def upload_all(
     client: DatasetsClient | None = None,
     token: str | None = None,
+    only: tuple[str, ...] | None = None,
 ) -> dict[str, str]:
-    """Upload all 10 datasets to Foundry. Returns {name: status}."""
+    """Upload datasets to Foundry.
+
+    Parameters
+    ----------
+    only : optional tuple of dataset names
+        If provided, upload only those datasets (subset of DATASET_RIDS keys).
+        Example: ``only=LINK_TYPES`` uploads just the 4 link datasets.
+    """
     if client is None:
         client = create_foundry_client(token=token)
 
+    targets = DATASET_RIDS if only is None else {k: DATASET_RIDS[k] for k in only}
+
     results = {}
-    for name, rid in DATASET_RIDS.items():
+    for name, rid in targets.items():
         local = LOCAL_FILES[name]
         if not local.exists():
             results[name] = f"SKIP: {local} not found"
             continue
 
         df = fix_dtypes_for_foundry(pd.read_parquet(local))
-        locator = DatasetLocator(rid, "main")
+        locator = DatasetLocator(rid, "master")
         ds = Dataset(client, locator)
 
         try:

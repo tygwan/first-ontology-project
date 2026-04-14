@@ -16,7 +16,7 @@
 **프로젝트 상태** (2026-04-13 기준):
 - Phase 0~6: ✅ 완료 (336 테스트 통과, +2 E2E skipped)
 - Phase 7 (Streamlit UI): ⏸ 남음
-- Findings: M1 ✅, M2 ✅, M3 ✅ | DXTnavis Issues: #2, #4 제출됨
+- Findings: M1 ✅, M2 ✅, M3 ✅, M4 🟡 | DXTnavis Issues: #2, #4 제출됨, M4 PR 초안 준비됨
 - OWL: 28 classes, 477K triples | Neo4j: 261K edges | SHACL: 468 violations
 - 33 KPIs | 5 notebooks + 26 해석 + 25 PNGs
 - **LLM**: LangGraph agent (Gemini 2.5 Flash) — 5 tools (SQL, FTS5, SPARQL, Cypher, KPI)
@@ -48,6 +48,7 @@
 | M1 | 2026-04-12 | 🟠 MAJOR | XLSX substring matching misclassifies 997 Piping objects | ✅ **Fully Resolved** (PR #3 + re-alignment) | [archive](findings/2026-04-12-M1-piping-misclassification/README.md) |
 | M2 | 2026-04-12 | 🟡 MINOR | Adjacency 는 AABB 기반 — 3단계 품질 분류 필요 | ✅ Resolved (tier 분류 도입) | [archive](findings/2026-04-12-M2-adjacency-tiers/README.md) |
 | M3 | 2026-04-13 | 🟠 MAJOR | Parent box 객체 448개가 adjacency 66% 오염 | ✅ Resolved locally (is_parent_box + 재분석 완료) | [archive](findings/2026-04-13-M3-parent-box-contamination/README.md) |
+| M4 | 2026-04-15 | 🟠 MAJOR | gap_fallback.fbx 의 788 mesh ↔ object_id 매핑 (`항목 - GUID` 한국어 property + 48 Geometry GUID 누락) | 🟡 **Partially Resolved** (740 Properties70 GUID + 48 centroid 매칭 = 100% 로컬 커버, DXTnavis PR 제출 대기) | [archive](findings/2026-04-15-M4-fbx-guid-mapping/README.md) |
 
 ### Known limitations (수용 / 연기)
 
@@ -177,6 +178,12 @@
              ├── JD 키워드 12개 대응 표 (8 완성 + 4 부분 = 66% coverage)
              ├── 회사별 강조 포인트 (Saltlux/LG CNS/Samsung SDS/Stardog/KT/ETRI)
              └── Notion portfolio 페이지에 7가지 역량 + 면접 언어 + Senior gap 추가
+             직무 역량 포트폴리오 중립화 + Notion 전체 반영
+             ├── 초안 lg-ax-job-fit.md (LG AX 특화) → job-competency-portfolio.md 로 재작성
+             ├── LG 특화 제거: EXAONE→LLM-agnostic, LG 계열사→산업 6 카테고리 transfer
+             ├── ML/AI 엔지니어 일반 JD 매핑 템플릿 (필수 4/4 ✅, 업무 8/8, 우대 7+3+3)
+             ├── Notion portfolio 페이지에 "# 크로스역량 — 직무 역량 포트폴리오" 전체 섹션 append (~130 blocks)
+             └── source of truth = 중립·완전, 특화는 지원 시점에 extract 원칙
 ```
 
 ### Test count progression
@@ -503,6 +510,7 @@ BIMEntity
 | **R11 Portfolio gap analysis** | [`docs/analysis/r11-portfolio-gap-analysis.md`](analysis/r11-portfolio-gap-analysis.md) |
 | **🔬 DA/DS 관점 심층 분석** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) ← **9 계층 수치·공식·ML task** |
 | **🎯 온톨로지/KG 엔지니어 관점 (7가지 역량)** | [`docs/analysis/ontology-kg-engineer-perspective.md`](analysis/ontology-kg-engineer-perspective.md) ← **채용 직군별 + JD 키워드 매핑** |
+| **💼 직무 역량 포트폴리오 (중립 버전)** | [`docs/analysis/job-competency-portfolio.md`](analysis/job-competency-portfolio.md) ← **5 PAAR + JD 매핑 템플릿 + 산업 6 카테고리 transfer** (Notion 동기화 완료) |
 | Notion portfolio (외부) | <https://www.notion.so/Refinery-Facility-Ontology-Analytics-3405a4e1f87881d08fd4f9ed41234793> |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
@@ -583,4 +591,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-13 (Phase 0~6 완료, 336 tests, Foundry 10 datasets 업로드, LLM agent, FastAPI)*
+*Last updated: 2026-04-14 (직무 역량 포트폴리오 중립화 + Notion 전체 반영)*
