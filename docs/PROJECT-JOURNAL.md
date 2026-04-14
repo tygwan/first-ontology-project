@@ -172,6 +172,11 @@
              ├── Audience-matched terminology 점검 (기존 본문 이미 충족)
              ├── Depth as authenticity 원칙 확인 (M1/M2/M3 구체 수치 + trade-off + upstream traces)
              └── Single-source marker convention (# 문제해결 / # 구현 / # 크로스역량) Notion 추가
+             온톨로지/KG 엔지니어 관점 7가지 역량 총정리
+             ├── 12 섹션 심층 문서 (ontology-kg-engineer-perspective.md)
+             ├── JD 키워드 12개 대응 표 (8 완성 + 4 부분 = 66% coverage)
+             ├── 회사별 강조 포인트 (Saltlux/LG CNS/Samsung SDS/Stardog/KT/ETRI)
+             └── Notion portfolio 페이지에 7가지 역량 + 면접 언어 + Senior gap 추가
 ```
 
 ### Test count progression
@@ -497,6 +502,7 @@ BIMEntity
 | **🎨 시각화 자료 통합 인덱스** | [`docs/VISUALIZATIONS.md`](VISUALIZATIONS.md) ← **모든 다이어그램/그래프/PNG 한눈에** |
 | **R11 Portfolio gap analysis** | [`docs/analysis/r11-portfolio-gap-analysis.md`](analysis/r11-portfolio-gap-analysis.md) |
 | **🔬 DA/DS 관점 심층 분석** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) ← **9 계층 수치·공식·ML task** |
+| **🎯 온톨로지/KG 엔지니어 관점 (7가지 역량)** | [`docs/analysis/ontology-kg-engineer-perspective.md`](analysis/ontology-kg-engineer-perspective.md) ← **채용 직군별 + JD 키워드 매핑** |
 | Notion portfolio (외부) | <https://www.notion.so/Refinery-Facility-Ontology-Analytics-3405a4e1f87881d08fd4f9ed41234793> |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
