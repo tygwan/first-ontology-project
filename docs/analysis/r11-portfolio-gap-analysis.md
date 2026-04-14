@@ -204,4 +204,26 @@ R11 본문의 핵심 체크리스트를 그대로 사용:
 
 ---
 
+---
+
+## Addendum — R11 v0.2.0 반영 (2026-04-14)
+
+dev-standards v0.4.0 에서 R11 이 v0.2.0 으로 확장됨. 세 가지 신규 요소 중 우리 프로젝트에 적용한 것:
+
+1. **Audience-matched terminology** — 기존 Notion 본문을 점검한 결과 이미 Redis/PostgreSQL 급의 구체 이름 (Palantir Foundry, Neo4j 5, SQLite+FTS5, FastAPI+Pydantic+uvicorn, Apache Airflow 3.x, OpenLineage v2, LangGraph ReAct, Gemini 2.5 Flash, ydata-profiling, pyshacl, rdflib, owlrl, networkx) 을 사용하고 있어 별도 치환 불필요.
+2. **Depth as authenticity** — M1/M2/M3 가 이미 구체 수치 + rejected alternatives + explicit trade-offs + named incidents + upstream traces (PR#3, Issue#4) 를 모두 포함하여 원칙 충족. 본문 위치는 그대로 유지.
+3. **Structural Convention (optional)** — Notion 페이지 하단에 `# 문제해결` / `# 구현` / `# 크로스역량` 3 marker H1 섹션을 추가. 기존 Part 1 / Part 2 narrative 는 그대로 두고, 동일 내용의 compressed marker view 를 병치하여 resume/portfolio dual-view auto-render 를 준비.
+
+`# 문제해결` 아래 7 H2 엔트리:
+- [Data Quality] M1 regex fix + PR #3
+- [Graph Accuracy] M2 3-tier adjacency + A/B
+- [Graph Integrity] M3 parent box + Issue #4
+- [Architecture] Medallion 3-tier + Oracle 100%
+- [Ontology Design] sibling taxonomy + 28 classes
+- [Query Interface] LangGraph 5-tool ReAct
+- [Ops Reliability] Foundry pandas 2.x dtype fix
+
+`# 구현` 아래 13 implementation signal lines (tech stack 재편성).
+`# 크로스역량` 1 단락 (DXTnavis upstream 기여 + dev-standards 첫 컨슈머).
+
 *Last updated: 2026-04-14*

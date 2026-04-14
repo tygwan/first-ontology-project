@@ -168,6 +168,10 @@
              ├── 운영 경험 (Foundry pandas) + 오픈소스 기여 (PR#3, Issue#4) 별도 section
              ├── Tech Stack role-based 분류 (Data Pipeline / Semantic Web / Graph / AI / Backend / QA / Workflow)
              └── DA/DS 관점 9 계층 심층 분석 문서 (data-analyst-data-scientist-deep-dive.md)
+             dev-standards v0.4.0 (R11 v0.2.0) 적용
+             ├── Audience-matched terminology 점검 (기존 본문 이미 충족)
+             ├── Depth as authenticity 원칙 확인 (M1/M2/M3 구체 수치 + trade-off + upstream traces)
+             └── Single-source marker convention (# 문제해결 / # 구현 / # 크로스역량) Notion 추가
 ```
 
 ### Test count progression
