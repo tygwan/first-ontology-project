@@ -13,17 +13,21 @@
 
 ## 한눈에 보기
 
-**프로젝트 상태** (2026-04-13 기준):
+**프로젝트 상태** (2026-04-15 기준):
 - Phase 0~6: ✅ 완료 (336 테스트 통과, +2 E2E skipped)
-- Phase 7 (Streamlit UI): ⏸ 남음
-- Findings: M1 ✅, M2 ✅, M3 ✅, M4 🟡 | DXTnavis Issues: #2, #4 제출됨, M4 PR 초안 준비됨
+- Phase 7 (Foundry integration): 🔄 진행 중 — Object/Link/Media 업로드 완료, Ontology 구성 대기
+- Findings: M1 ✅, M2 ✅, M3 ✅, M4 🟡 (100% 로컬, DXTnavis PR 대기)
 - OWL: 28 classes, 477K triples | Neo4j: 261K edges | SHACL: 468 violations
 - 33 KPIs | 5 notebooks + 26 해석 + 25 PNGs
 - **LLM**: LangGraph agent (Gemini 2.5 Flash) — 5 tools (SQL, FTS5, SPARQL, Cypher, KPI)
 - **FastAPI**: 12 REST endpoints (`uvicorn bimkg.api.main:app`)
-- **Foundry**: BIM-KG 프로젝트에 10 datasets 업로드 완료 (6 Object + 4 Link Type)
+- **Foundry**:
+  - 6 Object Type datasets (12,009 objects) ✅
+  - 4 Link Type datasets (137,116 rows) ✅
+  - 1 Media Set (`bim_mesh`, 8,219 GLBs / 327 MB) ✅
+  - Ontology 구성 + OSDK + AIP Agent ⏸ (로드맵: `docs/plan/foundry-next-steps-roadmap.md`)
 - **Standards**: dev-standards R1-R10 (R10 = Decision Validation / A/B Testing)
-- 다음: Foundry Ontology 구성 → Workshop 앱 → Phase 7 Streamlit
+- 다음: [Foundry Next-Steps Roadmap](plan/foundry-next-steps-roadmap.md) — A) Ontology 구성 → B) OSDK React 3D viewer
 
 ---
 
