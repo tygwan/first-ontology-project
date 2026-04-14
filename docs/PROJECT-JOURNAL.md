@@ -162,6 +162,12 @@
              ├── R11 = first MAY 규칙 (PAAR + 2-part narrative + Visual Asset)
              ├── CLAUDE.md bump (0.2.0 → 0.3.0)
              └── R11 Portfolio gap analysis 작성 (Phase A/B/C 적용 계획)
+             R11 Notion portfolio + DA/DS 심층 분석
+             ├── BIM Ontology 페이지 archive → Refinery Facility Ontology Analytics 단독
+             ├── Notion body 전면 R11 재작성 (PAAR + 2-part + 5-question rule)
+             ├── 운영 경험 (Foundry pandas) + 오픈소스 기여 (PR#3, Issue#4) 별도 section
+             ├── Tech Stack role-based 분류 (Data Pipeline / Semantic Web / Graph / AI / Backend / QA / Workflow)
+             └── DA/DS 관점 9 계층 심층 분석 문서 (data-analyst-data-scientist-deep-dive.md)
 ```
 
 ### Test count progression
@@ -486,6 +492,8 @@ BIMEntity
 | **Palantir 온톨로지 분석** | [`docs/analysis/palantir-ontology-for-construction.md`](analysis/palantir-ontology-for-construction.md) |
 | **🎨 시각화 자료 통합 인덱스** | [`docs/VISUALIZATIONS.md`](VISUALIZATIONS.md) ← **모든 다이어그램/그래프/PNG 한눈에** |
 | **R11 Portfolio gap analysis** | [`docs/analysis/r11-portfolio-gap-analysis.md`](analysis/r11-portfolio-gap-analysis.md) |
+| **🔬 DA/DS 관점 심층 분석** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) ← **9 계층 수치·공식·ML task** |
+| Notion portfolio (외부) | <https://www.notion.so/Refinery-Facility-Ontology-Analytics-3405a4e1f87881d08fd4f9ed41234793> |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
 | **Medallion 다이어그램 검토** | [`docs/analysis/medallion-data-flow-review.md`](analysis/medallion-data-flow-review.md) |
