@@ -302,6 +302,124 @@ raw 6 datasets 에 timestamp cast 를 적용함 (D-AIFDE-7). 되돌리지 않되
 
 ---
 
+### D-AIFDE-15: Ontology 생성/편집 = UI 전용 (SDK 제약 발견)
+
+**Discovery 2026-04-15/16**: AI FDE 가 `launch_sub_agents` 로 ontologyEditing mode sub-agent 3개 spawn 하여 Interface 자동 생성 시도했으나 전부 **실패**. Sub-agent 들이 보고: "no create_interface tool available — load only".
+
+**SDK 검증**: `foundry-sdk v2` 의 `ontologies` 모듈도 동일 제약:
+- `Ontology.list/get/get_full_metadata` (read) ✓
+- `create_object_type`, `create_interface`, `create_link_type` ❌ 부재
+
+**근본 원리**: Foundry 아키텍처 설계상 Ontology 스키마 변경은 **UI 에서 사람의 승인** 을 거쳐야 함. 자동화로 남발 방지.
+
+**실제 영향**:
+- AI FDE 의 "Registration Guide" = **수동 UI 작업 가이드**
+- AI FDE 의 역할 = **audit / verify** (load 쿼리로 사후 확인)
+- 사용자가 UI 에서 수동 등록 → AI FDE 가 검증 승인
+
+**포트폴리오 가치**:
+- "AI-augmented design, human-governed decisions" 가 실증됨
+- Foundry 철학 (Ontology = human-approved) 경험 확보
+
+**Cross-references**:
+- 사용자 설계 의도 D-AIFDE-13 (governance) 와 정합
+
+---
+
+### D-AIFDE-16: meshUri Media Reference — Interface 레벨 type 선언, Object Type 레벨 바인딩
+
+**Decision**: `BimObject.meshUri` 를 **Interface 에서 Media Reference 타입 선언**만 하고, 실제 `bim_mesh` Media Set 바인딩은 **각 Object Type 구현 시** 지정.
+
+**UI 경험으로 확정된 사실**:
+- Interface property 편집 화면에는 Media Set 선택 필드 **없음**
+- Object Type 생성 시 property 매핑 단계에서 Media Set 바인딩 UI 등장
+- 6개 BIM Object Type 이 모두 같은 bim_mesh 를 참조하므로 반복 작업 필요
+
+**실행 결과 (BimPiping)**:
+- Interface meshUri: Media Reference (binding 없음)
+- BimPiping.meshUri: Media Reference → bim_mesh (바인딩 성공)
+
+**AI FDE A안 vs B안 vs 채택안**:
+- A안 (AI FDE 추천): meshPath String + meshMedia Media Reference 분리 — **기각** (over-engineering)
+- B안: Interface 는 String, 각 Object Type 이 별도 Media Reference property 추가 — **기각** (반복 부담)
+- **채택**: Interface Media Reference type 선언 + Object Type 바인딩 (Foundry 표준 패턴)
+
+---
+
+### D-AIFDE-17: 219 property 전부 유지 (cleanup 불실행)
+
+**Decision**: BimPiping 의 219 properties (dataset 전체 컬럼 auto-import) 를 **전부 유지**. Phase 3 cleanup (63 목표) 도 실행 안 함.
+
+**사용자 결정 (2026-04-16)**:
+> "일단 유지하는 것으로 한다. 향후 인사이트 발견되면 별도로 온톨로지 생성해서 추가 분석 들어가면 되니깐."
+
+**원래 설계 (AI FDE Round 2)**:
+- Curated 63 properties (all-empty 컬럼 등 156 제외)
+- Tier 1 Interface 34 + Tier 2 Piping 18 + Tier 3 Niche 4 + Tier 4 Nav 7
+
+**Trade-off accepted**:
+- UI noise (219 property 표시) 수용
+- API surface 커짐 수용
+- 나중에 Workshop 에서 "Core View" 프리셋으로 필터 가능
+
+**Rationale**:
+- 도메인 확장 시 새 Ontology 병행 운영 계획
+- 현재 데이터 완전 보존 가치 > UI 깔끔함
+- Phase 2 속도 우선 (cleanup 에 30분 소요 회피)
+
+**적용 범위**: BimPiping (완료), BimStructural 이하 5개 Object Type 에도 동일 정책 적용
+
+---
+
+### D-AIFDE-18: ingested_at_utc Spark 읽기 에러 → M5 Finding 후보
+
+**Discovery 2026-04-16**: bim_piping dataset 의 Data Preview 탭 에서:
+
+```
+org.apache.spark.sql.execution.datasources.SchemaColumnConvertNotSupportedException
+column: [ingested_at_utc]
+physicalType: INT64
+logicalType: date
+```
+
+**근본 원인**: `scripts/cast_timestamp_columns.py` (D-AIFDE-7) 의 palantir-sdk `write_pandas` 가 `datetime64[ns, UTC]` 를 Parquet **DATE logical type** (INT64 physical) 로 잘못 직렬화. Spark 의 schema 기대 (Timestamp) 와 불일치.
+
+**영향 범위**:
+- Dataset Preview UI: ❌ 6개 BIM dataset 읽기 실패
+- Ontology Object Type 생성: ✅ 스키마 읽기만 → 정상
+- Ontology API 쿼리 (SDK): ✅ 정상 (BimPiping 등록 성공)
+- Workshop / OSDK: 🟡 미지
+
+**Governance lesson**:
+- **D-AIFDE-13 (Pipeline Builder 원칙) 이전** 에 발생한 raw 수정의 후과
+- 이 사건이 D-AIFDE-13 수립의 배경이 됨 (사후 원칙화)
+
+**해결 경로**:
+- Option A: ingested_at_utc 를 String 으로 복귀 (D-AIFDE-7 rollback)
+- Option B: pyarrow 로 명시적 Timestamp(us, tz=UTC) 로 재업로드
+- Option C: Pipeline Builder 로 파생 dataset 생성 (D-AIFDE-13 원칙 준수)
+
+**진행 결정**: **Option A (String 복귀)** — 실제 time-series 쿼리 미사용, 빠른 복구.
+
+**M5 Finding 후보**: `docs/findings/2026-04-16-M5-timestamp-schema-mismatch/` 로 archive 필요.
+
+---
+
+### D-AIFDE-19: Global Branching 제약 (Developer Tier)
+
+**Discovery 2026-04-16**: Foundry UI 에서 일부 기능 시도 시 "Global branching must be enabled to use [feature]" 에러.
+
+**배경**: Global Branching 은 Ontology 변경의 branch 기반 워크플로우 (Git-like). Developer Tier 에서 통상 비활성.
+
+**영향**:
+- 특정 advanced UI 기능 (branch 생성, PR, rollback 등) 사용 불가
+- **Phase 2 핵심 작업 (Interface / Object Type / Link 등록) 에는 영향 없음** — master branch 에서 가능
+- 지금까지 진행한 모든 작업 master branch 에서 수행됨
+
+**대응**: 현재 작업 범위에서는 무시. Phase 3 에서 필요하면 Palantir 관리자에 활성화 요청.
+
+---
+
 ### D-AIFDE-14: 3 Discrepancy Triage (AI FDE Round 3 대응)
 
 **Context**: AI FDE 가 Round 3 에서 3가지 데이터 불일치 flag.
