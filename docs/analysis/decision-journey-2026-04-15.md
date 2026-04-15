@@ -33,7 +33,7 @@ flowchart TD
     D12 --> D13["D13: Raw data 불변<br/>Pipeline Builder 의무<br/>⚠️ cast_timestamp 사후원칙화"]
     D13 --> D14["D14: 3 Discrepancy triage<br/>KPI defer<br/>Date 수용<br/>piperun_id Pipeline Builder"]
 
-    D14 --> Now([🔴 현재 위치<br/>AI FDE Round 4 대기])
+    D14 --> Now([🔴 현재 위치<br/>답변 전달 완료<br/>AI FDE 분석 중])
     Now --> Future{Ontology Registration}
     Future --> Phase3((Phase 3<br/>Apps + Ops Layer))
 
@@ -515,7 +515,7 @@ gantt
     Decisions D12–D14 (governance)    :done, d1214, 2026-04-15 15:00, 30m
 
     section 현재 위치
-    AI FDE Round 4 대기               :active, wait, 2026-04-15 15:30, 30m
+    답변 전달 완료 · AI FDE 분석 중     :active, wait, 2026-04-15 15:30, 30m
 
     section Registration
     Ontology editing mode             :reg, after wait, 60m

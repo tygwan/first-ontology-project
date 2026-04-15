@@ -235,6 +235,118 @@ WHERE object_id != nav_item_guid
 
 ---
 
+### D-AIFDE-12: 용어 분리 원칙 (BIM pipeline ≠ Foundry Pipeline Builder)
+
+**Decision**: AI FDE 와 모든 세션에서 다음 용어를 엄격히 분리하여 사용한다.
+
+| 용어 | 의미 | 범주 |
+|---|---|---|
+| **Pipeline** (BIM 도메인) | 플랜트 배관 시스템 (예: "P-10147 crude oil feed") — 공정 연결 단위 | Ontology Object Type (`BimPipeline`) |
+| **PipeRun** (BIM 도메인) | 배관의 시공/설치 세부 구간 — 작업 할당 단위 | Ontology Object Type (`BimPipeRun`) |
+| **Pipeline Builder** (Foundry 도구) | 파생 dataset 생성 + lineage 추적하는 ETL 도구 | Foundry tool |
+
+**Trigger**: AI FDE 가 Round 3 Final Review Doc 이후 "Pipeline Builder" 이라는 Foundry 용어를 사용하기 시작. 우리 BIM `Pipeline` Object Type 과 혼동 가능성 대두.
+
+**Rationale**:
+- 도메인 용어와 도구 용어가 같은 단어를 쓰면 문맥 추론 실패 시 심각한 오해
+- AI FDE 가 `BimPipeline` Object Type 을 "Pipeline Builder 로 만든 dataset" 으로 잘못 참조할 수 있음
+- 지금 명시적으로 분리해두면 이후 모든 세션 일관성 확보
+
+**Implementation**:
+- AI FDE 에 보낸 답변 서두에 용어 표 명시
+- 이후 모든 session log 에 이 원칙 적용
+
+**Cross-references**:
+- AI FDE Round 3 (Final Review Doc) → Round 4 (3 discrepancies) 대응 답변
+
+---
+
+### D-AIFDE-13: Raw Data 불변 + Pipeline Builder 의무
+
+**Decision**: 업로드된 raw dataset 은 수정 금지. 향후 모든 derivation 은 Foundry Pipeline Builder 로 수행한다.
+
+**Scope 명시**:
+- **Raw (수정 금지)**: bim_piping, bim_structural, bim_equipment, bim_electrical,
+  bim_hvac, bim_other, bim_adjacent_to, bim_has_parent,
+  bim_belongs_to_pipeline, bim_in_group
+- **Our derivations (iteration 가능)**: bim_pipelines, bim_piperuns
+  (Ontology 등록 전까지)
+- **향후 모든 변경**: Pipeline Builder
+
+**Trigger**: 사용자의 거버넌스 지시.
+> "원본이 손상되지 않도록 Pipeline Builder 를 활용하도록 한다"
+
+**Rationale**:
+- Foundry 가 lineage 자동 추적 → 재현성
+- 원본 audit 보존 → 데이터 품질 투명성
+- Source refresh 시 재실행 가능 → 운영 비용 절감
+- raw 와 derivation 명확히 구분 → 팀 협업 시 혼선 방지
+
+**⚠️ Sunk Cost Acknowledgment**:
+이 원칙 수립 **전에** 이미 `scripts/cast_timestamp_columns.py` 가
+raw 6 datasets 에 timestamp cast 를 적용함 (D-AIFDE-7). 되돌리지 않되,
+향후 이와 같은 raw 수정은 금지. 원칙 수립을 **사건 후** 한 것은 정직한
+기록으로 남김.
+
+**Trade-offs accepted**:
+- Pipeline Builder 학습 시간 필요 (사용자 아직 미숙)
+- 간단한 변경도 UI 단계를 거쳐야 함 (ad-hoc Python 대비 느림)
+
+**Revisit condition**:
+- Pipeline Builder 가 특정 변환에서 한계를 보이면 (예: 복잡한 KPI 계산)
+  Foundry Functions + Ontology edit 로 우회 검토
+
+**Cross-references**:
+- D-AIFDE-7 (timestamp cast — 원칙 수립 전 작업)
+- D-AIFDE-14 (3 discrepancy 처리에서 이 원칙 적용)
+
+---
+
+### D-AIFDE-14: 3 Discrepancy Triage (AI FDE Round 3 대응)
+
+**Context**: AI FDE 가 Round 3 에서 3가지 데이터 불일치 flag.
+
+| # | 이슈 | 영향 |
+|---|---|---|
+| ① | `corrosion_risk_score`, `isolation_section_count` KPI 가 bim_pipelines 에 없음 | BimPipeline 29 cols (AI FDE 추측 31 cols) |
+| ② | `ingested_at_utc` 가 Date type (Timestamp 기대) | 시계열 precision 손실 |
+| ③ | `piperun_id` 가 bim_belongs_to_pipeline 에 없음 | belongsToPipeRun link 등록 불가 |
+
+**Decision (각각)**:
+
+| # | 선택지 | 결정 | 이유 |
+|---|---|---|---|
+| ① | (a) 재업로드 / (b) Phase 3 Pipeline Builder 조인 | **(b)** | KPI 데이터 아직 Foundry 에 없음. Phase 3 operational layer 와 묶어 처리. |
+| ② | (a) 재cast / (b) Date 수용, 필요시 나중 cast | **(b)** | Phase 2 blocker 아님. Timestamp precision 은 Phase 3 operational task 에서 필요할 때 Pipeline Builder cast. |
+| ③ | (a) Pipeline Builder 파생 dataset / (b) sp3d_pipe_run 직접 link | **(a)** | D-AIFDE-13 원칙 적용. 원본 수정 없이 composite key 유지. |
+
+**Rationale**:
+- Phase 2 등록을 **지연시키지 않음** — 현재 자산으로 기본 Ontology 먼저 완성
+- Pipeline Builder 작업은 **등록 직후 cleanup** 으로 스케줄
+- KPI / Timestamp 는 **Phase 3 operational layer 착수 시** 필요해지면 처리
+
+**Implementation plan**:
+
+1. **Ontology registration (즉시, AI FDE Round 4)**:
+   - 7 Object Types + Interface + 2 Mixins
+   - 4 Link Types (belongsToPipeRun 제외)
+
+2. **Post-registration cleanup (24h 이내)**:
+   - Pipeline Builder: `bim_belongs_to_pipeline` → `bim_belongs_to_piperun`
+     (derived column: `piperun_id = CONCAT(pipeline_name, '::', pipe_run_name)`)
+   - `belongsToPipeRun` Link Type 등록
+
+3. **Phase 3 operational layer 착수 시**:
+   - Pipeline Builder: KPI dataset 조인 → `bim_pipelines_enriched`
+   - Pipeline Builder: Timestamp cast (필요 확인 후)
+   - BimPipeline backing 을 enriched view 로 전환
+
+**Cross-references**:
+- AI FDE Round 3 "Three Data Discrepancies to Flag" 섹션
+- `docs/plan/foundry-next-steps-roadmap.md` 방향 G (Phase 3)
+
+---
+
 ## 4. Discoveries / Surprises
 
 ### 🆕 Discovery 1: `nav_item_guid` 이 M1 감사 증거
@@ -285,10 +397,18 @@ WHERE object_id != nav_item_guid
 - [x] Phase 3 방향 G 로드맵 등재
 - [x] AI FDE Final Review Doc 9-section 발행 확인
 
-### Pending AI FDE Round 4
-- [ ] BimPipeRun Object Type spec 작성 (AI FDE 에 요청됨)
-- [ ] belongsToPipeRun Link Type spec 작성 (AI FDE 에 요청됨)
+### Completed in Round 4 (AI FDE side)
+- [x] BimPipeRun Object Type spec (26 properties)
+- [x] belongsToPipeRun Link Type spec (flagged: needs piperun_id)
+- [x] pipeRunInPipeline Link Type spec (new, BimPipeRun → BimPipeline)
+- [x] 3 data discrepancies flagged by AI FDE
+- [x] Final Review Doc 발행 (9 sections)
+
+### Pending AI FDE Round 5 (사용자 답변 전달 완료, 분석 중)
+- [ ] D12-14 수용 확인 (용어 분리, Pipeline Builder, discrepancy triage)
 - [ ] Ontology editing mode 전환
+- [ ] 등록 실행 (Interface → Mixins → 7 Object Types → 4 Link Types)
+- [ ] belongsToPipeRun 은 등록 후 Pipeline Builder 작업 대기
 
 ### Pending user action
 - [ ] Phase 2 session log (이 파일) 커밋
@@ -334,6 +454,8 @@ Round 2 에서 AI FDE 가 데이터 profile 로 재검증하여 "Equipment 는 0
 ### What went poorly
 - Phase 1 에서 Equipment HasPressureTemp 가정을 데이터 확인 없이 했음 (Phase 2 에서 뒤집힘)
 - Valve 문제는 Phase 2 초반에 눈치챌 수 있었는데 aggregate 결과 나온 후에야 발견
+- **Pipeline Builder 거버넌스 원칙을 사건 후 수립** (D-AIFDE-13) — `cast_timestamp_columns.py`
+  가 raw 를 먼저 수정한 뒤에야 원칙 명시. 향후는 선행 수립 지향.
 
 ### Next session improvements
 - **Phase 3 session prompt** 에 "Equipment pressure/temp 0% 를 인지하고 workaround 제시" 포함
