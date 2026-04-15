@@ -256,6 +256,79 @@ M4 finding (pipeline fragmentation) 같은 구조 분석을 live dashboard 로.
 | 2 | **F — AIP Logic** | 서버리스 KPI 함수 |
 | 3 | **문서화 + demo video** | 포트폴리오 완성 |
 
+### Future — 방향 G: Operational Layer (Construction Management)
+
+**추가 일자**: 2026-04-15 (Phase 2 AI FDE 세션에서 논의)
+**상태**: 로드맵 등재, 현재 진행 안 함. BIM static layer 완성 후 착수.
+
+플랜트 운영 / 공사 관리 도메인으로 확장. 정적 BIM 데이터 위에 **동적 운영 데이터** 를 그래프로 연결.
+
+#### 신규 Object Types (3개)
+
+```
+BimTask        many-to-one → BimObject (target_object_id)
+  taskId, taskType (INSTALL/INSPECT/WELD/HYDROTEST/COMMISSION)
+  plannedStartDate/EndDate, actualStartDate/EndDate
+  plannedDurationDays, actualDurationDays
+  completionStatus (NOT_STARTED/IN_PROGRESS/COMPLETE)
+  completionPercent, estimatedCostUsd, actualCostUsd
+  priority, blockingIssue
+
+BimCrew        many-to-many ↔ BimTask (via assignedTo)
+  crewId, crewName, skillType
+  headcount, hourlyRateUsd
+  availabilityStart/End
+
+BimSchedule    one-to-many → BimTask
+  scheduleId, projectName
+  baselineStart/End, currentForecastEnd
+  totalBudgetUsd, spentToDateUsd
+  overallProgressPercent
+```
+
+#### 신규 Link Types (2개)
+- `hasTask` — BimObject ←many-to-many→ BimTask
+- `assignedToCrew` — BimTask ←many-to-many→ BimCrew
+
+#### 신규 Actions
+- `MarkTaskComplete`, `UpdateTaskProgress`, `AssignCrew`, `ReportBlockingIssue`
+
+#### 신규 Functions (AIP Logic)
+- `computeRemainingDays(pipeline_id)` → 남은 공사일
+- `forecastCompletion(schedule_id)` → 완공 예상일 (EVM 기반)
+- `crewUtilization(crew_id, period)` → 가동률 %
+- `earnedValueAnalysis(schedule_id)` → SPI, CPI
+
+#### Workshop 앱
+"Construction Dashboard" — PipeRun 단위 진행 추적 + Gantt 차트 + 비용 vs 예산
+
+#### 외부 데이터 수집 설계
+- Primavera P6 export → BimTask 동기화
+- MS Project → BimTask 동기화
+- Excel schedule → Workshop 업로드
+- 수기 입력 (Workshop form)
+
+#### 분석 가능해지는 질문
+- PipeRun PR-001 의 남은 공사일?
+- Pipeline P-10147 총 공사비 vs 예산?
+- 이번 주 끝나는 Task 20개는?
+- 용접공(WELDING crew) 가동률?
+- Zone-A 의 critical path 상 지연 Task?
+- 프로젝트 전체 EVM (Earned Value)?
+
+#### 도메인 배경
+- `Pipeline` = 전체 배관 시스템 (예: "P-10147 crude oil feed")
+- `PipeRun` = **시공 단위** (flange 사이 / support 사이 구간) — Phase 2 에 BimPipeRun 승격됨
+- Task 는 주로 **PipeRun 단위**로 할당 → `BimTask.targetObjectId` 가 BimPipeRun 일 경우가 가장 흔함
+
+#### 선행 조건
+- Phase 2 완료 (BimPipeline + BimPipeRun 등록)
+- 외부 schedule 데이터 1건 이상 확보
+- Foundry AIP Logic 권한 확인
+
+#### 예상 소요
+2–3 주 (external data 수집 시간 제외)
+
 ---
 
 ## 10. 각 방향의 성공 기준

@@ -61,6 +61,7 @@
 | Date | Phase | Key Decisions | Link |
 |---|---|---|---|
 | 2026-04-15 | 1 Exploration | D-AIFDE-1 (6 ObjType + Interface), D-AIFDE-2 (BimPipeline 승격, Group/Zone defer), D-AIFDE-3 (전체 포함 + Object Set 필터), D-AIFDE-4 (단일 adjacentTo link), D-AIFDE-5 (3D + Pipeline 우선) | [session log](analysis/ai-fde-sessions/2026-04-15-phase1-exploration.md) |
+| 2026-04-15 | 2 Ontology Modeling | D-AIFDE-6 (BimPipeRun 1급 승격), D-AIFDE-7 (Timestamp cast 8 datasets), D-AIFDE-8 (Equipment HasPressureTemp 제외), D-AIFDE-9 (nav_item_guid M1 감사 증거 보존), D-AIFDE-10 (Phase 3 Operational Layer 로드맵 등재), D-AIFDE-11 (추가 mixin 불채택) | [session log](analysis/ai-fde-sessions/2026-04-15-phase2-ontology-modeling.md) |
 
 ### Known limitations (수용 / 연기)
 
