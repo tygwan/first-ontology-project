@@ -1,0 +1,9 @@
+dataset,local_parquet_path,exists,physical_type,logical_type,arrow_type,foundry_cast_state,foundry_post_rollback,expected_local_type,local_mismatch
+bim_piping,data/ontology/2026-04-12/object_types/piping.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_structural,data/ontology/2026-04-12/object_types/structural.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_equipment,data/ontology/2026-04-12/object_types/equipment.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_electrical,data/ontology/2026-04-12/object_types/electrical.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_hvac,data/ontology/2026-04-12/object_types/hvac.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_other,data/ontology/2026-04-12/object_types/other.parquet,True,BYTE_ARRAY,String,string,date (INT64) — broken,string (ISO 8601),string,False
+bim_pipelines,data/ontology/2026-04-12/bim_pipelines.parquet,True,INT64,"Timestamp(isAdjustedToUTC=true, timeUnit=nanoseconds, is_from_converted_type=false, force_set_converted_type=false)","timestamp[ns, tz=UTC]",date (INT64) — broken,string (ISO 8601),"timestamp[ns, tz=UTC]",False
+bim_piperuns,data/ontology/2026-04-12/bim_piperuns.parquet,True,INT64,"Timestamp(isAdjustedToUTC=true, timeUnit=nanoseconds, is_from_converted_type=false, force_set_converted_type=false)","timestamp[ns, tz=UTC]",date (INT64) — broken,string (ISO 8601),"timestamp[ns, tz=UTC]",False

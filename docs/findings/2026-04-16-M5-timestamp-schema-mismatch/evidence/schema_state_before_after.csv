@@ -1,0 +1,9 @@
+dataset,dataset_category,local_parquet_type,foundry_initial_upload_2026_04_15_am,foundry_after_cast_2026_04_15_pm,foundry_after_rollback_2026_04_16,ui_preview_after_cast,ui_preview_after_rollback,affected_by_cast_script
+bim_piping,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_structural,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_equipment,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_electrical,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_hvac,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_other,object_type,string,string (ISO 8601),date (INT64) — broken,string (ISO 8601),FAIL,OK,yes
+bim_pipelines,aggregate,"timestamp[ns, tz=UTC]",date (INT64) — broken,date (INT64) — broken,string (ISO 8601),FAIL,OK,no (local was already datetime)
+bim_piperuns,aggregate,"timestamp[ns, tz=UTC]",date (INT64) — broken,date (INT64) — broken,string (ISO 8601),FAIL,OK,no (local was already datetime)

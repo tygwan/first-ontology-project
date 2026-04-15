@@ -16,7 +16,7 @@
 **프로젝트 상태** (2026-04-15 기준):
 - Phase 0~6: ✅ 완료 (336 테스트 통과, +2 E2E skipped)
 - Phase 7 (Foundry integration): 🔄 진행 중 — Object/Link/Media 업로드 완료, Ontology 구성 대기
-- Findings: M1 ✅, M2 ✅, M3 ✅, M4 🟡 (100% 로컬, DXTnavis PR 대기)
+- Findings: M1 ✅, M2 ✅, M3 ✅, M4 🟡 (100% 로컬, DXTnavis PR 대기), M5 ✅ (timestamp schema rollback)
 - OWL: 28 classes, 477K triples | Neo4j: 261K edges | SHACL: 468 violations
 - 33 KPIs | 5 notebooks + 26 해석 + 25 PNGs
 - **LLM**: LangGraph agent (Gemini 2.5 Flash) — 5 tools (SQL, FTS5, SPARQL, Cypher, KPI)
@@ -28,6 +28,21 @@
   - Ontology 구성 + OSDK + AIP Agent ⏸ (로드맵: `docs/plan/foundry-next-steps-roadmap.md`)
 - **Standards**: dev-standards R1-R10 (R10 = Decision Validation / A/B Testing)
 - 다음: [Foundry Next-Steps Roadmap](plan/foundry-next-steps-roadmap.md) — A) Ontology 구성 → B) OSDK React 3D viewer
+
+---
+
+## 독자별 Entry Point
+
+이 프로젝트에 처음 진입했다면 당신이 누구냐에 따라 다른 자료가 최적입니다:
+
+| 당신은 | 최적 진입점 | 소요 |
+|--------|-----------|------|
+| **첫 방문자** — "이 프로젝트가 뭐지?" | 이 문서 §1 Quick Problem Index + [README.md](../README.md) | 5분 |
+| **채용 회사 서류 검토자** — JD 매칭 확인 | [`docs/analysis/job-competency-portfolio.md`](analysis/job-competency-portfolio.md) §0 한눈에 보기 → §7 JD 매핑 | 10분 |
+| **기술 면접관 — 온톨로지·KG 깊이 궁금** | [`docs/analysis/ontology-kg-engineer-perspective.md`](analysis/ontology-kg-engineer-perspective.md) 7가지 역량 | 20분 |
+| **기술 면접관 — 데이터 분석·사이언스 깊이 궁금** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) 11 섹션 | 30분 |
+| **동료 엔지니어 — 구현·결정 과정 궁금** | 이 문서 §2 Timeline + §4 Decisions + [`docs/findings/`](findings/) | 40분 |
+| **기술블로그 구독자 — 서사로 읽고 싶다** | [`docs/blog/`](blog/) (예정) + Notion 블로그 페이지 | 글당 ~15분 |
 
 ---
 
@@ -53,6 +68,7 @@
 | M2 | 2026-04-12 | 🟡 MINOR | Adjacency 는 AABB 기반 — 3단계 품질 분류 필요 | ✅ Resolved (tier 분류 도입) | [archive](findings/2026-04-12-M2-adjacency-tiers/README.md) |
 | M3 | 2026-04-13 | 🟠 MAJOR | Parent box 객체 448개가 adjacency 66% 오염 | ✅ Resolved locally (is_parent_box + 재분석 완료) | [archive](findings/2026-04-13-M3-parent-box-contamination/README.md) |
 | M4 | 2026-04-15 | 🟠 MAJOR | gap_fallback.fbx 의 788 mesh ↔ object_id 매핑 (`항목 - GUID` 한국어 property + 48 Geometry GUID 누락) | 🟡 **Partially Resolved** (740 Properties70 GUID + 48 centroid 매칭 = 100% 로컬 커버, DXTnavis PR 제출 대기) | [archive](findings/2026-04-15-M4-fbx-guid-mapping/README.md) |
+| M5 | 2026-04-16 | 🟠 MAJOR | palantir-sdk `write_pandas` 가 `ingested_at_utc` 를 Parquet DATE(INT64) 로 직렬화 → Spark/UI Preview 8 datasets 전수 실패 | ✅ **Resolved** (D-AIFDE-7 rollback via `fix_dataset_schema.py`, String 복귀; Ontology property type Date→String UI 수정 follow-up) | [archive](findings/2026-04-16-M5-timestamp-schema-mismatch/README.md) |
 
 ### AI FDE Collaboration Sessions
 

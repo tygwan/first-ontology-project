@@ -1,0 +1,43 @@
+Captured: 2026-04-16, Foundry UI "Dataset → Data Preview" tab for bim_piping
+Source: /Datayoon-09825c/BIM-KG/bim_piping (post D-AIFDE-7 timestamp cast)
+
+------------------------------------------------------------------------
+
+org.apache.spark.sql.execution.datasources.SchemaColumnConvertNotSupportedException
+  column: [ingested_at_utc]
+  physicalType: INT64
+  logicalType: date
+
+    at org.apache.spark.sql.execution.datasources.parquet.
+       VectorizedColumnReader.constructConvertNotSupportedException(...)
+    at org.apache.spark.sql.execution.datasources.parquet.
+       VectorizedColumnReader.readBatch(...)
+    at org.apache.spark.sql.execution.datasources.parquet.
+       VectorizedParquetRecordReader.nextBatch(...)
+    at org.apache.spark.sql.execution.datasources.FileScanRDD$$anon$1.hasNext(...)
+    ...
+
+Interpretation:
+  - The Foundry table schema expects ingested_at_utc to be a Timestamp.
+  - The underlying Parquet file (written by palantir-sdk's write_pandas)
+    encodes the column as:
+        physical type  = INT64
+        logical type   = DATE
+  - Spark's VectorizedColumnReader refuses to coerce INT64+DATE into
+    Timestamp and throws SchemaColumnConvertNotSupportedException.
+
+Affected surfaces (same error or equivalent read failure):
+  - Foundry UI Dataset Preview        [FAIL]
+  - foundry-sdk Dataset.read_table    [FAIL]
+  - Ontology Object Type registration [OK]  (schema-only path)
+  - Ontology SDK query (objects().BimPiping())
+                                      [OK]  (Ontology serving layer)
+
+Reproduced on all 8 datasets uploaded via scripts/cast_timestamp_columns.py
+plus the 2 aggregates which were produced by the same palantir-sdk path.
+
+Resolution path:
+  scripts/fix_dataset_schema.py re-uploads every ingested_at_utc column as
+  an ISO 8601 String, which is the known-working path for palantir-sdk
+  write_pandas. After rollback, all 8 datasets read cleanly from UI, Spark,
+  and foundry-sdk.
