@@ -326,20 +326,20 @@ PR 대화창에 그대로 남아 있습니다. 이력이 됩니다.
 
 ## 참조
 
-- **Finding archive**: [`docs/findings/2026-04-12-M1-piping-misclassification/`](../findings/2026-04-12-M1-piping-misclassification/)
-  - [`audit.py`](../findings/2026-04-12-M1-piping-misclassification/audit.py) — 재현 스크립트
+- **Finding archive**: [`docs/findings/2026-04-12-M1-piping-misclassification/`](../../findings/2026-04-12-M1-piping-misclassification/)
+  - [`audit.py`](../../findings/2026-04-12-M1-piping-misclassification/audit.py) — 재현 스크립트
   - `figures/01~04.png` — 4 시각화
   - `data/*.csv` — 5 CSV 증거
-- **재정렬 task log**: [`docs/tasklog/phase-1-realignment-20260412.md`](../tasklog/phase-1-realignment-20260412.md)
-- **XLSX classifier 로직 분석**: [`docs/analysis/refined-xlsx-exporter-logic.md`](../analysis/refined-xlsx-exporter-logic.md)
+- **재정렬 task log**: [`docs/tasklog/phase-1-realignment-20260412.md`](../../tasklog/phase-1-realignment-20260412.md)
+- **XLSX classifier 로직 분석**: [`docs/analysis/refined-xlsx-exporter-logic.md`](../../analysis/refined-xlsx-exporter-logic.md)
 - **DXTnavis Issue #2**: <https://github.com/tygwan/DXTnavis/issues/2>
 - **DXTnavis PR #3**: <https://github.com/tygwan/DXTnavis/pull/3>
-- **Python 포팅**: [`src/bimkg/ingest/xlsx_classifier.py`](../../src/bimkg/ingest/xlsx_classifier.py)
+- **Python 포팅**: [`src/bimkg/ingest/xlsx_classifier.py`](../../../src/bimkg/ingest/xlsx_classifier.py)
 - **dev-standards R3 (Finding Archive Rule)**: <https://github.com/tygwan/dev-standards>
 
 ---
 
 *이 글은 dev-standards R11 실험 중 — "기록된 finding 을 기술블로그
 narrative 로 풀어쓰는 패턴" 을 탐색하는 첫 번째 사례입니다. 글을
-쓰며 관찰한 패턴은 [블로그 회고 메모](blog-writing-retrospective.md)
+쓰며 관찰한 패턴은 [블로그 회고 메모](../blog-writing-retrospective.md)
 에 정리합니다.*

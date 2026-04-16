@@ -548,7 +548,7 @@ BIMEntity
 | **🔬 DA/DS 관점 심층 분석** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) ← **9 계층 수치·공식·ML task** |
 | **🎯 온톨로지/KG 엔지니어 관점 (7가지 역량)** | [`docs/analysis/ontology-kg-engineer-perspective.md`](analysis/ontology-kg-engineer-perspective.md) ← **채용 직군별 + JD 키워드 매핑** |
 | **💼 직무 역량 포트폴리오 (중립 버전)** | [`docs/analysis/job-competency-portfolio.md`](analysis/job-competency-portfolio.md) ← **5 PAAR + JD 매핑 템플릿 + 산업 6 카테고리 transfer** (Notion 동기화 완료) |
-| **📝 기술블로그 (narrative 장문)** | [`docs/blog/`](blog/) ← M1 수사극 첫 번째 글 + [작성 회고](blog/blog-writing-retrospective.md) (11 패턴 + R12 룰 초안) |
+| **📝 기술블로그 (narrative 장문)** | [`docs/blog/`](blog/) ← [인덱스](blog/README.md) · [Refinery M1 수사극](blog/refinery/2026-04-M1-piping-misclassification.md) · [작성 회고 11 패턴](blog/blog-writing-retrospective.md) |
 | Notion portfolio (외부) | <https://www.notion.so/Refinery-Facility-Ontology-Analytics-3405a4e1f87881d08fd4f9ed41234793> |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |

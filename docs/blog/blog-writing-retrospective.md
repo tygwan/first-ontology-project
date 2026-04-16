@@ -6,7 +6,7 @@
 > 승격시킬 것을 전제로 합니다.
 >
 > **작성일**: 2026-04-16
-> **대상 글**: [`2026-04-M1-piping-misclassification.md`](2026-04-M1-piping-misclassification.md) (345 lines, ~4,800자, 읽기 12분)
+> **대상 글**: [`refinery/2026-04-M1-piping-misclassification.md`](refinery/2026-04-M1-piping-misclassification.md) (345 lines, ~4,800자, 읽기 12분)
 > **Notion 반영**: <https://www.notion.so/Piping-997-Structure-3435a4e1f87881f5b052cd7cd3d96407>
 
 ---
@@ -204,7 +204,7 @@ MCP 스키마는 `paragraph` · `bulleted_list_item` 만 명시하지만 실제�
 
 ## 7. 참조
 
-- 본 회고의 대상 블로그: [`2026-04-M1-piping-misclassification.md`](2026-04-M1-piping-misclassification.md)
+- 본 회고의 대상 블로그: [`2026-04-M1-piping-misclassification.md`](refinery/2026-04-M1-piping-misclassification.md)
 - Notion 반영: <https://www.notion.so/Piping-997-Structure-3435a4e1f87881f5b052cd7cd3d96407>
 - 원본 finding: [`docs/findings/2026-04-12-M1-piping-misclassification/`](../findings/2026-04-12-M1-piping-misclassification/)
 - 토스 참조 글: <https://toss.tech/article/place-metric-review> (문체 · 저자 소개 · 구조 레퍼런스)
