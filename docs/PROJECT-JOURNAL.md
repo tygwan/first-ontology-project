@@ -213,6 +213,14 @@
              ├── ML/AI 엔지니어 일반 JD 매핑 템플릿 (필수 4/4 ✅, 업무 8/8, 우대 7+3+3)
              ├── Notion portfolio 페이지에 "# 크로스역량 — 직무 역량 포트폴리오" 전체 섹션 append (~130 blocks)
              └── source of truth = 중립·완전, 특화는 지원 시점에 extract 원칙
+2026-04-16   PROJECT-JOURNAL §0 독자별 Entry Point 섹션 추가 (6 페르소나)
+             M1 기술블로그 첫 번째 글 (docs/blog/) + Notion 갤러리 DB 연동
+             ├── 2026-04-M1-piping-misclassification.md (345줄, ~4,800자, 존댓말 + 저자 소개)
+             ├── 토스플레이스 스타일 (a)+(b) 조합 — 개인 엔지니어 에세이 + 존댓말·저자 소개
+             ├── Notion 기술 블로그 페이지에 M1 포스트 push (~80 blocks, 커버 + 🔍 아이콘)
+             ├── 사용자 inline DB 생성 → M1 이 첫 row 로 이동, 태그 6개 입력
+             ├── blog-writing-retrospective.md — 11 narrative 패턴 + R12 룰 초안 + 다음 글 3 후보
+             └── MCP Notion data_source API 제약 확인 (invalid_request_url) → DB 수동 설정 우회
 ```
 
 ### Test count progression
@@ -540,6 +548,7 @@ BIMEntity
 | **🔬 DA/DS 관점 심층 분석** | [`docs/analysis/data-analyst-data-scientist-deep-dive.md`](analysis/data-analyst-data-scientist-deep-dive.md) ← **9 계층 수치·공식·ML task** |
 | **🎯 온톨로지/KG 엔지니어 관점 (7가지 역량)** | [`docs/analysis/ontology-kg-engineer-perspective.md`](analysis/ontology-kg-engineer-perspective.md) ← **채용 직군별 + JD 키워드 매핑** |
 | **💼 직무 역량 포트폴리오 (중립 버전)** | [`docs/analysis/job-competency-portfolio.md`](analysis/job-competency-portfolio.md) ← **5 PAAR + JD 매핑 템플릿 + 산업 6 카테고리 transfer** (Notion 동기화 완료) |
+| **📝 기술블로그 (narrative 장문)** | [`docs/blog/`](blog/) ← M1 수사극 첫 번째 글 + [작성 회고](blog/blog-writing-retrospective.md) (11 패턴 + R12 룰 초안) |
 | Notion portfolio (외부) | <https://www.notion.so/Refinery-Facility-Ontology-Analytics-3405a4e1f87881d08fd4f9ed41234793> |
 | **Foundry dtype 호환** | [`docs/reference/foundry-dtype-compatibility.md`](reference/foundry-dtype-compatibility.md) |
 | **Foundry 셋업 가이드** | [`docs/reference/foundry-setup-guide.md`](reference/foundry-setup-guide.md) |
@@ -620,4 +629,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-14 (직무 역량 포트폴리오 중립화 + Notion 전체 반영)*
+*Last updated: 2026-04-16 (M1 기술블로그 첫 번째 글 + Notion 갤러리 DB 연동 + 독자별 entry point + blog-writing-retrospective)*
