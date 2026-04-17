@@ -69,6 +69,7 @@
 | M3 | 2026-04-13 | 🟠 MAJOR | Parent box 객체 448개가 adjacency 66% 오염 | ✅ Resolved locally (is_parent_box + 재분석 완료) | [archive](findings/2026-04-13-M3-parent-box-contamination/README.md) |
 | M4 | 2026-04-15 | 🟠 MAJOR | gap_fallback.fbx 의 788 mesh ↔ object_id 매핑 (`항목 - GUID` 한국어 property + 48 Geometry GUID 누락) | 🟡 **Partially Resolved** (740 Properties70 GUID + 48 centroid 매칭 = 100% 로컬 커버, DXTnavis PR 제출 대기) | [archive](findings/2026-04-15-M4-fbx-guid-mapping/README.md) |
 | M5 | 2026-04-16 | 🟠 MAJOR | palantir-sdk `write_pandas` 가 `ingested_at_utc` 를 Parquet DATE(INT64) 로 직렬화 → Spark/UI Preview 8 datasets 전수 실패 | ✅ **Resolved** (D-AIFDE-7 rollback via `fix_dataset_schema.py`, String 복귀; Ontology property type Date→String UI 수정 follow-up) | [archive](findings/2026-04-16-M5-timestamp-schema-mismatch/README.md) |
+| M6 | 2026-04-17 | 🟠 MAJOR | BimPiping Ontology 등록 실패 — 5개 중첩 원인 (null Arrow dtype / auto-import 170 properties bloat / `sp3d_sp3d_moniker` 이중 prefix / meshUri interface property ID collision / Media Reference path `mesh/` prefix 불일치) | ✅ **Resolved** (아키텍처 전환: 6 specialized OT → 단일 BimObject OT + refined_class 필터 + 4 Link Type 생성 완료) | [archive](findings/2026-04-17-M6-ontology-registration-asymmetry/README.md) |
 
 ### AI FDE Collaboration Sessions
 
@@ -78,6 +79,7 @@
 |---|---|---|---|
 | 2026-04-15 | 1 Exploration | D-AIFDE-1 (6 ObjType + Interface), D-AIFDE-2 (BimPipeline 승격, Group/Zone defer), D-AIFDE-3 (전체 포함 + Object Set 필터), D-AIFDE-4 (단일 adjacentTo link), D-AIFDE-5 (3D + Pipeline 우선) | [session log](analysis/ai-fde-sessions/2026-04-15-phase1-exploration.md) |
 | 2026-04-15 | 2 Ontology Modeling | D-AIFDE-6 (BimPipeRun 1급 승격), D-AIFDE-7 (Timestamp cast 8 datasets), D-AIFDE-8 (Equipment HasPressureTemp 제외), D-AIFDE-9 (nav_item_guid M1 감사 증거 보존), D-AIFDE-10 (Phase 3 Operational Layer 로드맵 등재), D-AIFDE-11 (추가 mixin 불채택), D-AIFDE-12 (BIM pipeline vs Foundry Pipeline Builder 용어 분리), D-AIFDE-13 (Raw data 불변 + Pipeline Builder 의무), D-AIFDE-14 (3 discrepancy triage: KPI defer, Date 수용, piperun_id PB 파생) | [session log](analysis/ai-fde-sessions/2026-04-15-phase2-ontology-modeling.md) · [journey](analysis/decision-journey-2026-04-15.md) |
+| 2026-04-17 | 2/3 Registration & Link | D-AIFDE-20 (`sp3d_sp3d_moniker` → `sp3d_moniker` rename, 이중 prefix 해소), D-AIFDE-21 (단일 BimObject OT + `refined_class` 필터 — 6 specialized 폐기, streaming-ready), D-AIFDE-22 (Media Reference 변환 = Foundry Transform `bim-mesh-uri-transform`, write_pandas 직접 struct 지양) | [tasklog](tasklog/phase-2-3-ontology-registration-20260417.md) · [M6 finding](findings/2026-04-17-M6-ontology-registration-asymmetry/README.md) |
 
 ### Known limitations (수용 / 연기)
 
@@ -221,7 +223,22 @@
              ├── 사용자 inline DB 생성 → M1 이 첫 row 로 이동, 태그 6개 입력
              ├── blog-writing-retrospective.md — 11 narrative 패턴 + R12 룰 초안 + 다음 글 3 후보
              └── MCP Notion data_source API 제약 확인 (invalid_request_url) → DB 수동 설정 우회
+2026-04-17   Phase 2/3 Foundry Ontology Registration 완료 — ✅ **데이터 기본 세팅 완료**
+             Finding M6 — 5개 중첩 원인 (null-dtype / bloat / 이중 prefix / meshUri ID collision / mesh path)
+             ├── BimPiping 재등록 성공 (새 RID 생성, 3,062 objects)
+             ├── AI FDE 가 Foundry Code Repo `bim-mesh-uri-transform` 작성 → 6 `_with_media_ref` dataset
+             ├── AI FDE 가 UNION pipeline → `bim_objects` dataset (12,009 rows)
+             ├── 아키텍처 전환: 통합 BimObject OT 도입 + 6 specialized OT **병행 보존** (2-view 전략)
+             ├── BimPipelines OT 등록 (147 objects), BimPipeRun OT 후속 예정 (378 objects, 30분)
+             ├── 4 Link Type 전수 생성: adjacentTo (Join table M:N) / hasParent (FK) / inGroup (FK) / belongsToPipeline (FK)
+             ├── D-AIFDE-20: `sp3d_sp3d_moniker` → `sp3d_moniker` 리네임 (이중 prefix 해소)
+             ├── D-AIFDE-21: 통합 BimObject OT + 6 specialized OT 2-view 전략 (streaming-ready)
+             └── D-AIFDE-22: Media Reference 변환 = Foundry Transform (vs SDK write_pandas, M5 연장선)
 ```
+
+**Phase 2/3 마일스톤**: 데이터 기본 세팅 완료. Phase 4 (Workshop 대시보드 / Streaming 설계) 진입 가능.
+
+**종합 인사이트 리포트** ([`docs/analysis/bim-kg-insights-20260417.md`](analysis/bim-kg-insights-20260417.md)): 등록 직후 BimObject 기반 8개 카테고리 쿼리 — 품질(Piping 92.5% OK vs Other 40.9%), 물리속성(Foundation 620톤 · 221 인접 허브), 설계압력(P-10147 104 atm 핫라인), 인접네트워크(Structure↔Structure 16,689 overlap), 계층(L6 5,105 피크), 파이프라인 Top 10, 재료(A106 탄소강 중심). 액션 아이템 6개 도출 — NDT 우선순위, clash 자동 검출 파이프라인, 3D 디지털 트윈.
 
 ### Test count progression
 
@@ -439,6 +456,69 @@ BIMEntity
 
 ---
 
+### D-AIFDE-20 — `sp3d_sp3d_moniker` → `sp3d_moniker` rename (이중 prefix 해소)
+
+**맥락**: DXTnavis XLSX loader 가 SP3D property name 에 `sp3d_` prefix 를 이중 부여하여 컬럼명이 `sp3d_sp3d_moniker` 로 저장됨. Foundry Ontology Manager 의 auto-map (camelCase → snake_case) 이 interface property `sp3dMoniker` 를 `sp3d_moniker` 로 추론하기 때문에 수동 매핑 필요.
+
+**결정**: 6개 Object Type parquet 전수 에서 `sp3d_sp3d_moniker` → `sp3d_moniker` 로 컬럼 리네임. `scripts/rename_double_prefix_column.py` 로 자동화.
+
+**근거**:
+1. 수동 매핑 6개 Object Type 마다 반복하는 비용 > raw data 수정 비용
+2. D-AIFDE-13 "raw data 불변" 원칙의 예외 — upstream 버그를 Pipeline Builder view 로 우회하는 것은 가능하나, 6개 transform 을 만드는 것이 과함
+3. 장기적으로 DXTnavis 업스트림 PR 로 해결되면 이 rename 은 불필요해짐
+
+**상세**: `docs/findings/2026-04-17-M6-ontology-registration-asymmetry/README.md` §3.1-R3, `docs/tasklog/phase-2-3-ontology-registration-20260417.md`
+
+---
+
+### D-AIFDE-21 — 단일 BimObject Object Type + `refined_class` 필터 (vs 6 specialized)
+
+**맥락**: Phase 3 에서 `adjacentTo` link (110,173 edges) 이 6개 Object Type 간 cross-type 교차임을 확인. Foundry Link Type 은 concrete OT 쌍에만 선언 가능 → 6×6=36 조합 생성은 비현실적. 또한 live streaming 확장 시 단일 스트림 → 단일 dataset 흐름이 자연스러움.
+
+**결정**: 6개 `_with_media_ref` dataset 을 UNION 해 `bim_objects` (12,009 rows) dataset 생성 → 단일 **BimObject** Object Type 등록. `refined_class` String property 로 타입 구분 (Piping/Structure/Equipment/Electrical/HVAC/Other).
+
+4개 Link Type 전부 BimObject self-link 또는 BimObject→BimPipelines FK:
+- `adjacentTo`: BimObject ↔ BimObject (Many-to-Many, Join table `bim_adjacent_to`)
+- `hasParent`: BimObject ↔ BimObject (Many-to-One, FK `parent_id`)
+- `inGroup`: BimObject ↔ BimObject (Many-to-One, FK `group_id`)
+- `belongsToPipeline`: BimObject → BimPipelines (Many-to-One, FK `sp3d_pipeline`)
+
+**근거**:
+1. Cross-type adjacency 110,173 edges 를 self-link 1개로 커버 (36 concrete link type 회피)
+2. Streaming 시나리오 확장성: 단일 스트림 → 단일 dataset → 즉시 인덱싱
+3. Object 중복 없음 (UNION 결과를 OT 의 backing 으로 사용; 6개 specialized OT 와 병행 시 발생할 중복 회피)
+4. `refined_class` 로 Power BI / Workshop / Object Explorer 에서 타입 필터 가능
+
+**2-view 전략**:
+- **통합 뷰 (BimObject)**: 12,009 objects, 전체 cross-type 그래프 탐색 + 링크 네비게이션 + 3D Media Reference 뷰어
+- **세분화 뷰 (specialized OT)**: 각 refined_class 특화 속성 포함 (BimPiping 의 sp3d_pipeline/design_pressure_kpa, BimStructural 의 sp3d_material/width_m, BimEquipment 의 sp3d_equipment_name 등). 도메인별 정밀 쿼리 용.
+- **유지 결정**: 세분화 OT 는 삭제하지 않고 병행 보존 — 이미 ETL 결과가 있고 추가 비용 없이 더 풍부한 분석 자료가 됨. 통합/세분화는 상호보완.
+- **Trade-off**: Compass 에 OT 가 많아져 navigation 이 복잡해짐; 다만 `refined_class` 필터로 통합 뷰에서도 대부분 대체 가능하므로 실사용 영향 작음.
+
+**상세**: `docs/findings/2026-04-17-M6-ontology-registration-asymmetry/README.md` §4.2, `docs/tasklog/phase-2-3-ontology-registration-20260417.md` §3.4
+
+---
+
+### D-AIFDE-22 — Media Reference 변환 = Foundry Transform (vs SDK `write_pandas`)
+
+**맥락**: `mesh_uri` 를 `struct<mediaSetRid, mediaSetViewRid, mediaItemRid>` Media Reference 타입으로 변환 필요. palantir-sdk `write_pandas` 는 struct 직렬화 path 가 M5 (timestamp → DATE) 와 유사한 degenerate 가능성이 있음.
+
+**결정**: Foundry Code Repository `bim-mesh-uri-transform` 을 AI FDE 가 작성. Spark 으로 `list_media_items_by_path_with_media_reference` API 호출 → Media Reference struct 생성 + `mesh/` prefix 자동 제거 + 빈 문자열 → NULL 처리. 6개 `_with_media_ref` dataset 출력 (Equipment/Electrical/HVAC/Other/Structural/Piping 전수).
+
+**근거**:
+1. M5 사건 이후 write_pandas 의 struct/timestamp/null 직렬화 path 신뢰도 저하
+2. Foundry Transform 은 Spark DataFrame 기반 → Parquet struct 직렬화 Foundry 가 책임지므로 type consistency 보장
+3. Media Set 의 실제 파일 경로 (`UUID.glb`) 와 dataset 컬럼 값 (`mesh/UUID.glb`) 간 포맷 불일치를 Transform 단계에서 일괄 해소
+4. 재빌드 가능 (incremental / snapshot 모두 지원) → 향후 GLB 추가 업로드 시 매칭률 개선 가능
+
+**Trade-off**:
+- 매칭률 60~91% — Media Set 에 없는 GLB 는 NULL (인덱싱 영향 없음, 3D viewer 에서만 일부 부재)
+- `_with_media_ref` suffix dataset 추가로 Compass 폴더가 복잡해짐 (원본 + 변환 출력 병존)
+
+**상세**: `docs/findings/2026-04-17-M6-ontology-registration-asymmetry/README.md` §3.1-R5, §4.2
+
+---
+
 ## 5. External Dependencies
 
 ### DXTnavis (C# .NET 8 BIM data extractor)
@@ -629,4 +709,4 @@ BIMEntity
 
 ---
 
-*Last updated: 2026-04-16 (M1 기술블로그 첫 번째 글 + Notion 갤러리 DB 연동 + 독자별 entry point + blog-writing-retrospective)*
+*Last updated: 2026-04-17 (Phase 2/3 Foundry Ontology Registration 완료 + M6 finding + D-AIFDE-20/21/22 결정 — 단일 BimObject 아키텍처 전환)*

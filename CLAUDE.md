@@ -28,7 +28,7 @@ separately-named `feedback_portal_update.md` file lives in the
 
 - **Goal**: BIM ontology / knowledge graph pipeline for SP3D plant model data (12,009 objects × 110,173 spatial relations)
 - **Upstream data**: DXTnavis v1.4.0 snapshot `2026-04-12` (PR #3 XLSX fix re-aligned)
-- **Current phase**: Phase 0–6 complete; Foundry 6 ObjectTypes live; Airflow DAG + OpenLineage live. Phase 7 (Streamlit UI) pending.
+- **Current phase**: Phase 0–6 complete; Phase 2/3 Foundry Ontology 데이터 기본 세팅 완료 (2026-04-17) — 통합 BimObject OT (12,009) + 6 specialized OT 병행 + BimPipelines (147) + 4 Link Types; BimPipeRun OT 등록만 마지막 30분 남음. Airflow DAG + OpenLineage live. Phase 4 Workshop 대시보드 / Streaming 설계 진입 가능.
 - **Primary targets**: Palantir Foundry (Developer Tier) + Power BI + Neo4j + FastAPI + LLM Agent
 - **Test suite**: 336/336 passing
 

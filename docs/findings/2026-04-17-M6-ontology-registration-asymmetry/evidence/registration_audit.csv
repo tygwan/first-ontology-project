@@ -1,0 +1,7 @@
+type,rows,total_cols,null_cols,spec_cols,null_in_spec,null_in_spec_names,has_sp3d_sp3d_moniker,has_sp3d_moniker,mesh_uri_prefix,ingested_at_utc_type
+piping,3062,219,64,63,1,nav_item_source_file_name,False,True,✅ clean,✅ string
+structural,4840,219,51,57,4,"nav_item_source_file_name,sp3d_description,sp3d_material_type,sp3d_reporting_type",False,True,🔴 mesh/,✅ string
+equipment,770,219,63,53,2,"nav_item_source_file_name,sp3d_area",False,True,🔴 mesh/,✅ string
+electrical,1053,219,54,51,2,"nav_item_source_file_name,sp3d_short_code",False,True,🔴 mesh/,✅ string
+hvac,125,219,67,50,1,nav_item_source_file_name,False,True,🔴 mesh/,✅ string
+other,2159,219,25,45,0,,False,True,🔴 mesh/,✅ string
