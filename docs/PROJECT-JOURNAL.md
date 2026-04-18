@@ -240,6 +240,18 @@
 
 **종합 인사이트 리포트** ([`docs/analysis/bim-kg-insights-20260417.md`](analysis/bim-kg-insights-20260417.md)): 등록 직후 BimObject 기반 8개 카테고리 쿼리 — 품질(Piping 92.5% OK vs Other 40.9%), 물리속성(Foundation 620톤 · 221 인접 허브), 설계압력(P-10147 104 atm 핫라인), 인접네트워크(Structure↔Structure 16,689 overlap), 계층(L6 5,105 피크), 파이프라인 Top 10, 재료(A106 탄소강 중심). 액션 아이템 6개 도출 — NDT 우선순위, clash 자동 검출 파이프라인, 3D 디지털 트윈.
 
+> ⚠️ **2026-04-19 정정**: 위 insights 의 수치 중 "P-10147 10,467 kPa / 16,870 kg / 204°C" 는 Foundry SQL 로 직접 검증 결과 **AI FDE hallucination** 확정. 진짜 hotline 은 SC-168 (1,207 kPa / 260°C). 상세는 [`case-p10147-sc168-deep-dive.md`](analysis/case-p10147-sc168-deep-dive.md). verification 시리즈 4번째 (M1/M5/M6 계승).
+
+2026-04-19   Phase 4 진입 — "플랜트 데이터 심층 분석 + AIP 기술 적용" 로드맵 수립
+             ✅ Phase 4-α (P-10147 vs SC-168 case study) 완료
+             ├── AI FDE hallucination 검증 발견 (`case-p10147-sc168-deep-dive.md`)
+             ├── AIP Logic Agent 프롬프트 세트 10개 + Function 후보 4개 (`aip-logic-agent-prompts-p10147-sc168.md`)
+             └── 시각화 6개 (`notebooks/figures/case-p10147-sc168/`)
+             📋 Phase 4-β 이후 로드맵 문서화 (`docs/plan/phase-4-deep-dive-roadmap.md`)
+             └── A 시리즈 7개 (clash/foundation/material/balancing/contamination/isolated/piperun)
+             └── B 시리즈 8개 (LogicAgent/Workshop/Function/Action/Scenario/OSDK/PipelineBuilder/Studio)
+             └── 15 items 순차 진행 예정, 각 완료 시 roadmap checkbox 갱신
+
 ### Test count progression
 
 | Phase | Test count | Cumulative |
