@@ -19,17 +19,22 @@
 
 ## 📊 A. 데이터 분석 — 7개 (모두 local 실행 가능, 순차 진행)
 
-### [ ] A1 — Clash 검출 랭킹 🔥
+### [x] A1 — Clash 검출 랭킹 🔥 ✅ 2026-04-19
 
 - **목표**: 110,173 adjacency overlap 중 Top 100 위험 간섭 지점 추출
-- **스코어 공식**: `overlap_volume_m3 × (src.dry_weight_kg + tgt.dry_weight_kg) × pipeline.max_pressure_kpa` (가중 복합)
+- **스코어 공식**: 3 lens (composite / cross-type / pressure-weighted) — 단일 스코어의 편향 회피
 - **Inputs**: `bim_adjacent_to`, `bim_belongs_to_pipeline`, `bim_pipelines`, 6 Object Type
 - **Outputs**:
-  - `docs/analysis/a1-clash-detection-ranking.md`
-  - 2-4 PNG: 스코어 히스토그램, Top 100 heatmap, refined_class 쌍 매트릭스, pipeline 별 clash 수
+  - [`docs/analysis/a1-clash-detection-ranking.md`](../analysis/a1-clash-detection-ranking.md)
+  - 4 PNG: score distribution / refined_class 매트릭스 / Top100 scatter / 3-lens top10 panel
   - `scripts/analysis_a1_clash_ranking.py`
-- **Function 후보**: F1 `rank_clashes(pipeline?, threshold?)` — Phase 4-β 의 B3 에 넘김
-- **시간**: 45분
+  - CSV: `data/analysis/a1_clash_ranking_{top100, cross_type_top50, pressure_weighted_top50}.csv`
+- **핵심 findings**:
+  - 91% edges (80K+) 가 M3 parent-box contamination → 유효 8,108
+  - Composite Top 10 = DB_Conduit Run 자기들끼리 (전기실 밀집)
+  - Cross-type Top 1 = Slab × Road (106톤 × 45 m³) — civil layer
+  - Pressure-weighted Top 2 = **SC-168 Flange/Elbow × TMHandrail** (1,207 kPa × 작업자 동선) ← Phase 4-α 확증
+- **Function 후보**: F1 `rank_clashes(pipeline?, lens?, threshold?)` → B3 seed
 
 ### [ ] A3 — Foundation 중심성 분석
 
