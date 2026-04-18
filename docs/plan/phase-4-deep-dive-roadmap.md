@@ -100,15 +100,17 @@
   - 4 PNG: classification / bin comparison / level breakdown / AI vs reality table
   - `scripts/analysis_a7_isolated.py`
 
-### [ ] A8 — BimPipeRun 흐름 분석
+### [x] A8 — BimPipeRun Flow ✅ 2026-04-19
 
-- **목표**: 378 piperun 전수 — 평균 부품 수 (2.6/pipeline), valve/flange 분포 이상치, NPD 계층 분석
-- **Inputs**: `bim_piperuns` + `belongsToPipeline`
+- **결정적 버그 발견**: `bim_piperuns.valve_count` aggregate 전부 0 인데 실제 **472 valves / 159 runs** 존재 → aggregate builder case-sensitive 매칭 버그 (M7 후보)
+- **Typical**: 378 runs / 147 pipelines — median 5 comp/run, 2 runs/pipeline
+- **Top valve-rich (실제 count)**: S-175 (12v, 87% fittings) / P-10147 TRN / P-204 (9v+11f)
+- **NPD 주류**: 4" (17%) + 8" (16%) + 6" (12%) + 2" (11%)
+- **"Pipelines" 메타 재조명**: U12-2-MZ-00xx 시리즈 11 runs, 256°C Process heat, 명명 누락 sample
 - **Outputs**:
-  - `docs/analysis/a8-piperun-flow.md`
-  - 3 PNG: run 크기 분포, NPD 감소율 (pipeline 내), fitting 밀도 outlier
-  - `scripts/analysis_a8_piperun.py`
-- **시간**: 30분
+  - [`docs/analysis/a8-piperun-flow.md`](../analysis/a8-piperun-flow.md)
+  - 4 PNG: run size / valve bug / density outliers / NPD distribution
+  - `scripts/analysis_a8_piperun_flow.py`
 
 **A 시리즈 합계**: ~3.5시간, ~16 PNG, ~7 markdown, 7 scripts
 
