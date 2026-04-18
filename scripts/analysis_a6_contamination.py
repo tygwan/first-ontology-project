@@ -18,6 +18,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
+from _plot_style import setup_plot_style
+setup_plot_style()
+
 import numpy as np
 import pandas as pd
 
@@ -27,10 +32,7 @@ FIG.mkdir(parents=True, exist_ok=True)
 OUT_CSV = Path("data/analysis")
 OUT_CSV.mkdir(exist_ok=True)
 
-plt.rcParams.update({
-    "font.size": 10, "axes.titlesize": 12,
-    "figure.dpi": 100, "savefig.dpi": 300, "savefig.bbox": "tight",
-})
+# (rcParams handled by setup_plot_style)
 
 keep = ["object_id", "display_name", "refined_class", "original_class",
         "dry_weight_kg", "bbox_volume_m3", "is_parent_box", "is_bbox_placeholder",
@@ -107,9 +109,9 @@ ax.barh(range(len(labels)), combos_df["count"].values, color=colors_c)
 ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=9)
 ax.set_xlabel("Object count")
 ax.set_title(f"Object 분류 by Flag 조합 (총 {len(all_obj):,})\n"
-             "🔴 = 이미 필터 대상 (parent_box or bbox_placeholder)\n"
-             "🟠 = 애매 (is_container 만)\n"
-             "🟢 = 실체 물리 객체",
+             "[RED] = 이미 필터 대상 (parent_box or bbox_placeholder)\n"
+             "[ORANGE] = 애매 (is_container 만)\n"
+             "[GREEN] = 실체 물리 객체",
              fontweight="bold")
 for i, v in enumerate(combos_df["count"].values):
     ax.text(v + 50, i, f"{v:,}", va="center", fontsize=9)

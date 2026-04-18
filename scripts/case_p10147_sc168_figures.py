@@ -10,6 +10,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
+from _plot_style import setup_plot_style
+setup_plot_style()
+
 import numpy as np
 import pandas as pd
 
@@ -17,14 +22,7 @@ BASE = Path("data/ontology/2026-04-12")
 OUT = Path("notebooks/figures/case-p10147-sc168")
 OUT.mkdir(parents=True, exist_ok=True)
 
-plt.rcParams.update({
-    "font.size": 10,
-    "axes.titlesize": 12,
-    "axes.labelsize": 10,
-    "figure.dpi": 100,
-    "savefig.dpi": 300,
-    "savefig.bbox": "tight",
-})
+# (rcParams handled by setup_plot_style)
 
 COLOR_P = "#4A90E2"   # P-10147 blue
 COLOR_SC = "#E74C3C"  # SC-168 red

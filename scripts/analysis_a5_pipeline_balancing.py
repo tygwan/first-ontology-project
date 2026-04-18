@@ -14,6 +14,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
+from _plot_style import setup_plot_style
+setup_plot_style()
+
 import numpy as np
 import pandas as pd
 
@@ -23,10 +28,7 @@ FIG.mkdir(parents=True, exist_ok=True)
 OUT_CSV = Path("data/analysis")
 OUT_CSV.mkdir(exist_ok=True)
 
-plt.rcParams.update({
-    "font.size": 10, "axes.titlesize": 12,
-    "figure.dpi": 100, "savefig.dpi": 300, "savefig.bbox": "tight",
-})
+# (rcParams handled by setup_plot_style)
 
 pipe = pd.read_parquet(BASE / "bim_pipelines.parquet")
 print(f"Pipelines: {len(pipe)}")
