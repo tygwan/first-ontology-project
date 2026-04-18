@@ -63,16 +63,17 @@
   - 4 PNG: material distribution / P-T regime scatter / stainless pipelines / SC-168 breakdown
   - `scripts/analysis_a4_material_pt.py`
 
-### [ ] A5 — 파이프라인 밸런싱
+### [x] A5 — Pipeline Balancing ✅ 2026-04-19
 
-- **목표**: 147 pipelines 전체 분포 분석 — 부품수 / 무게 / 압력 / 온도 편차
-- **분석**: quartile plot, outlier detection (IQR method), 가장 흔한 "typical pipeline" 프로파일 정의
-- **Inputs**: `bim_pipelines` (aggregate)
+- **Typical pipeline (median)**: 13 comp / 2 runs / 826 kg / 미지정 P-T
+- **실질 고압 라인은 단 2개**: SC-168 (1,207 kPa), P-005 (670 kPa) — 나머지 48개는 default 0.04 psi
+- **66% 가 pressure 미입력** — AI FDE summary 가 왜 오해를 샀는지 재확증
+- **Prefix 분류**: `03-/04-` refinery 18 + `PR01-` area 15 + `TRN` 30 + `SC-` 2 + `Uxx-` 9 + Other 45
+- **Data quality finding**: pipeline_name = `"Pipelines"` 메타-이름 라인 발견 (153 comp, TRAINING path) → A6 추적 대상
 - **Outputs**:
-  - `docs/analysis/a5-pipeline-balancing.md`
-  - 3 PNG: box plot 4-metric, outlier table, 전형적 pipeline 프로필 radar chart
-  - `scripts/analysis_a5_pipelines.py`
-- **시간**: 30분
+  - [`docs/analysis/a5-pipeline-balancing.md`](../analysis/a5-pipeline-balancing.md)
+  - 4 PNG: distribution boxplots / typical vs outliers / prefix groups / profile radar
+  - `scripts/analysis_a5_pipeline_balancing.py`
 
 ### [ ] A6 — 계층 오염 탐지 (M3 parent box 연장)
 
