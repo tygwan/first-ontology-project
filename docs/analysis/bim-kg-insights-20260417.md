@@ -4,6 +4,16 @@
 **대상**: BimObject 통합 Object Type (12,009 objects, refined_class 6종) + BimPipelines (147) + 4 Link Types.
 **연결**: [Phase 2/3 Ontology Registration tasklog](../tasklog/phase-2-3-ontology-registration-20260417.md), [M6 finding](../findings/2026-04-17-M6-ontology-registration-asymmetry/README.md)
 
+> ⚠️ **2026-04-19 정정 고지**: 이 리포트는 AI FDE 가 생성한 원본 요약입니다. 후속 검증 (`case-p10147-sc168-deep-dive.md`) 결과, **§3 설계 압력/온도** 와 **§6 파이프라인 Top 10** 의 핵심 숫자들이 raw data 와 10× 이상 괴리 (AI hallucination) 하는 것으로 확인되었습니다.
+>
+> **재확인된 사실**:
+> - Piping/Equipment/Structure/HVAC max_pressure = 10,467 kPa → **실제 최대는 1,206.58 kPa** (P-10147 은 0 kPa, 진짜 최고압 라인은 SC-168)
+> - P-10147 "총 무게 16,870 kg" → **실제 1,684 kg** (10× 오차)
+> - P-10147 "204°C" → **실제 −17.78°C** (부호까지 반대, 설계 파라미터 미입력 TRAINING 데이터)
+> - "sp3d_design_max_pressure" raw 값은 오직 `{0.00, 0.04, 97.22, 175.00}` psi 4가지만 존재
+>
+> **§1 Verdict 분포 · §5 계층 구조 · §7 재료 분석 등 categorical 데이터는 재검증 필요. 수치 요약은 기본적으로 raw SQL 로 재확인 후 사용할 것.** 자세한 내용은 [`case-p10147-sc168-deep-dive.md`](./case-p10147-sc168-deep-dive.md) 참조.
+
 ---
 
 ## 1. 🏭 설비 품질 분석 (Verdict)
