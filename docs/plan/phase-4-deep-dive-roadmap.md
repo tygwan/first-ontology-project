@@ -48,19 +48,20 @@
   - `scripts/analysis_a3_physical_hubs.py`
 - **Function 후보**: `physical_hubs(top_n, refined_class?)` → B3 seed
 
-### [ ] A4 — 재료별 압력/온도 적합성 검증
+### [x] A4 — Material × P × T Adequacy ✅ 2026-04-19
 
-- **목표**: A106 Gr.B (탄소강) 의 온도 상한 분포, A312 TP304 (스테인리스) 위치 등 material–pressure–temp 적합성 매트릭스
-- **분석**:
-  - ASME B31.3 기준 대비 위반 샘플 추출
-  - commodity_code prefix 별 재료 분류
-  - SC-168 의 A-type 재료 집중 확인
-- **Inputs**: `bim_piping` (design_pressure, design_temp, sp3d_commodity_code)
+- **데이터 추출**: `sp3d_description` 에서 regex 로 ASTM 재료 파싱 (3,062 중 2,785 / 91%)
+- **분포**: Carbon Steel 85.3% / Stainless 304-316 5.4% / Unknown 9%
+- **AI FDE hallucination (6번째)**: A106/A312/A234 수치 3종 전부 오류 (inflated + deflated 혼합)
+  - A106 Gr.B claim 639 vs actual 92 (7×)
+  - A312 TP304 claim 218 vs actual 75 (3×)
+  - A234 WPB claim 213 vs actual 680 (역방향 3×)
+- **SC-168 재료**: 17 components 전부 Carbon Steel (A106-B / A105 / A234-WPB / A53-B), B31.3 safety margin ~14× (충분)
+- **플래그**: Sulphur Recovery 환경 → NACE MR0175 재검토 필요 (SC-168 의 숨은 리스크)
 - **Outputs**:
-  - `docs/analysis/a4-material-pressure-temperature.md`
-  - 3 PNG: scatter (P×T, 재료별 색), 위반 영역 (Regime map), 재료 hist
-  - `scripts/analysis_a4_material.py`
-- **시간**: 30분
+  - [`docs/analysis/a4-material-pt-adequacy.md`](../analysis/a4-material-pt-adequacy.md)
+  - 4 PNG: material distribution / P-T regime scatter / stainless pipelines / SC-168 breakdown
+  - `scripts/analysis_a4_material_pt.py`
 
 ### [ ] A5 — 파이프라인 밸런싱
 
