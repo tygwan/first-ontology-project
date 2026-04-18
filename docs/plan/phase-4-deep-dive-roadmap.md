@@ -36,16 +36,17 @@
   - Pressure-weighted Top 2 = **SC-168 Flange/Elbow × TMHandrail** (1,207 kPa × 작업자 동선) ← Phase 4-α 확증
 - **Function 후보**: F1 `rank_clashes(pipeline?, lens?, threshold?)` → B3 seed
 
-### [ ] A3 — Foundation 중심성 분석
+### [x] A3 — Physical Hub Centrality ✅ 2026-04-19
 
-- **목표**: 620톤 기초 구조물 허브 + 221 인접을 중심으로 "플랜트의 물리적 중심" 지도
-- **분석**: hasParent 하향 계통 + adjacentTo 1-hop/2-hop + 무게/부피 가중
-- **Inputs**: `bim_has_parent`, `bim_adjacent_to`, `bim_structural`
+- **AI FDE hallucination 발견 (5번째)**: "Foundation 221 adj + 620톤" 조합 객체가 **실제 0 개**
+- **실제 발견**: 플랜트 물리 허브 Top 20 중 10개가 전부 **Level 6 Slab** — Structure 콘크리트 바닥 슬래브
+- **#1**: `BaseSlab-001-0001` (adj 247 + 82.7톤) — 진짜 centrality 최상위
+- **A1 연결**: Slab-1-0901 이 A3 허브 Top 2 + A1 cross-type clash #1 (Road 과) — 이중 역할
 - **Outputs**:
-  - `docs/analysis/a3-foundation-centrality.md`
-  - 3 PNG: 2-hop 그래프 (networkx), degree vs weight scatter, 계층 하위 트리 구조
-  - `scripts/analysis_a3_foundation.py`
-- **시간**: 30분
+  - [`docs/analysis/a3-physical-hub-centrality.md`](../analysis/a3-physical-hub-centrality.md)
+  - 4 PNG: hub ranking / degree-weight scatter (hallucination marker 포함) / tier refined_class / #1 drill-down
+  - `scripts/analysis_a3_physical_hubs.py`
+- **Function 후보**: `physical_hubs(top_n, refined_class?)` → B3 seed
 
 ### [ ] A4 — 재료별 압력/온도 적합성 검증
 
