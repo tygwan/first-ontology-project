@@ -75,18 +75,17 @@
   - 4 PNG: distribution boxplots / typical vs outliers / prefix groups / profile radar
   - `scripts/analysis_a5_pipeline_balancing.py`
 
-### [ ] A6 — 계층 오염 탐지 (M3 parent box 연장)
+### [x] A6 — Hierarchy Contamination (M3 연장) ✅ 2026-04-19
 
-- **목표**: M3 에서 448개 parent box 식별. 추가 오염 후보 발견 (큰 bbox + null mesh + high adjacency)
-- **분석**:
-  - `is_bbox_placeholder`, `is_parent_box`, `is_container` 플래그 교차
-  - 12,009 객체 중 M3 미식별 + 오염 의심 후보 리스트
-- **Inputs**: 전체 6 Object Type
+- **거대 발견**: 12,009 중 **98.8% (11,860) 이 TRAINING 경로** — dataset 전체가 DXTnavis 튜토리얼 샘플 플랜트
+- **M3 확장 발견**: bbox > p95 + no_mesh + is_container 조합의 **30개 추가 unflagged contamination** (Tank/Vessel placeholders + Duct Banks + WallSystem)
+- **Meta-name 이상**: `pipeline_name = "Pipelines"` L5 라인 유일 이상 (26개 meta-name 은 정상 L4 aggregator)
+- **권장 Data Contract**: `is_production` / `is_real_object` / `contamination_score` computed properties 추가
 - **Outputs**:
-  - `docs/analysis/a6-hierarchy-contamination.md`
-  - 2 PNG: 오염 점수 분포, level × adjacency heatmap
+  - [`docs/analysis/a6-hierarchy-contamination.md`](../analysis/a6-hierarchy-contamination.md)
+  - 4 PNG: training vs production / flag matrix / level contamination / meta name drill
   - `scripts/analysis_a6_contamination.py`
-- **시간**: 30분
+  - CSV: 30 unflagged candidates + 27 meta-names
 
 ### [ ] A7 — 고립 객체 2,790개 분석
 
