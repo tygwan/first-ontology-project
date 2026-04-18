@@ -87,19 +87,18 @@
   - `scripts/analysis_a6_contamination.py`
   - CSV: 30 unflagged candidates + 27 meta-names
 
-### [ ] A7 — 고립 객체 2,790개 분석
+### [x] A7 — Isolated Objects ✅ 2026-04-19
 
-- **목표**: `adjacency_count = 0` 객체 2,790개의 정체 분석
-- **가설**:
-  - 분리 설계 (standalone 장비)
-  - 메타 전용 (Container, HierarchyNode)
-  - 누락 (mesh 없어 BBox 계산 실패)
-- **Inputs**: 6 Object Type + `adjacency_count`
+- **실측 isolated = 3,353 (27.9%)**, AI FDE 주장 2,790 과 **7번째 hallucination** (+563 개, +4.7%p)
+- 전 bin 분포 중 특히 1-5 bin 에서 3,304개 괴리 — AI FDE 가 1-5 와 6-20 을 text-level 에서 혼동
+- **핵심 인사이트**: truly-standalone real object **0 개** — 모든 real physical 은 최소 1 neighbor
+- 3,353 isolated 전부 container / parent_box (C 카테고리 3,176 + A parent_box 177)
+- L3-L5 aggregator 에 isolated 집중 (각 85/48/62%)
+- 조밀한 플랜트 + AABB tolerance 0.15m → 모든 실체 객체가 네이버 보유
 - **Outputs**:
-  - `docs/analysis/a7-isolated-objects.md`
-  - 3 PNG: refined_class 분포, verdict 교차, bbox_volume vs isolation
+  - [`docs/analysis/a7-isolated-objects.md`](../analysis/a7-isolated-objects.md)
+  - 4 PNG: classification / bin comparison / level breakdown / AI vs reality table
   - `scripts/analysis_a7_isolated.py`
-- **시간**: 30분
 
 ### [ ] A8 — BimPipeRun 흐름 분석
 
