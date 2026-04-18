@@ -1,37 +1,64 @@
 """Generate Palantir Foundry Object Type + Link Type parquet outputs.
 
-Output location: ``data/ontology/2026-04-07/``
+Output location: ``data/ontology/2026-04-12/``
 
 Structure::
 
-    ontology/2026-04-07/
+    ontology/2026-04-12/
       object_types/
-        piping.parquet         PipingComponent
-        structural.parquet     StructuralMember
-        equipment.parquet      Equipment
-        electrical.parquet     ElectricalComponent
-        hvac.parquet           HvacComponent
-        other.parquet          OtherObject
+        piping.parquet         BimPiping / BimObject  (Piping subset)
+        structural.parquet     BimStructural / BimObject
+        equipment.parquet      BimEquipment / BimObject
+        electrical.parquet     BimElectrical / BimObject
+        hvac.parquet           BimHvac / BimObject
+        other.parquet          BimOther / BimObject
+      bim_pipelines.parquet    BimPipelines (aggregate, 147 rows)
+      bim_piperuns.parquet     BimPipeRun (aggregate, 378 rows)
       link_types/
-        adjacent_to.parquet    AdjacentTo (symmetric)
-        has_parent.parquet     HasParent
-        belongs_to_pipeline.parquet  BelongsToPipeline
-        in_group.parquet       InConnectedGroup
+        adjacent_to.parquet    AdjacentTo (symmetric, 110,173)
+        has_parent.parquet     HasParent (12,008)
+        belongs_to_pipeline.parquet  BelongsToPipeline (2,926)
+        in_group.parquet       InGroup (12,009)
 
-Design decisions
-----------------
+Design decisions — CURRENT STATE (Phase 2/3 완료, 2026-04-17)
+-------------------------------------------------------------
 
-1. **Object Types: all-in-one columns.** Every class-specific parquet file
-   keeps all 216 Gold columns (dropped rows are the only difference). This
-   lets Foundry users decide the column filter and Property Set layout at
-   the platform level rather than being forced by us up-front.
+1. **Foundry Transform 이 컬럼 필터링 + Media Reference 변환을 담당**
+   (D-AIFDE-22). 이 exporter 는 219 전체 컬럼 wide table 을 그대로 출력하고,
+   Foundry Code Repo ``bim-mesh-uri-transform`` 이:
+   - ``mesh_uri`` 를 Media Reference struct (``mediaSetRid + mediaSetViewRid +
+     mediaItemRid``) 로 변환 (Media Set ``bim_mesh`` 매핑)
+   - ``mesh/UUID.glb`` → ``UUID.glb`` prefix 제거
+   - 빈 문자열 → NULL
+   를 수행해 ``*_with_media_ref`` 6개 dataset 을 출력.
+
+   이어서 별도 UNION Transform 이 6개를 합쳐 ``bim_objects`` (12,009)
+   단일 dataset 을 생성 → **통합 BimObject Object Type** 의 backing.
+   (D-AIFDE-21, 2-view 전략)
 
 2. **Link Type symmetry: single direction + flag.** ``adjacent_to.parquet``
-   stores each edge once (the producer output, 110,173 rows). In Foundry
-   the Link Type is marked symmetric; we do not duplicate the reversed edge.
+   stores each edge once (producer output, 110,173 rows). In Foundry
+   the Link Type 은 symmetric 로 선언되어 역방향 자동 처리.
 
-3. **All-in-one column schema** is identical across the 6 files so Foundry
-   can treat them uniformly when joining or running cross-class queries.
+3. **All-in-one column schema** 는 6개 파일 간 동일하여 UNION 시
+   schema harmonization 비용 0.
+
+4. **`sp3d_sp3d_moniker` → `sp3d_moniker` rename** 은 local
+   `scripts/rename_double_prefix_column.py` 로 one-time 적용 (D-AIFDE-20).
+   DXTnavis upstream fix 전까지 유지.
+
+Notes
+-----
+
+- `ingested_at_utc` 는 6개 Object Type 에서는 **String** (M5 rollback, D-AIFDE-14).
+- aggregate 2개 (bim_pipelines / bim_piperuns) 는 `timestamp[ns, tz=UTC]` 로 유지
+  — Ontology API serving path 에서 정상 동작 확인됨.
+- BimPiping, BimStructural, BimEquipment 등 **세분화 OT** 는 통합 BimObject 와
+  병행 보존 (도메인별 정밀 쿼리 용). 삭제 금지.
+
+References: `docs/plan/ontology-registration-cheatsheet.md`,
+`docs/tasklog/phase-2-3-ontology-registration-20260417.md`,
+`docs/findings/2026-04-17-M6-ontology-registration-asymmetry/`.
 """
 
 from __future__ import annotations

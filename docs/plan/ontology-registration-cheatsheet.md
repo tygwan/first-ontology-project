@@ -3,6 +3,8 @@
 **목적**: Foundry Ontology Manager UI 에 Copy-Paste 용 입력값 모음.
 **전제**: AI FDE 의 "Ontology Registration Guide" 문서를 Foundry 에서 참조하면서 이 치트시트로 실제 입력.
 
+> **2026-04-17 업데이트**: Phase 2/3 완료. 아키텍처가 **6 specialized OT → 통합 BimObject + 6 specialized OT 병행 (2-view 전략)** 으로 전환됨 (D-AIFDE-21). Finding M6 — 5개 중첩 원인 해소. BimPipeRun OT 등록만 잔여 (30분). 상세는 [`tasklog/phase-2-3-ontology-registration-20260417.md`](../tasklog/phase-2-3-ontology-registration-20260417.md).
+
 ---
 
 ## 📦 기준 RID (참조용)
@@ -14,9 +16,21 @@ HasSP3DMetadata:  ri.ontology.main.interface.2a9d1741-f6df-4e57-92ba-199a6d3ebb1
 HasPressureTemp:  ri.ontology.main.interface.9f79fc16-8fca-47af-af09-4a5db806d4d2
 ```
 
-### Dataset RIDs (backing datasets)
+### Dataset RIDs — 통합 뷰 (D-AIFDE-21)
 ```
-bim_piping:              ri.foundry.main.dataset.2388ddc2-3c83-4ef3-a7df-fef11024bb4e
+bim_objects (UNION, 12,009):              ri.foundry.main.dataset.7d5c883e-a60e-46d2-acbe-ea741447b129
+bim_piping (재생성, 3,062):                ri.foundry.main.dataset.19583834-1d30-471a-a25b-1b92f682fcb8
+bim_piping_with_media_ref (Transform 출력): (Compass: /Datayoon-09825c/BIM-KG/bim_piping_with_media_ref)
+bim_structural_with_media_ref:            (동일 Transform 출력 그룹)
+bim_equipment_with_media_ref:             (동일)
+bim_electrical_with_media_ref:            (동일)
+bim_hvac_with_media_ref:                  (동일)
+bim_other_with_media_ref:                 (동일)
+```
+
+### Dataset RIDs — 세분화 뷰 (원본, domain-specific 쿼리용)
+```
+bim_piping (구):         ri.foundry.main.dataset.2388ddc2-3c83-4ef3-a7df-fef11024bb4e  [삭제됨, 위 신규 RID 사용]
 bim_structural:          ri.foundry.main.dataset.32658e86-ad1b-4adb-8acf-c3c409a21661
 bim_equipment:           ri.foundry.main.dataset.5e250030-37c1-4475-aaac-8a9e9bf42e64
 bim_electrical:          ri.foundry.main.dataset.29338c90-e5be-4db7-86f9-eb0449340873
@@ -29,6 +43,44 @@ bim_has_parent:          ri.foundry.main.dataset.159d949e-fe9b-4267-a20e-57512e0
 bim_belongs_to_pipeline: ri.foundry.main.dataset.97db7363-a24e-4cd8-870c-39450ba9bbfa
 bim_in_group:            ri.foundry.main.dataset.0e57446a-bbc6-4443-bec8-7cbf58103e65
 ```
+
+---
+
+## 🏁 실제 등록 현황 (2026-04-17)
+
+| Object Type | Backing Dataset | Rows | Properties | Status |
+|---|---|---:|---:|---|
+| **BimObject** (통합, 신규) | `bim_objects` (UNION) | 12,009 | 218 | ✅ 등록 완료 |
+| **BimPipelines** | `bim_pipelines` | 147 | 29 | ✅ 등록 완료 |
+| **BimPipeRun** | `bim_piperuns` | 378 | 26 | ⏳ **잔여** (30분) |
+| BimPiping (세분화 뷰) | `bim_piping` (신규 RID) | 3,062 | 62 | ✅ 등록 완료 |
+| BimStructural (세분화 뷰) | `bim_structural` | 4,840 | ~170 | ✅ 기존 유지 (mesh_uri=String) |
+| BimEquipment/Electrical/Hvac/Other | — | — | — | 📋 필요 시 추가 등록 |
+
+| Link Type | Source → Target | Edges | Status |
+|---|---|---:|---|
+| adjacentTo | BimObject ↔ BimObject (Join table M:N, symmetric) | 110,173 | ✅ 등록 완료 |
+| hasParent | BimObject → BimObject (FK `parent_id`) | 12,008 | ✅ 등록 완료 |
+| inGroup | BimObject → BimObject (FK `group_id`) | 12,009 | ✅ 등록 완료 |
+| belongsToPipeline | BimObject → BimPipelines (FK `sp3d_pipeline`) | 2,926 | ✅ 등록 완료 |
+| **piperunBelongsToPipeline** | BimPipeRun → BimPipelines (FK `pipeline_name`) | (378) | ⏳ **잔여** |
+
+---
+
+## 🎓 Lessons Learned (Finding M6 요약)
+
+BimPiping 재등록 과정에서 확인된 **5개 중첩 원인** — 향후 동일 실수 방지:
+
+1. **auto-import bloat**: "Create Object Type" 마법사가 backing dataset 전체 컬럼 매핑 → 219 properties. spec 외 삭제 필수.
+2. **`sp3d_sp3d_moniker` 이중 prefix**: DXTnavis XLSX loader 의 버그. 로컬 rename 으로 해소 (D-AIFDE-20). `sp3d_moniker` 로 사용.
+3. **meshUri Interface property ID collision**: 로컬 `mesh_uri` (String) + interface 요구 (Media Reference) 가 **같은 ID** 에 겹치면 indexer 실패. BimStructural 처럼 `_BimObject` suffix 별도 property 로 분리되는 패턴이 안전.
+4. **Media Reference path 포맷**: Media Set 내부 파일 경로는 `UUID.glb` 인데 dataset 값은 `mesh/UUID.glb` → 불일치. Transform `bim-mesh-uri-transform` 으로 prefix 제거 (D-AIFDE-22).
+5. **null Arrow dtype** (minor): `write_pandas` 가 전부 NaN 인 컬럼을 Arrow null type 으로 직렬화. Foundry 가 암묵적 string 승격 처리하지만 M5 같은 degenerate 잠재 — 향후 monitor.
+
+**권장 Interface fulfillment 패턴** (Structural 이 성공한 방식):
+- Interface property → 별도 property ID (`*_BimObject` 같은 suffix) 로 생성
+- 로컬 property 와 ID 충돌 회피
+- Media Reference 같은 특수 타입은 반드시 분리
 
 ---
 
