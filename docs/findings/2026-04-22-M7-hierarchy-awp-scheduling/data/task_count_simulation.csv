@@ -1,0 +1,8 @@
+strategy,grouping_key,n_tasks,covered_objects,coverage_pct
+Pipeline-only (current DXTnavis),"(sp3d_pipeline, sp3d_pipe_run)",378,2926,24.4
+Hierarchy fallback — prefix depth 2,system_path[:2],5,12009,100.0
+Hierarchy fallback — prefix depth 3,system_path[:3],149,12009,100.0
+Hierarchy fallback — prefix depth 4,system_path[:4],183,12009,100.0
+Hierarchy fallback — prefix depth 5,system_path[:5],299,12009,100.0
+Hierarchy fallback — prefix depth 6,system_path[:6],938,12009,100.0
+Hierarchy fallback — prefix depth 7,system_path[:7],4242,12009,100.0
