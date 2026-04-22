@@ -18,11 +18,13 @@ following rules at session start:
 
 - `feedback_task_logging.md` — R2 (5-section task log in `docs/tasklog/`)
 - `feedback_finding_archive.md` — R3 (6-step issue archive in `docs/findings/`)
+- `feedback_portal_update.md` — R1/R4 (portal update on every finding / decision / phase / dependency / open-question event, synced from dev-standards@0.4.0 on 2026-04-22)
+- `feedback_visualization_png.md` — project-specific (DPI 300 PNG under `notebooks/figures/`)
 
-Historical note: The `portal update` rule (R1/R4) is currently integrated
-into `feedback_finding_archive.md` step 5 in this project's memory. The
-separately-named `feedback_portal_update.md` file lives in the
-`dev-standards` repo and may be added here in a future session.
+Drift check: `bash scripts/check_dev_standards_sync.sh` compares the project
+memory dir against `$DEV_STANDARDS_DIR/memory/` (default `~/dev/dev-standards`)
+and reports missing or diverged files. Run this whenever pulling a new
+`dev-standards` version or starting a session that edits memory rules.
 
 ## Project-specific context
 
