@@ -26,6 +26,7 @@ venv/
 env/
 ENV/
 .venv/
+.venv_check/
 .env
 
 # IDE
@@ -37,6 +38,9 @@ ENV/
 
 # MCP config (contains API tokens)
 .mcp.json
+
+# Claude Code session data (per-project state, scheduled tasks, etc.)
+.claude/
 
 # OS
 .DS_Store
