@@ -1,0 +1,7 @@
+category,count,pct
+Total,12009,100.0
+SP3D Geometry (sp3d_name),7890,65.7
+has Pipeline (sp3d_pipeline),2926,24.4
+has PipeRun (sp3d_pipe_run),2926,24.4
+SP3D w/o Pipeline,4964,41.3
+Navisworks-only,4119,34.3

@@ -1,0 +1,6 @@
+refined_class,actual_count,readme_estimate
+Structure,2577,"~1,200 (StructuralMember)"
+Other,830,"~3,000 (HVAC, Insulation, etc.)"
+Electrical,792,"~400 (CableTray, Cableway)"
+Equipment,697,"~300 (ProcessEquipment, Civil)"
+HVAC,68,"(part of '~3,000 기타')"
